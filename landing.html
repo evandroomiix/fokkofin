@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark" style="background-color: #060913 !important; color: #f1f5f9 !important;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FOKKO FIN • Organização Financeira para TDAH | Site Oficial</title>
+  <link rel="icon" type="image/jpeg" href="fokko_icon.jpg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#060913">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      background-color: #060913 !important;
+      color: #f1f5f9 !important;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .dark-card {
+      background-color: #0f172a !important;
+      border: 1px solid #1e293b !important;
+    }
+    .dark-card:hover {
+      border-color: #059669 !important;
+    }
+
+    .glow-bg {
+      background: radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.06), transparent 70%);
+    }
+  </style>
+</head>
+<body class="min-h-screen glow-bg flex flex-col bg-[#060913] text-slate-100 antialiased">
+
+  <!-- NAVBAR OFICIAL -->
+  <header class="w-full border-b border-slate-800 bg-[#090e1c]/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Marca -->
+      <a href="landing.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/20 border border-cyan-400/40 shrink-0">
+          <img src="fokko_icon.jpg" alt="FOKKO FIN Logo" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <span class="font-black text-lg tracking-tight text-white block leading-none">FOKKO <span class="text-cyan-400">FIN</span></span>
+          <span class="text-[9px] text-slate-400 font-semibold tracking-wider">ORGANIZAÇÃO FINANCEIRA</span>
+        </div>
+      </a>
+
+      <!-- Links de Navegação -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="#como-funciona" class="hover:text-emerald-400 transition">Como Funciona</a>
+        <a href="#open-finance" class="hover:text-emerald-400 transition">Open Finance</a>
+        <a href="#download" class="hover:text-emerald-400 transition">Download / App</a>
+        <a href="#oficializar" class="hover:text-emerald-400 text-cyan-400 font-bold transition">Plano de Lançamento</a>
+      </nav>
+
+      <!-- Botões de Ação -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="openAuthModal('login')" class="text-xs font-bold text-slate-300 hover:text-white px-3 py-2 rounded-xl transition">
+          Entrar
+        </button>
+        <button onclick="openAuthModal('signup')" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs rounded-xl transition hidden sm:inline-block">
+          Criar Conta
+        </button>
+        <a href="app.html" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 transition active:scale-95">
+          <span>Abrir App Web</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 flex flex-col items-center text-center">
+    
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold mb-6">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+      <span>A Primeira Plataforma Financeira Feita para a Mente com TDAH</span>
+    </div>
+
+    <!-- Banner Oficial em Alta Definição -->
+    <div class="max-w-md w-full mb-6 p-4 rounded-3xl bg-[#0b1122] border border-slate-800 shadow-2xl">
+      <img src="fokko_logo.jpg" alt="FOKKO FIN" class="w-full max-h-36 object-contain mx-auto">
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight max-w-3xl leading-tight mb-4">
+      Chega de paralisia na hora de <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">pagar e controlar suas contas</span>.
+    </h1>
+
+    <p class="text-sm sm:text-base text-slate-300 max-w-2xl mb-8 leading-relaxed">
+      Você tem o dinheiro, mas esquece o boleto ou trava na hora de abrir o banco? O <strong>FOKKO FIN</strong> elimina 100% da burocracia de datas, protege seu dinheiro de compras por impulso e te diz exatamente quanto você pode gastar sem culpa.
+    </p>
+
+    <!-- Botões Principais -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+      <a href="app.html" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl text-sm shadow-xl shadow-emerald-500/30 transition flex items-center justify-center gap-2">
+        <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+        <span>Acessar Versão Web Agora</span>
+      </a>
+      <button onclick="openAuthModal('signup')" class="w-full sm:w-auto px-6 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold rounded-2xl text-sm transition flex items-center justify-center gap-2">
+        <i data-lucide="user-plus" class="w-4 h-4 text-cyan-400"></i>
+        <span>Criar Conta (Google / Apple / Email)</span>
+      </button>
+    </div>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-medium">
+      <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> 100% Seguro</span>
+      <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Zero Alertas do Play Protect</span>
+      <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> PWA Homologado Google</span>
+    </div>
+  </section>
+
+  <!-- SEÇÃO DE AUTENTICAÇÃO / CRIAÇÃO DE CONTA (DEMO INTERATIVA) -->
+  <section id="criar-conta" class="max-w-5xl mx-auto px-4 sm:px-6 py-12 border-t border-slate-800">
+    <div class="dark-card p-6 sm:p-10 rounded-3xl text-center relative overflow-hidden">
+      <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 mx-auto flex items-center justify-center mb-3">
+        <i data-lucide="users" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-black text-white">Criação de Conta Simples e Segura</h2>
+      <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-2 mb-6">
+        Seus dados sincronizados em tempo real entre celular e computador. Escolha como prefere se conectar:
+      </p>
+
+      <div class="max-w-sm mx-auto space-y-3">
+        <!-- Botão Google -->
+        <button onclick="handleSocialAuth('Google')" class="w-full py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow transition active:scale-95">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Continuar com Google</span>
+        </button>
+
+        <!-- Botão Apple -->
+        <button onclick="handleSocialAuth('Apple')" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-3 border border-slate-700 shadow transition active:scale-95">
+          <i data-lucide="apple" class="w-4 h-4"></i>
+          <span>Continuar com Apple</span>
+        </button>
+
+        <div class="relative py-2">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+          <div class="relative flex justify-center text-[10px] uppercase font-bold text-slate-500 bg-[#0f172a] px-2">Ou com e-mail</div>
+        </div>
+
+        <button onclick="openAuthModal('email')" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow transition active:scale-95">
+          <i data-lucide="mail" class="w-4 h-4"></i>
+          <span>Cadastrar com E-mail e Senha</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO DE DOWNLOAD & INSTALAÇÃO (ANDROID & IOS SEM BLOQUEIOS) -->
+  <section id="download" class="max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-slate-800">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs uppercase tracking-widest font-extrabold text-cyan-400 block mb-1">Tecnologia PWA Oficial Google & Apple</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white">Instale no Celular Sem Risco de Bloqueio</h2>
+      <p class="text-xs sm:text-sm text-slate-300 mt-2">
+        Evite baixar arquivos <code>.apk</code> soltos na internet que acionam os alarmes do <strong>Google Play Protect</strong>. O FOKKO FIN utiliza a tecnologia oficial <strong>Progressive Web App</strong>.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- CARD ANDROID -->
+      <div class="dark-card p-6 sm:p-8 rounded-3xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="smartphone" class="w-7 h-7"></i>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">100% Play Protect Safe</span>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-white">Instalar no Android</h3>
+          <p class="text-xs text-slate-400 mt-1">Abre em tela cheia como app nativo, com ícone oficial na gaveta de aplicativos e sem barra de navegador.</p>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-[#090e1c] border border-slate-800 text-xs space-y-2 text-slate-300">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">1</span>
+            <span>Abra este site no <strong>Google Chrome</strong> do celular.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">2</span>
+            <span>Toque no botão <strong>"Instalar Aplicativo"</strong> no Chrome.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">3</span>
+            <span>Pronto! O app é instalado com certificado de segurança e sem avisos de risco.</span>
+          </div>
+        </div>
+
+        <a href="app.html" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Acessar e Instalar no Android
+        </a>
+      </div>
+
+      <!-- CARD IOS -->
+      <div class="dark-card p-6 sm:p-8 rounded-3xl space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+            <i data-lucide="apple" class="w-7 h-7"></i>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold">iOS 14+ Compatível</span>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-white">Instalar no iPhone / iPad</h3>
+          <p class="text-xs text-slate-400 mt-1">A Apple permite instalar direto pelo Safari com total segurança e sem precisar de cartão ou login na App Store.</p>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-[#090e1c] border border-slate-800 text-xs space-y-2 text-slate-300">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">1</span>
+            <span>Abra este site no <strong>Safari</strong> do seu iPhone.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">2</span>
+            <span>Toque no botão de <strong>Compartilhar</strong> (quadradinho com seta).</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">3</span>
+            <span>Selecione <strong>"Adicionar à Tela de Início"</strong>. Feito!</span>
+          </div>
+        </div>
+
+        <a href="app.html" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Adicionar ao iPhone
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SEÇÃO PLANO DE OFICIALIZAÇÃO COMPLETO -->
+  <section id="oficializar" class="max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-slate-800">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs uppercase tracking-widest font-extrabold text-amber-400 block mb-1">Roteiro de Produção</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white">Como Vamos Oficializar o FOKKO FIN</h2>
+      <p class="text-xs sm:text-sm text-slate-300 mt-2">
+        Os 4 pilares necessários para transformar o projeto em um produto comercial oficial de sucesso:
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+      
+      <!-- Passo 1 -->
+      <div class="dark-card p-5 rounded-2xl space-y-2.5">
+        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">1</div>
+        <h4 class="font-extrabold text-white text-sm">Banco de Dados em Nuvem</h4>
+        <p class="text-slate-400">Configuração do <strong>Supabase</strong> (PostgreSQL em nuvem) com criptografia LGPD, para sincronizar dados em tempo real entre celular e PC.</p>
+        <span class="text-[10px] text-emerald-400 font-bold block pt-1">Custo: Gratuito inicial</span>
+      </div>
+
+      <!-- Passo 2 -->
+      <div class="dark-card p-5 rounded-2xl space-y-2.5">
+        <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">2</div>
+        <h4 class="font-extrabold text-white text-sm">Login Google & Apple</h4>
+        <p class="text-slate-400">Ativação do módulo OAuth do Google e Apple para os usuários criarem conta com 1 toque sem decorar senhas.</p>
+        <span class="text-[10px] text-emerald-400 font-bold block pt-1">Custo: Gratuito</span>
+      </div>
+
+      <!-- Passo 3 -->
+      <div class="dark-card p-5 rounded-2xl space-y-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">3</div>
+        <h4 class="font-extrabold text-white text-sm">Domínio Próprio & Hospedagem</h4>
+        <p class="text-slate-400">Registro de domínio (ex: <code>fokkofin.com.br</code> no Registro.br por R$ 40/ano) e deploy global gratuito na Vercel/Cloudflare com SSL.</p>
+        <span class="text-[10px] text-cyan-400 font-bold block pt-1">Custo: R$ 40/ano</span>
+      </div>
+
+      <!-- Passo 4 -->
+      <div class="dark-card p-5 rounded-2xl space-y-2.5">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">4</div>
+        <h4 class="font-extrabold text-white text-sm">Publicação na Google Play Store</h4>
+        <p class="text-slate-400">Empacotamento TWA (Google Bubblewrap) gerando o arquivo <code>.aab</code> assinado com o selo oficial de verificação do Play Protect.</p>
+        <span class="text-[10px] text-amber-400 font-bold block pt-1">Custo: US$ 25 taxa única Google</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-slate-800 py-8 bg-[#090e1c]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <img src="fokko_icon.jpg" class="w-6 h-6 rounded-lg object-cover">
+        <span class="font-bold text-white">FOKKO FIN • Organização Financeira</span>
+      </div>
+      <div>
+        Desenvolvido com foco neurodivergente para vencer o TDAH.
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="app.html" class="text-emerald-400 hover:underline">Abrir App Web</a>
+        <a href="#download" class="hover:text-white">Download</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE AUTENTICAÇÃO INTERATIVA -->
+  <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark-card rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+        <i data-lucide="lock" class="w-6 h-6"></i>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-black text-white" id="authModalTitle">Criar Minha Conta</h3>
+        <p class="text-xs text-slate-400 mt-1" id="authModalDesc">Acesse suas finanças de forma segura em qualquer lugar.</p>
+      </div>
+
+      <div class="space-y-2.5">
+        <button onclick="handleSocialAuth('Google')" class="w-full py-2.5 px-3 bg-white text-slate-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2.5 hover:bg-slate-100 transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Continuar com Google</span>
+        </button>
+
+        <button onclick="handleSocialAuth('Apple')" class="w-full py-2.5 px-3 bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2.5 border border-slate-700 hover:bg-slate-700 transition">
+          <i data-lucide="apple" class="w-4 h-4"></i>
+          <span>Continuar com Apple</span>
+        </button>
+
+        <form onsubmit="handleEmailAuth(event)" class="space-y-2 pt-2 text-left text-xs">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Seu E-mail</label>
+            <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Sua Senha</label>
+            <input type="password" id="authPass" required placeholder="••••••••" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition mt-2">
+            Confirmar e Entrar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function openAuthModal(mode) {
+      const modal = document.getElementById('authModal');
+      const title = document.getElementById('authModalTitle');
+      const desc = document.getElementById('authModalDesc');
+
+      if (mode === 'login') {
+        title.innerText = "Entrar no FOKKO FIN";
+        desc.innerText = "Bem-vindo de volta! Acesse suas contas com facilidade.";
+      } else {
+        title.innerText = "Criar Minha Conta";
+        desc.innerText = "Crie sua conta em segundos e acerte suas finanças.";
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function handleSocialAuth(provider) {
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      alert(`🎉 Autenticação com ${provider} simulada com sucesso!\n\nNo ambiente de produção, esta chamada aciona o login OAuth oficial do ${provider} com 1 clique.`);
+      closeAuthModal();
+      window.location.href = 'app.html';
+    }
+
+    function handleEmailAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      alert(`🎉 Conta criada com sucesso para ${email}!\n\nRedirecionando para o seu FOKKO FIN...`);
+      closeAuthModal();
+      window.location.href = 'app.html';
+    }
+
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

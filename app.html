@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FOKKO FIN • Organização Financeira para TDAH</title>
+  <link rel="icon" type="image/jpeg" href="fokko_icon.jpg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#060913">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.dark body {
+      background-color: #060913;
+      color: #f1f5f9;
+    }
+    html.dark .phone-wrapper {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 0 12px #1e293b, 0 0 0 14px #334155;
+      background-color: #0f172a;
+    }
+
+    html:not(.dark) body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    html:not(.dark) .phone-wrapper {
+      box-shadow: 0 25px 50px -12px rgba(100, 116, 139, 0.3), 0 0 0 12px #cbd5e1, 0 0 0 14px #94a3b8;
+      background-color: #ffffff;
+    }
+
+    .phone-wrapper {
+      max-width: 440px;
+      height: 920px;
+      border-radius: 50px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s ease;
+    }
+
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .pulse-urgent {
+      animation: pulse-border 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.4); }
+      50% { border-color: rgba(239, 68, 68, 0.9); box-shadow: 0 0 12px rgba(239, 68, 68, 0.35); }
+    }
+
+    /* Cartões */
+    .credit-card-nubank { background: linear-gradient(135deg, #820ad1 0%, #4a037b 100%); }
+    .credit-card-itau { background: linear-gradient(135deg, #ec7000 0%, #9e3d00 100%); }
+    .credit-card-inter { background: linear-gradient(135deg, #ff7a00 0%, #1e1e24 100%); }
+    .credit-card-mercadopago { background: linear-gradient(135deg, #009ee3 0%, #005680 100%); }
+    .credit-card-black { background: linear-gradient(135deg, #27272a 0%, #09090b 100%); border: 1px solid #3f3f46; }
+    .credit-card-santander { background: linear-gradient(135deg, #cc0000 0%, #700000 100%); }
+
+    /* SVG Donut Chart */
+    .donut-segment {
+      transition: stroke-dasharray 0.8s ease, stroke-dashoffset 0.8s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
+
+  <!-- Header Superior de Controle -->
+  <header class="w-full max-w-4xl flex items-center justify-between py-2 px-4 mb-2 text-xs sm:text-sm">
+    <div class="flex items-center gap-2.5">
+      <!-- Ícone Oficial FOKKO FIN -->
+      <div class="relative w-9 h-9 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/25 border border-cyan-400/40 shrink-0">
+        <img src="fokko_icon.jpg" alt="Ícone FOKKO FIN" class="w-full h-full object-cover">
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-black text-sm tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+          <span class="text-[9px] text-slate-400 font-semibold">Organização Financeira • Miix IA</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <!-- Botão Site Oficial -->
+      <a href="index.html" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-slate-300 hover:text-white shadow-sm transition" title="Ver Site Oficial & Download">
+        <i data-lucide="globe" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span class="hidden sm:inline">Site Oficial</span>
+      </a>
+
+      <!-- Botão Abrir no Celular (QR Code) -->
+      <button onclick="openPhoneShareModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-emerald-400 shadow-sm hover:opacity-90 transition" title="Abrir no Celular">
+        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+        <span>No Celular</span>
+      </button>
+
+      <!-- Botão Olho de Privacidade (Mobills / Organizze) -->
+      <button onclick="togglePrivacyMode()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm hover:opacity-80 transition" title="Ocultar/Mostrar Valores">
+        <i id="privacyIcon" data-lucide="eye" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Toggle Tema Escuro / Claro -->
+      <button onclick="toggleTheme()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm text-xs font-semibold hover:opacity-90 transition">
+        <i id="themeIcon" data-lucide="moon" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span id="themeText">Escuro</span>
+      </button>
+
+      <!-- Toggle Moldura Celular / Tela Cheia -->
+      <button id="toggleFrameBtn" onclick="togglePhoneFrame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm text-xs font-semibold hover:opacity-90 transition">
+        <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+        <span id="frameToggleText">Expandir</span>
+      </button>
+
+      <!-- Restaurar Dados Demo -->
+      <button onclick="resetDemoData()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 bg-white border-slate-300 text-slate-500 hover:opacity-90 transition" title="Restaurar dados demo">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTAINER DO APLICATIVO -->
+  <main id="appContainer" class="phone-wrapper w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-200">
+    
+    <!-- Barra Superior do Celular (Notch + Hora) -->
+    <div class="relative z-30 pt-3 px-6 pb-2 dark:bg-slate-900/90 bg-white/90 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
+      <span id="currentTime" class="font-bold dark:text-slate-200 text-slate-800">19:45</span>
+      <div class="w-24 h-4 bg-black rounded-full flex items-center justify-center">
+        <div class="w-2 h-2 rounded-full bg-slate-800 mr-2"></div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery-charging" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO ROLÁVEL -->
+    <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4 pb-28">
+
+      <!-- ==================== ABA 1: DASHBOARD / INÍCIO ==================== -->
+      <div id="view-dashboard" class="space-y-4">
+        
+        <!-- Navegador de Mês (Inspirado em Organizze & Minhas Finanças) -->
+        <div class="flex items-center justify-between dark:bg-slate-800/80 bg-white p-2 px-3 rounded-2xl border dark:border-slate-700/80 border-slate-200 shadow-sm">
+          <button onclick="changeMonth(-1)" class="p-1 rounded-lg hover:bg-slate-700/30 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <div class="text-center">
+            <span class="text-xs font-black dark:text-white text-slate-900 uppercase tracking-wider" id="currentMonthName">Novembro 2026</span>
+          </div>
+          <button onclick="changeMonth(1)" class="p-1 rounded-lg hover:bg-slate-700/30 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Logo Oficial FOKKO FIN Banner -->
+        <div class="rounded-3xl overflow-hidden shadow-xl border border-cyan-500/25 bg-slate-950 flex flex-col items-center justify-center p-3 text-center relative group">
+          <img src="fokko_logo.jpg" alt="FOKKO FIN - Organização Financeira" class="max-h-24 w-auto object-contain transition group-hover:scale-105 duration-300">
+          <span class="text-[10px] text-cyan-400/80 font-bold uppercase tracking-widest mt-1">Desenvolvido com foco neurodivergente</span>
+        </div>
+
+        <!-- CARD PRINCIPAL: SALDO REALMENTE LIVRE (SAFE-TO-SPEND) COM OLHINHO DE PRIVACIDADE -->
+        <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 p-4 rounded-3xl border border-indigo-500/40 shadow-xl relative overflow-hidden text-white">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] uppercase tracking-wider text-indigo-300 font-bold flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Saldo Realmente Livre
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="togglePrivacyMode()" class="text-slate-400 hover:text-white text-xs">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              </button>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">Sem Culpa</span>
+            </div>
+          </div>
+
+          <div class="flex items-baseline gap-2 mb-2">
+            <span class="text-3xl font-black text-white" id="safeToSpendDisplay">R$ 0,00</span>
+            <span class="text-xs text-slate-300 font-medium">p/ gastar</span>
+          </div>
+
+          <!-- Barra Visual de Conforto -->
+          <div class="w-full bg-slate-950/80 rounded-full h-2 mb-3 overflow-hidden border border-slate-800">
+            <div id="safeProgressBar" class="bg-gradient-to-r from-emerald-400 to-indigo-400 h-full rounded-full transition-all duration-700" style="width: 50%;"></div>
+          </div>
+
+          <!-- 4 Métricas Chave (Mobills + Organizze + Minhas Finanças) -->
+          <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-800 text-[10px]">
+            <div>
+              <span class="text-emerald-400 flex items-center gap-0.5 font-bold"><i data-lucide="arrow-down-left" class="w-3 h-3"></i> Receitas</span>
+              <strong id="totalIncomeDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="text-rose-400 flex items-center gap-0.5 font-bold"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> Contas</span>
+              <strong id="totalBillsDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="text-purple-300 flex items-center gap-0.5 font-bold"><i data-lucide="credit-card" class="w-3 h-3"></i> Faturas</span>
+              <strong id="totalCardInvoicesDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div class="text-right">
+              <span class="text-amber-300 flex items-center justify-end gap-0.5 font-bold"><i data-lucide="piggy-bank" class="w-3 h-3"></i> Guardado</span>
+              <strong id="totalSavingsDisplay" class="text-[11px] font-black text-amber-300 block mt-0.5">R$ 0,00</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- OS TRÊS BOTÕES DE AÇÃO RÁPIDA (ZERO BUROCRACIA) -->
+        <div class="grid grid-cols-3 gap-2">
+          <!-- 1: GASTEI AGORA -->
+          <button onclick="openFastSpendModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-emerald-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1">
+              <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">Gastei Agora</span>
+            <span class="text-[9px] text-slate-400">Sem vencimento</span>
+          </button>
+
+          <!-- 2: RECEBI DINHEIRO -->
+          <button onclick="openAddIncomeModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-blue-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">+ Recebi</span>
+            <span class="text-[9px] text-slate-400">Salário / Pix</span>
+          </button>
+
+          <!-- 3: CONTA A PAGAR -->
+          <button onclick="openAddBillModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-indigo-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-1">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">Conta Fixa</span>
+            <span class="text-[9px] text-slate-400">Tem vencimento</span>
+          </button>
+        </div>
+
+        <!-- CONCILIAÇÃO AUTOMÁTICA EM 1 CLIQUE (INSPIRADO NO ORGANIZZE PRINT 10) -->
+        <div id="smartConciliationBanner" class="p-3 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between gap-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-200 block">Conciliação Automática</span>
+              <span class="text-[10px] text-slate-400">Seus pagamentos são sincronizados sem trabalho manual.</span>
+            </div>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/30 shrink-0">Em dia ✓</span>
+        </div>
+
+        <!-- RECURSO MÁGICO: LEITOR DE NOTIFICAÇÕES (ORGANIZZE / MINHAS FINANÇAS) -->
+        <div class="dark:bg-slate-800/60 bg-white border dark:border-slate-700/70 border-slate-200 rounded-2xl p-3 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-400"></i> Leitor de Notificação Bancária
+            </span>
+            <span class="text-[10px] text-slate-400">Zero digitação</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mb-2">Comprou no cartão ou Pix? Cole a notificação do banco aqui:</p>
+          <div class="flex gap-2">
+            <input type="text" id="pasteNotificationInput" placeholder="Ex: Compra de R$ 45,90 aprovada em Supermercado no Nubank" class="flex-1 dark:bg-slate-900 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-2.5 py-1.5 text-xs dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-400">
+            <button onclick="parseAndSaveNotification()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow transition">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Lançar
+            </button>
+          </div>
+        </div>
+
+        <!-- DESTRAVADOR DE PARALISIA (BODY DOUBLING) -->
+        <div class="bg-gradient-to-r from-amber-500/15 via-slate-800/80 to-slate-800/40 border border-amber-500/30 rounded-2xl p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold dark:text-slate-100 text-slate-800">Travei pra pagar conta?</h3>
+              <p class="text-[10px] text-slate-400">Isola 1 conta e copia o Pix em 1 toque.</p>
+            </div>
+          </div>
+          <button onclick="startFocusPayFlow()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 transition shadow-md shadow-amber-500/20">
+            <span>Resolver 1</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- LISTA DE CONTAS COM VENCIMENTO (ORGANIZADO POR URGÊNCIA) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-indigo-400"></i> Contas a Vencer
+            </h2>
+            <span class="text-[11px] text-slate-400" id="pendingCountBadge">0 pendentes</span>
+          </div>
+
+          <!-- Filtro rápido temporal -->
+          <div class="grid grid-cols-3 gap-1.5 mb-2.5 dark:bg-slate-900 bg-slate-200/70 p-1 rounded-xl border dark:border-slate-800 border-slate-300 text-xs">
+            <button onclick="setFilter('urgent')" id="filter-urgent" class="filter-btn py-1 font-bold rounded-lg text-rose-300 bg-rose-500/20 border border-rose-500/40">Hoje / Urgente</button>
+            <button onclick="setFilter('week')" id="filter-week" class="filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200">Próximos 7d</button>
+            <button onclick="setFilter('all')" id="filter-all" class="filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200">Todas</button>
+          </div>
+
+          <!-- Lista de Itens -->
+          <div id="billsContainer" class="space-y-2"></div>
+        </div>
+
+        <!-- HISTÓRICO DE GASTOS AVULSOS EFETUADOS -->
+        <div class="pt-1">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="receipt" class="w-3.5 h-3.5 text-emerald-400"></i> Últimos Gastos Efetuados
+            </h2>
+            <span class="text-[10px] text-slate-500">Sem data de vencimento</span>
+          </div>
+          <div id="expensesHistoryContainer" class="space-y-1.5"></div>
+        </div>
+
+      </div>
+
+      <!-- ==================== ABA 2: CARTÕES DE CRÉDITO (MOBILLS + ORGANIZZE) ==================== -->
+      <div id="view-cards" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Meus Cartões 💳</h2>
+            <p class="text-xs text-slate-400">Faturas abertas e fechadas sem sustos.</p>
+          </div>
+          <button onclick="openNewCardModal()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Cartão
+          </button>
+        </div>
+
+        <!-- Resumo Geral de Cartões -->
+        <div class="dark:bg-slate-800/80 bg-white p-3.5 rounded-2xl border dark:border-slate-700/80 border-slate-200 flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Faturas em Aberto:</span>
+            <div class="text-xl font-black text-rose-400" id="totalCreditUsedDisplay">R$ 0,00</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Limite Disponível Total:</span>
+            <div class="text-xl font-black text-emerald-400" id="totalCreditAvailableDisplay">R$ 0,00</div>
+          </div>
+        </div>
+
+        <!-- Lista de Cartões Visuais -->
+        <div id="cardsListContainer" class="space-y-3.5"></div>
+      </div>
+
+      <!-- ==================== ABA 3: RELATÓRIOS & RAIO-X (GRÁFICO DE ROSCA SVG - MOBILLS/ORGANIZZE) ==================== -->
+      <div id="view-reports" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Raio-X de Gastos 📊</h2>
+            <p class="text-xs text-slate-400">Saiba para onde foi cada real, sem complicação.</p>
+          </div>
+          <button onclick="switchView('budgets')" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1">
+            Ver Tetos <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Gráfico de Rosca SVG Interativo -->
+        <div class="dark:bg-slate-800/80 bg-white p-4 rounded-3xl border dark:border-slate-700/80 border-slate-200 shadow-sm flex flex-col items-center">
+          <div class="relative w-48 h-48 my-1 flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="38" stroke="#1e293b" stroke-width="12" fill="none"/>
+              <!-- Segmentos Dinâmicos gerados via JS -->
+              <circle id="donutSeg1" class="donut-segment" cx="50" cy="50" r="38" stroke="#f59e0b" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg2" class="donut-segment" cx="50" cy="50" r="38" stroke="#a855f7" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg3" class="donut-segment" cx="50" cy="50" r="38" stroke="#10b981" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg4" class="donut-segment" cx="50" cy="50" r="38" stroke="#3b82f6" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+            </svg>
+            <div class="absolute text-center">
+              <span class="text-[10px] text-slate-400 block uppercase font-bold">Total Gasto</span>
+              <span class="text-base font-black dark:text-white text-slate-900" id="donutTotalDisplay">R$ 0,00</span>
+            </div>
+          </div>
+
+          <!-- Legenda de Categorias -->
+          <div id="donutLegendContainer" class="w-full space-y-2 pt-3 border-t dark:border-slate-700/80 border-slate-200 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ABA 4: TETOS & CAIXINHA DA PAZ (ORGANIZZE PRINT 6 & 12) ==================== -->
+      <div id="view-budgets" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Tetos & Poupança 🎯</h2>
+            <p class="text-xs text-slate-400">Limites por categoria e sua caixinha protegida.</p>
+          </div>
+          <button onclick="openNewBudgetModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Teto
+          </button>
+        </div>
+
+        <!-- Caixinha da Paz (Reserva Separada para não gastar por impulso!) -->
+        <div class="bg-gradient-to-r from-emerald-950 via-slate-800 to-slate-900 border border-emerald-500/40 p-4 rounded-3xl shadow-lg relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+              <i data-lucide="piggy-bank" class="w-4 h-4"></i> Caixinha da Paz (Anti-Impulso)
+            </span>
+            <button onclick="depositSavingsPrompt()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-2.5 py-1 rounded-xl transition">
+              + Guardar
+            </button>
+          </div>
+          <div class="text-2xl font-black text-white my-1" id="savingsAmountCardDisplay">R$ 3.450,00</div>
+          <p class="text-[10px] text-slate-400">Esse dinheiro fica intocado e fora do seu saldo livre para evitar compras impulsivas.</p>
+        </div>
+
+        <!-- Total Disponível Geral nos Tetos (Organizze Print 12) -->
+        <div class="dark:bg-slate-800/80 bg-white p-3 rounded-2xl border dark:border-slate-700/80 border-slate-200 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-400">Total disponível nos limites:</span>
+          <strong class="text-sm font-black text-emerald-400" id="totalBudgetAvailableDisplay">R$ 0,00</strong>
+        </div>
+
+        <!-- Lista de Tetos -->
+        <div id="budgetsListContainer" class="space-y-2.5"></div>
+      </div>
+
+      <!-- ==================== ABA 5: BANCOS & CONTAS ==================== -->
+      <div id="view-accounts" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Minhas Contas & Bancos 🏦</h2>
+            <p class="text-xs text-slate-400">Nubank, Itaú, Santander, Inter, etc.</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openOpenFinanceModal()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow transition">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Open Finance
+            </button>
+            <button onclick="openNewAccountModal()" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs transition" title="Conta Manual">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner Open Finance Automático -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-800 to-slate-900 border border-emerald-500/40 flex items-center justify-between gap-3 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <i data-lucide="link" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-white block">Sincronização Automática</span>
+              <span class="text-[10px] text-slate-300">Conecte seus bancos oficiais via Banco Central.</span>
+            </div>
+          </div>
+          <button onclick="openOpenFinanceModal()" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-black rounded-lg text-[10px] shrink-0 hover:bg-emerald-400 transition">
+            Conectar
+          </button>
+        </div>
+
+        <div class="dark:bg-indigo-950/40 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-200 rounded-2xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span class="text-[11px] dark:text-slate-300 text-indigo-950">Ajuste seu saldo com 1 clique se não bater com a realidade!</span>
+          </div>
+        </div>
+
+        <div id="accountsListContainer" class="space-y-2.5"></div>
+      </div>
+
+      <!-- ==================== ABA 6: MIIX IA • ASSISTENTE TDAH ==================== -->
+      <div id="view-mia" class="space-y-3 hidden flex flex-col h-full">
+        <div class="flex items-center gap-3 pt-1">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-emerald-500 to-indigo-500 flex items-center justify-center text-white shadow-lg">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-extrabold dark:text-white text-slate-800">Miix IA • Assistente NeuroAmiga</h2>
+            <p class="text-[11px] text-slate-400">Zero julgamento. Te ajudo a entender e destravar suas contas.</p>
+          </div>
+        </div>
+
+        <div id="miaChatMessages" class="space-y-2.5 p-3 rounded-2xl dark:bg-slate-900/80 bg-slate-100 border dark:border-slate-800 border-slate-200 max-h-[460px] overflow-y-auto custom-scroll text-xs">
+          <div class="flex gap-2">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold shadow">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="dark:bg-slate-800 bg-white p-3 rounded-2xl dark:text-slate-200 text-slate-800 border dark:border-slate-700 border-slate-200 shadow-sm max-w-[85%]">
+              Olá! Eu sou a <strong>Miix IA</strong>. Sei que lidar com finanças e TDAH pode ser exaustivo. Pode me perguntar quanto tem livre hoje, quanto gastou em mercado ou pedir uma dica para não travar!
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+          <button onclick="askMiaPrompt('Quanto dinheiro eu tenho realmente livre hoje?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            💡 Quanto posso gastar hoje?
+          </button>
+          <button onclick="askMiaPrompt('Qual a soma de todas as minhas faturas de cartão?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            💳 Fatura total dos cartões?
+          </button>
+          <button onclick="askMiaPrompt('Quais contas estão mais urgentes para vencer?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            🚨 Contas mais urgentes?
+          </button>
+          <button onclick="askMiaPrompt('Como não entrar em pânico com minhas finanças hoje?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            🧘 Dica anti-paralisia rápida
+          </button>
+        </div>
+
+        <div class="flex gap-1.5 pt-1">
+          <input type="text" id="miaInput" placeholder="Pergunte algo para a Miix IA..." class="flex-1 dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 text-xs dark:text-white text-slate-800 focus:outline-none focus:border-indigo-500">
+          <button onclick="handleSendMia()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
+    <nav class="absolute bottom-0 left-0 right-0 dark:bg-slate-900/95 bg-white/95 backdrop-blur border-t dark:border-slate-800 border-slate-200 py-2 px-2 flex items-center justify-around z-20">
+      <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-0.5 text-emerald-400 text-[10px] font-bold">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Início</span>
+      </button>
+      <button onclick="switchView('cards')" id="nav-cards" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="credit-card" class="w-4 h-4"></i>
+        <span>Cartões</span>
+      </button>
+      <button onclick="switchView('reports')" id="nav-reports" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="pie-chart" class="w-4 h-4"></i>
+        <span>Raio-X</span>
+      </button>
+      <button onclick="switchView('budgets')" id="nav-budgets" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="target" class="w-4 h-4"></i>
+        <span>Tetos</span>
+      </button>
+      <button onclick="switchView('accounts')" id="nav-accounts" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="landmark" class="w-4 h-4"></i>
+        <span>Bancos</span>
+      </button>
+      <button onclick="switchView('mia')" id="nav-mia" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        <span>Miix IA</span>
+      </button>
+    </nav>
+  </main>
+
+  <!-- ==================== MODAL DE MARCA & LOGO ==================== -->
+  <div id="brandModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-200 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeBrandModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Logo Grande Preview -->
+      <div class="w-20 h-20 mx-auto rounded-3xl overflow-hidden shadow-xl border-2 border-emerald-500/40 p-1 bg-slate-950">
+        <img src="logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-2xl">
+      </div>
+
+      <div>
+        <h3 class="text-lg font-black dark:text-white text-slate-900">Identidade da Marca</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Como você notou que 'FOCO PAY' e 'FOCUS PAY' já existem no mercado, criamos alternativas que preservam o som e a força:</p>
+      </div>
+
+      <div class="space-y-2 text-left text-xs">
+        <button onclick="selectBrandName('FOCO PAY')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-emerald-500 hover:border-emerald-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="dark:text-white text-slate-900 block font-bold">FOCO PAY</strong>
+            <span class="text-[10px] text-slate-400">O seu favorito original (Uso como app/projeto)</span>
+          </div>
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+        </button>
+
+        <button onclick="selectBrandName('FOKKO PAY')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-emerald-500 hover:border-emerald-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-emerald-400 block font-bold">FOKKO PAY ⭐ (Recomendado)</strong>
+            <span class="text-[10px] text-slate-400">Som idêntico, estilo escandinavo, livre p/ registro</span>
+          </div>
+        </button>
+
+        <button onclick="selectBrandName('FOCOFLOW')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-indigo-500 hover:border-indigo-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-indigo-400 block font-bold">FOCOFLOW</strong>
+            <span class="text-[10px] text-slate-400">Foco + 'Flow' mental (zero atrito e mente leve)</span>
+          </div>
+        </button>
+
+        <button onclick="selectBrandName('FOCOMIND')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-purple-500 hover:border-purple-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-purple-400 block font-bold">FOCOMIND</strong>
+            <span class="text-[10px] text-slate-400">Conecta direto com a mente TDAH</span>
+          </div>
+        </button>
+      </div>
+
+      <button onclick="closeBrandModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ABRIR NO CELULAR VIA QR CODE / LINK -->
+  <div id="phoneShareModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-cyan-500/40 border-cyan-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closePhoneShareModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="smartphone" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <h3 class="text-base font-black dark:text-white text-slate-900">Acesse o FOKKO FIN no seu Celular 📱</h3>
+        <p class="text-xs text-slate-400 mt-1">Aponte a câmera do seu celular para o QR Code abaixo para testar diretamente na tela do seu smartphone:</p>
+      </div>
+
+      <!-- QR Code Gerado Dinamicamente -->
+      <div class="p-3 bg-white rounded-2xl inline-block shadow-lg mx-auto border border-slate-200">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://192.168.1.171:3000" alt="QR Code FOKKO FIN" class="w-44 h-44 mx-auto">
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-2.5 rounded-xl dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-200 text-left">
+          <span class="text-[10px] text-slate-400 block font-bold">Link Wi-Fi Direto (Mesma rede):</span>
+          <a href="http://192.168.1.171:3000" target="_blank" class="text-xs font-mono font-bold text-cyan-400 underline">http://192.168.1.171:3000</a>
+        </div>
+        <div class="p-2.5 rounded-xl dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-200 text-left">
+          <span class="text-[10px] text-slate-400 block font-bold">Link Público na Web (Qualquer lugar):</span>
+          <a href="https://fokkofin.loca.lt" target="_blank" class="text-xs font-mono font-bold text-emerald-400 underline">https://fokkofin.loca.lt</a>
+        </div>
+      </div>
+
+      <button onclick="closePhoneShareModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: CONEXÃO OPEN FINANCE (BANCO CENTRAL) -->
+  <div id="openFinanceModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-emerald-500/40 border-emerald-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeOpenFinanceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="shield-check" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest text-emerald-400">Banco Central do Brasil</span>
+        <h3 class="text-base font-extrabold dark:text-white text-slate-900 mt-0.5">Conectar via Open Finance</h3>
+        <p class="text-[11px] text-slate-400 mt-1">Selecione seu banco para sincronizar saldos e faturas automaticamente sem esforço:</p>
+      </div>
+
+      <!-- Lista de Instituições -->
+      <div class="space-y-2 text-left text-xs max-h-56 overflow-y-auto custom-scroll pr-1">
+        <button onclick="connectBankViaOpenFinance('Nubank', 2340.50, 'Mastercard Roxinho')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-purple-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-purple-700 text-white font-bold flex items-center justify-center text-[10px]">nu</div>
+            <span class="font-bold dark:text-white text-slate-900">Nubank</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Itaú', 1150.00, 'Visa Click')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-orange-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-orange-600 text-white font-bold flex items-center justify-center text-[10px]">it</div>
+            <span class="font-bold dark:text-white text-slate-900">Itaú Unibanco</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Santander', 890.00, 'Santander SX')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-red-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-red-700 text-white font-bold flex items-center justify-center text-[10px]">st</div>
+            <span class="font-bold dark:text-white text-slate-900">Santander</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Banco Inter', 640.00, 'Inter Gold')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-amber-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-amber-600 text-white font-bold flex items-center justify-center text-[10px]">in</div>
+            <span class="font-bold dark:text-white text-slate-900">Banco Inter</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Mercado Pago', 310.00, 'Cartão MP')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-cyan-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-cyan-600 text-white font-bold flex items-center justify-center text-[10px]">mp</div>
+            <span class="font-bold dark:text-white text-slate-900">Mercado Pago</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+      </div>
+
+      <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[10px] text-slate-400 text-left space-y-1">
+        <div class="flex items-center gap-1.5 text-slate-200 font-bold">
+          <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i> Somente Leitura
+        </div>
+        <p>Você nunca digita sua senha do banco aqui. A autorização é feita diretamente no ambiente oficial da instituição.</p>
+      </div>
+
+      <button onclick="closeOpenFinanceModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAIS ==================== -->
+
+  <!-- MODAL: GASTEI AGORA (ZERO BUROCRACIA) -->
+  <div id="fastSpendModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-emerald-500/40 border-emerald-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeFastSpendModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Gastei Agora</h3>
+          <p class="text-[11px] text-slate-400">Sem data de vencimento. Já foi pago!</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveFastSpend(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Com o que gastou?</label>
+          <input type="text" id="spendTitle" required placeholder="Ex: Almoço, Farmácia, Uber, Café" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor (R$)</label>
+          <input type="number" step="0.01" id="spendAmount" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-lg font-bold focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Categoria</label>
+          <select id="spendCategory" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs">
+            <option value="Alimentação">Alimentação & Mercado</option>
+            <option value="Lazer">Lazer & Dopamina</option>
+            <option value="Transporte">Transporte / Uber</option>
+            <option value="Saúde">Saúde & Farmácia</option>
+            <option value="Casa">Casa & Moradia</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">De onde saiu o dinheiro?</label>
+          <select id="spendPaymentSource" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs"></select>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Quando foi?</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="selectSpendDateOption('today')" id="date-opt-today" class="py-1.5 px-2 rounded-xl text-center font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Hoje</button>
+            <button type="button" onclick="selectSpendDateOption('yesterday')" id="date-opt-yesterday" class="py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300">Ontem</button>
+            <button type="button" onclick="selectSpendDateOption('custom')" id="date-opt-custom" class="py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300">Outro dia</button>
+          </div>
+          <input type="date" id="spendCustomDate" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 mt-1.5 hidden text-xs">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar e Debitar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: + RECEBI DINHEIRO -->
+  <div id="addIncomeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-blue-500/40 border-blue-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddIncomeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Entrada de Dinheiro</h3>
+          <p class="text-[11px] text-slate-400">Salário, Pix recebido ou renda extra.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveIncome(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Descrição</label>
+          <input type="text" id="incomeTitle" required placeholder="Ex: Salário, Freelance, Pix do Amigo" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor Recebido (R$)</label>
+          <input type="number" step="0.01" id="incomeAmount" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-lg font-bold focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Em qual banco caiu?</label>
+          <select id="incomeAccountSelect" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500"></select>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/20">
+            <i data-lucide="check" class="w-4 h-4"></i> Adicionar ao Saldo 🎉
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTA A PAGAR -->
+  <div id="addBillModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddBillModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Nova Conta a Pagar</h3>
+          <p class="text-[11px] text-slate-400">Contas fixas, boletos ou faturas futuras.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveBill(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Nome da Conta</label>
+          <input type="text" id="billNameInput" required placeholder="Ex: Aluguel, Luz, Internet Claro, Celular" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor (R$)</label>
+            <input type="number" step="0.01" id="billAmountInput" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Vencimento</label>
+            <input type="date" id="billDateInput" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">De qual banco costuma pagar?</label>
+          <select id="billBankSourceInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500 text-xs"></select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="billRepeatMonthly" class="w-4 h-4 rounded text-indigo-600 dark:bg-slate-800 bg-slate-100 dark:border-slate-700 border-slate-300">
+          <label for="billRepeatMonthly" class="dark:text-slate-300 text-slate-700 font-medium cursor-pointer">Repetir todo mês automaticamente</label>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Código Pix ou Barras (Opcional)</label>
+          <input type="text" id="billCodeInput" placeholder="Cole para copiar em 1 clique depois" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-[11px] font-mono focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Lembrete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO CARTÃO -->
+  <div id="newCardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewCardModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+          <i data-lucide="credit-card" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Cadastrar Cartão</h3>
+          <p class="text-[11px] text-slate-400">Acompanhe limite e vencimento sem surpresas.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveCard(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Nome do Cartão (Apelido)</label>
+          <input type="text" id="cardNameInput" required placeholder="Ex: Nubank Roxinho, Itaú Click, Santander SX" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Bandeira</label>
+            <select id="cardBrandInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+              <option value="Mastercard">Mastercard</option>
+              <option value="Visa">Visa</option>
+              <option value="Elo">Elo</option>
+              <option value="Amex">Amex</option>
+            </select>
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Cor / Estilo</label>
+            <select id="cardColorInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+              <option value="credit-card-nubank">Roxo (Nubank)</option>
+              <option value="credit-card-itau">Laranja (Itaú)</option>
+              <option value="credit-card-santander">Vermelho (Santander)</option>
+              <option value="credit-card-inter">Laranja/Preto (Inter)</option>
+              <option value="credit-card-mercadopago">Azul (Mercado Pago)</option>
+              <option value="credit-card-black">Black / Escuro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Limite Total (R$)</label>
+            <input type="number" step="0.01" id="cardTotalLimitInput" required placeholder="Ex: 3500" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Fatura Atual (R$)</label>
+            <input type="number" step="0.01" id="cardUsedLimitInput" required placeholder="Ex: 850" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Dia Fechamento</label>
+            <input type="number" min="1" max="31" id="cardClosingDayInput" required placeholder="Ex: 1" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Dia Vencimento</label>
+            <input type="number" min="1" max="31" id="cardDueDayInput" required placeholder="Ex: 10" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Cartão
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA CONTA -->
+  <div id="newAccountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewAccountModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="landmark" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Cadastrar Banco</h3>
+          <p class="text-[11px] text-slate-400">Adicione onde você guarda dinheiro.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveAccount(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Instituição</label>
+          <input type="text" id="accNameInput" required placeholder="Ex: Nubank, Itaú, Santander, Caixa, Inter" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Saldo Atual (R$)</label>
+          <input type="number" step="0.01" id="accBalanceInput" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-base font-bold focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Adicionar Conta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO TETO DE GASTOS -->
+  <div id="newBudgetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewBudgetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="pie-chart" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Novo Teto de Gastos</h3>
+          <p class="text-[11px] text-slate-400">Defina um limite confortável por categoria.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveBudget(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Categoria</label>
+          <input type="text" id="budgetNameInput" required placeholder="Ex: Alimentação & Delivery, Lazer, Roupas" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Limite Mensal Desejado (R$)</label>
+          <input type="number" step="0.01" id="budgetLimitInput" required placeholder="Ex: 800,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-base font-bold focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Teto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: FOCO TOTAL (BODY DOUBLING) -->
+  <div id="focusModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-500/30 rounded-3xl w-full max-w-sm p-6 text-center space-y-4 shadow-2xl relative">
+      <button onclick="closeFocusModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="target" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <span class="text-[10px] uppercase font-extrabold tracking-wider text-indigo-400">Foco Total • Uma Coisa Por Vez</span>
+        <h3 class="text-xl font-bold dark:text-white text-slate-900 mt-1" id="focusBillTitle">Conta</h3>
+        <div class="text-3xl font-black text-emerald-400 my-1" id="focusBillAmount">R$ 0,00</div>
+        <p class="text-xs text-slate-400" id="focusBillDesc">Vence hoje! Pague agora e livre sua cabeça.</p>
+      </div>
+
+      <div class="dark:bg-slate-800/80 bg-slate-100 p-3 rounded-2xl border dark:border-slate-700 border-slate-300 text-left space-y-2 text-xs">
+        <div class="flex items-center justify-between dark:text-slate-300 text-slate-700">
+          <span>Banco sugerido:</span>
+          <strong id="focusBillBankName" class="text-indigo-400 font-bold">Nubank</strong>
+        </div>
+        <div class="flex items-center gap-2 dark:bg-slate-900 bg-white p-2 rounded-xl border dark:border-slate-700/80 border-slate-300">
+          <input type="text" id="focusBillCode" readonly value="" class="bg-transparent text-[11px] dark:text-slate-300 text-slate-700 w-full font-mono outline-none">
+          <button onclick="copyFocusCode()" id="copyBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 flex items-center gap-1 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 flex flex-col gap-2">
+        <button onclick="confirmFocusPaid()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i> Já Paguei no Banco! 🎉
+        </button>
+        <button onclick="closeFocusModal()" class="w-full py-2 text-slate-400 hover:text-slate-200 text-xs font-medium">
+          Deixar para daqui a pouco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT JS -->
+  <script>
+    lucide.createIcons();
+
+    function getTodayOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    }
+
+    const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    let currentMonthIndex = 10; // Novembro
+    let currentYear = 2026;
+
+    // ESTADO PADRÃO
+    const INITIAL_STATE = {
+      isDarkMode: true,
+      privacyMode: false,
+      savingsBalance: 3450.00,
+      accounts: [
+        { id: 1, name: "Nubank", balance: 1801.73, icon: "landmark" },
+        { id: 2, name: "Itaú", balance: 750.00, icon: "landmark" },
+        { id: 3, name: "Santander", balance: 620.00, icon: "landmark" },
+        { id: 4, name: "Mercado Pago", balance: 240.00, icon: "wallet" }
+      ],
+      cards: [
+        {
+          id: 1,
+          name: "Nubank Roxinho",
+          brand: "Mastercard",
+          style: "credit-card-nubank",
+          totalLimit: 15000.00,
+          usedLimit: 7586.78,
+          closingDay: 10,
+          dueDay: 17
+        },
+        {
+          id: 2,
+          name: "Santander SX",
+          brand: "Visa",
+          style: "credit-card-santander",
+          totalLimit: 3000.00,
+          usedLimit: 850.00,
+          closingDay: 1,
+          dueDay: 8
+        },
+        {
+          id: 3,
+          name: "Itaú Click",
+          brand: "Mastercard",
+          style: "credit-card-itau",
+          totalLimit: 6000.00,
+          usedLimit: 1250.00,
+          closingDay: 2,
+          dueDay: 10
+        }
+      ],
+      bills: [
+        {
+          id: 1,
+          name: "Conta de Energia (Luz)",
+          amount: 145.00,
+          dueDate: getTodayOffset(0),
+          bankSource: "Nubank",
+          code: "836100000010350001380020000123456789",
+          repeatMonthly: true,
+          paid: false
+        },
+        {
+          id: 2,
+          name: "Internet Fibra",
+          amount: 119.90,
+          dueDate: getTodayOffset(3),
+          bankSource: "Nubank",
+          code: "00020126580014br.gov.bcb.pix0136claro-fibra",
+          repeatMonthly: true,
+          paid: false
+        },
+        {
+          id: 3,
+          name: "Aluguel",
+          amount: 1200.00,
+          dueDate: getTodayOffset(7),
+          bankSource: "Itaú",
+          code: "PIX-ALUGUEL-DONO-12345",
+          repeatMonthly: true,
+          paid: false
+        }
+      ],
+      budgets: [
+        { id: 1, name: "Alimentação & Mercado", limit: 2500.00, spent: 1850.00, color: "from-amber-400 to-orange-500", stroke: "#f59e0b" },
+        { id: 2, name: "Lazer & Dopamina", limit: 800.00, spent: 540.00, color: "from-purple-400 to-indigo-500", stroke: "#a855f7" },
+        { id: 3, name: "Saúde & Farmácia", limit: 450.00, spent: 185.00, color: "from-emerald-400 to-teal-500", stroke: "#10b981" },
+        { id: 4, name: "Transporte / Uber", limit: 400.00, spent: 260.00, color: "from-blue-400 to-cyan-500", stroke: "#3b82f6" }
+      ],
+      expensesHistory: [
+        {
+          id: 101,
+          title: "Supermercado Souza",
+          amount: 45.90,
+          date: getTodayOffset(0),
+          sourceName: "Nubank (Débito)",
+          category: "Alimentação",
+          type: "debit"
+        },
+        {
+          id: 102,
+          title: "Farmácia Remédios",
+          amount: 85.00,
+          date: getTodayOffset(-1),
+          sourceName: "Nubank Roxinho (Crédito)",
+          category: "Saúde",
+          type: "credit"
+        }
+      ],
+      incomesHistory: [
+        {
+          id: 201,
+          title: "Salário Mensal",
+          amount: 5400.00,
+          date: getTodayOffset(-5),
+          accountName: "Nubank"
+        }
+      ]
+    };
+
+    let state = JSON.parse(localStorage.getItem('focopay_v4')) || INITIAL_STATE;
+    let currentFilter = 'urgent';
+    let currentFocusBill = null;
+    let isPhoneFramed = true;
+    let spendDateSelected = 'today';
+
+    function saveState() {
+      localStorage.setItem('focopay_v4', JSON.stringify(state));
+      render();
+    }
+
+    function resetDemoData() {
+      if (confirm("Deseja restaurar as contas, cartões e dados de demonstração?")) {
+        state = JSON.parse(JSON.stringify(INITIAL_STATE));
+        saveState();
+      }
+    }
+
+    function formatCurrency(val) {
+      if (state.privacyMode) return "R$ •••••";
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    }
+
+    function togglePrivacyMode() {
+      state.privacyMode = !state.privacyMode;
+      const icon = document.getElementById('privacyIcon');
+      if (state.privacyMode) {
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+      saveState();
+    }
+
+    function getDaysUntil(dateStr) {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const [y, m, d] = dateStr.split('-');
+      const due = new Date(y, m - 1, d);
+      due.setHours(0,0,0,0);
+      return Math.round((due - today) / (1000 * 60 * 60 * 24));
+    }
+
+    // TEMA
+    function initTheme() {
+      if (state.isDarkMode === false) {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('themeText').innerText = "Claro";
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeText').innerText = "Escuro";
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      state.isDarkMode = !state.isDarkMode;
+      initTheme();
+      saveState();
+    }
+
+    function changeMonth(delta) {
+      currentMonthIndex += delta;
+      if (currentMonthIndex > 11) {
+        currentMonthIndex = 0;
+        currentYear++;
+      } else if (currentMonthIndex < 0) {
+        currentMonthIndex = 11;
+        currentYear--;
+      }
+      document.getElementById('currentMonthName').innerText = `${MONTHS[currentMonthIndex]} ${currentYear}`;
+    }
+
+    function togglePhoneFrame() {
+      const app = document.getElementById('appContainer');
+      const text = document.getElementById('frameToggleText');
+      if (isPhoneFramed) {
+        app.classList.remove('phone-wrapper');
+        app.classList.add('max-w-2xl', 'w-full', 'rounded-3xl', 'shadow-2xl', 'h-[920px]', 'flex', 'flex-col', 'overflow-hidden');
+        text.innerText = "Modo Celular";
+        isPhoneFramed = false;
+      } else {
+        app.classList.remove('max-w-2xl', 'w-full', 'rounded-3xl', 'h-[920px]');
+        app.classList.add('phone-wrapper');
+        text.innerText = "Expandir";
+        isPhoneFramed = true;
+      }
+    }
+
+    function switchView(viewName) {
+      ['dashboard', 'cards', 'reports', 'budgets', 'accounts', 'mia'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const navEl = document.getElementById(`nav-${v}`);
+        if (navEl) navEl.className = 'nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]';
+      });
+
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) activeNav.className = 'nav-item flex flex-col items-center gap-0.5 text-emerald-400 text-[10px] font-bold';
+      render();
+    }
+
+    // RENDER PRINCIPAL
+    function render() {
+      const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+      const pendingBills = state.bills.filter(b => !b.paid);
+      const totalPending = pendingBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const totalInvoices = state.cards.reduce((acc, c) => acc + Number(c.usedLimit), 0);
+      const safeToSpend = Math.max(0, totalBank - totalPending);
+      const totalIncomes = state.incomesHistory.reduce((acc, i) => acc + Number(i.amount), 0);
+
+      document.getElementById('safeToSpendDisplay').innerText = formatCurrency(safeToSpend);
+      document.getElementById('totalIncomeDisplay').innerText = formatCurrency(totalIncomes);
+      document.getElementById('totalBillsDisplay').innerText = formatCurrency(totalPending);
+      document.getElementById('totalCardInvoicesDisplay').innerText = formatCurrency(totalInvoices);
+      document.getElementById('totalSavingsDisplay').innerText = formatCurrency(state.savingsBalance);
+      document.getElementById('savingsAmountCardDisplay').innerText = formatCurrency(state.savingsBalance);
+      document.getElementById('pendingCountBadge').innerText = `${pendingBills.length} pendente${pendingBills.length === 1 ? '' : 's'}`;
+
+      const ratio = totalBank > 0 ? Math.min(100, Math.round((safeToSpend / totalBank) * 100)) : 0;
+      document.getElementById('safeProgressBar').style.width = `${ratio}%`;
+
+      // Renderizar Contas Pendentes
+      const billsContainer = document.getElementById('billsContainer');
+      billsContainer.innerHTML = '';
+      let filteredBills = state.bills;
+      if (currentFilter === 'urgent') {
+        filteredBills = state.bills.filter(b => !b.paid && getDaysUntil(b.dueDate) <= 1);
+      } else if (currentFilter === 'week') {
+        filteredBills = state.bills.filter(b => !b.paid && getDaysUntil(b.dueDate) <= 7);
+      }
+
+      if (filteredBills.length === 0) {
+        billsContainer.innerHTML = `
+          <div class="text-center py-6 px-4 dark:bg-slate-900/60 bg-white rounded-2xl border border-dashed dark:border-slate-800 border-slate-300 text-xs">
+            <i data-lucide="check-circle" class="w-6 h-6 text-emerald-400 mx-auto mb-1 opacity-90"></i>
+            <span class="font-bold dark:text-slate-200 text-slate-800 block">Nenhuma conta pendente para este período!</span>
+            <span class="text-[11px] text-slate-400">Mente em paz e sem peso na consciência.</span>
+          </div>
+        `;
+      } else {
+        filteredBills.forEach(bill => {
+          const days = getDaysUntil(bill.dueDate);
+          let badgeText = '';
+          let badgeClass = '';
+          let cardBorder = 'dark:border-slate-800 border-slate-200';
+
+          if (bill.paid) {
+            badgeText = 'Pago 🎉';
+            badgeClass = 'bg-emerald-950 text-emerald-400 border border-emerald-500/30';
+          } else if (days < 0) {
+            badgeText = `Venceu há ${Math.abs(days)}d`;
+            badgeClass = 'bg-rose-950 text-rose-400 border border-rose-500/40';
+            cardBorder = 'pulse-urgent border-rose-500/60 bg-rose-950/15';
+          } else if (days === 0) {
+            badgeText = '🚨 Vence Hoje!';
+            badgeClass = 'bg-rose-900/80 text-rose-300 font-bold border border-rose-500/50';
+            cardBorder = 'border-rose-500/50 bg-rose-950/10';
+          } else if (days === 1) {
+            badgeText = 'Amanhã';
+            badgeClass = 'bg-amber-950 text-amber-300 border border-amber-500/30';
+          } else {
+            badgeText = `Em ${days} dias`;
+            badgeClass = 'dark:bg-slate-800 bg-slate-200 dark:text-slate-300 text-slate-700';
+          }
+
+          const card = document.createElement('div');
+          card.className = `p-3 rounded-2xl dark:bg-slate-800/80 bg-white border ${cardBorder} flex items-center justify-between gap-3 shadow-sm transition`;
+          card.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${badgeClass}">${badgeText}</span>
+                ${bill.repeatMonthly ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 font-semibold">Mensal</span>' : ''}
+                <span class="text-xs font-bold dark:text-slate-100 text-slate-800 truncate">${bill.name}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-extrabold text-emerald-400">${formatCurrency(bill.amount)}</span>
+                <span class="text-[10px] text-slate-400">• ${bill.bankSource || 'Banco'}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${!bill.paid ? `
+                <button onclick="openFocusBill(${bill.id})" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1 shadow transition">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> Pagar
+                </button>
+              ` : `
+                <span class="text-emerald-400 text-xs font-bold px-2 py-1 flex items-center gap-1"><i data-lucide="check" class="w-4 h-4"></i> Pago</span>
+              `}
+              <button onclick="deleteBill(${bill.id})" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+          billsContainer.appendChild(card);
+        });
+      }
+
+      // Renderizar Gastos Avulsos
+      const historyContainer = document.getElementById('expensesHistoryContainer');
+      historyContainer.innerHTML = '';
+      if (state.expensesHistory.length === 0) {
+        historyContainer.innerHTML = `<div class="text-[11px] text-slate-500 py-2 text-center">Nenhum gasto avulso registrado ainda.</div>`;
+      } else {
+        state.expensesHistory.slice(0, 5).forEach(exp => {
+          const item = document.createElement('div');
+          item.className = 'p-2.5 rounded-xl dark:bg-slate-900/70 bg-white border dark:border-slate-800/80 border-slate-200 flex items-center justify-between text-xs shadow-sm';
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg ${exp.type === 'credit' ? 'bg-purple-500/20 text-purple-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center shrink-0">
+                <i data-lucide="${exp.type === 'credit' ? 'credit-card' : 'shopping-bag'}" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <span class="font-bold dark:text-slate-200 text-slate-800 block text-xs">${exp.title}</span>
+                <span class="text-[10px] text-slate-400">${exp.sourceName} • ${exp.category || 'Gasto'}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-extrabold ${exp.type === 'credit' ? 'text-purple-400' : 'dark:text-slate-200 text-slate-800'}">-${formatCurrency(exp.amount)}</span>
+            </div>
+          `;
+          historyContainer.appendChild(item);
+        });
+      }
+
+      // Renderizar Cartões
+      const cardsList = document.getElementById('cardsListContainer');
+      cardsList.innerHTML = '';
+      let totalUsedLimit = 0;
+      let totalAvailLimit = 0;
+
+      state.cards.forEach(card => {
+        const available = Math.max(0, card.totalLimit - card.usedLimit);
+        totalUsedLimit += Number(card.usedLimit);
+        totalAvailLimit += available;
+        const percUsed = Math.min(100, Math.round((card.usedLimit / card.totalLimit) * 100));
+
+        const cardEl = document.createElement('div');
+        cardEl.className = `${card.style || 'credit-card-black'} p-4 rounded-3xl text-white shadow-xl space-y-3 relative overflow-hidden`;
+        cardEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="credit-card" class="w-5 h-5 text-white/90"></i>
+              <span class="font-black text-sm tracking-wide">${card.name}</span>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 bg-black/30 rounded-full border border-white/20">${card.brand}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-white/70 block">Fatura Atual:</span>
+              <span class="text-lg font-black text-white">${formatCurrency(card.usedLimit)}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] uppercase font-bold text-white/70 block">Disponível:</span>
+              <span class="text-lg font-black text-emerald-300">${formatCurrency(available)}</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="w-full bg-black/40 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-white h-full rounded-full transition-all duration-500" style="width: ${percUsed}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-white/70 mt-1">
+              <span>Limite Total: ${formatCurrency(card.totalLimit)}</span>
+              <span>${percUsed}% usado</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-white/15 text-white/90">
+            <div>Fecha: Dia <strong>${card.closingDay}</strong> • Vence: Dia <strong>${card.dueDay}</strong></div>
+            <div class="flex gap-2">
+              <button onclick="payCardInvoicePrompt(${card.id})" class="bg-white/20 hover:bg-white/30 text-white font-bold px-2 py-0.5 rounded-lg text-[10px] transition">Pagar Fatura</button>
+              <button onclick="editCardPrompt(${card.id})" class="text-white/80 hover:text-white underline text-[10px]">Ajustar</button>
+              <button onclick="deleteCard(${card.id})" class="text-rose-300 hover:text-rose-100 text-[10px]">Excluir</button>
+            </div>
+          </div>
+        `;
+        cardsList.appendChild(cardEl);
+      });
+
+      document.getElementById('totalCreditUsedDisplay').innerText = formatCurrency(totalUsedLimit);
+      document.getElementById('totalCreditAvailableDisplay').innerText = formatCurrency(totalAvailLimit);
+
+      // Renderizar Gráfico de Rosca (Raio-X de Gastos)
+      renderDonutChart();
+
+      // Renderizar Tetos & Orçamentos
+      const budgetsList = document.getElementById('budgetsListContainer');
+      budgetsList.innerHTML = '';
+      let totalBudgetAvail = 0;
+
+      state.budgets.forEach(b => {
+        const remaining = Math.max(0, b.limit - b.spent);
+        totalBudgetAvail += remaining;
+        const perc = Math.min(100, Math.round((b.spent / b.limit) * 100));
+        const isNear = perc >= 85;
+
+        const bCard = document.createElement('div');
+        bCard.className = 'p-3.5 rounded-2xl dark:bg-slate-800/80 bg-white border dark:border-slate-700/80 border-slate-200 shadow-sm space-y-2';
+        bCard.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold dark:text-slate-100 text-slate-800">${b.name}</span>
+            <span class="text-[11px] font-extrabold ${isNear ? 'text-rose-400' : 'text-emerald-400'}">
+              ${formatCurrency(remaining)} livre
+            </span>
+          </div>
+
+          <div class="w-full bg-slate-200 dark:bg-slate-900 rounded-full h-2 overflow-hidden">
+            <div class="bg-gradient-to-r ${b.color || 'from-indigo-400 to-emerald-400'} h-full rounded-full transition-all duration-500" style="width: ${perc}%"></div>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] text-slate-400">
+            <span>Gasto: <strong>${formatCurrency(b.spent)}</strong> de ${formatCurrency(b.limit)}</span>
+            <span>${perc}% atingido</span>
+          </div>
+        `;
+        budgetsList.appendChild(bCard);
+      });
+
+      document.getElementById('totalBudgetAvailableDisplay').innerText = formatCurrency(totalBudgetAvail);
+
+      // Renderizar Contas Bancárias
+      const accountsList = document.getElementById('accountsListContainer');
+      accountsList.innerHTML = '';
+      state.accounts.forEach(acc => {
+        const item = document.createElement('div');
+        item.className = 'p-3.5 rounded-2xl dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 shadow-sm flex items-center justify-between text-xs';
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+              <i data-lucide="landmark" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-bold dark:text-slate-100 text-slate-800 text-sm">${acc.name}</h4>
+              <span class="text-[10px] text-slate-400">Conta Ativa</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block">Saldo</span>
+              <strong class="text-sm font-black text-emerald-400">${formatCurrency(acc.balance)}</strong>
+            </div>
+            <button onclick="editAccountPrompt(${acc.id})" class="p-1.5 dark:bg-slate-700 bg-slate-100 hover:opacity-80 rounded-lg dark:text-slate-200 text-slate-700 transition" title="Ajustar saldo">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+        accountsList.appendChild(item);
+      });
+
+      lucide.createIcons();
+    }
+
+    // RENDERIZAR GRÁFICO DE ROSCA SVG
+    function renderDonutChart() {
+      const totalSpent = state.budgets.reduce((acc, b) => acc + Number(b.spent), 0);
+      document.getElementById('donutTotalDisplay').innerText = formatCurrency(totalSpent);
+
+      const circumference = 2 * Math.PI * 38; // ~238.76
+      let accumulatedOffset = 0;
+
+      const legend = document.getElementById('donutLegendContainer');
+      legend.innerHTML = '';
+
+      state.budgets.slice(0, 4).forEach((b, idx) => {
+        const seg = document.getElementById(`donutSeg${idx + 1}`);
+        if (seg) {
+          const ratio = totalSpent > 0 ? (b.spent / totalSpent) : 0;
+          const strokeLength = ratio * circumference;
+          seg.style.strokeDasharray = `${strokeLength} ${circumference}`;
+          seg.style.strokeDashoffset = -accumulatedOffset;
+          seg.style.stroke = b.stroke || "#6366f1";
+          accumulatedOffset += strokeLength;
+        }
+
+        const perc = totalSpent > 0 ? Math.round((b.spent / totalSpent) * 100) : 0;
+        legend.innerHTML += `
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full" style="background-color: ${b.stroke || '#6366f1'}"></span>
+              <span class="dark:text-slate-200 text-slate-800 font-medium">${b.name}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold dark:text-white text-slate-900">${formatCurrency(b.spent)}</span>
+              <span class="text-[10px] text-slate-400 font-semibold w-8 text-right">${perc}%</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // CAIXINHA DA PAZ (POUPANÇA / RESERVA)
+    function depositSavingsPrompt() {
+      const val = prompt("Quanto deseja guardar na Caixinha da Paz hoje? (R$)\nO valor sairá do seu saldo do banco e ficará protegido de impulsos.");
+      if (val !== null && !isNaN(parseFloat(val))) {
+        const amount = parseFloat(val);
+        if (state.accounts.length > 0) {
+          state.accounts[0].balance -= amount;
+        }
+        state.savingsBalance += amount;
+        saveState();
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+        alert(`🎉 Parabéns! ${formatCurrency(amount)} guardados com sucesso na sua Caixinha da Paz!`);
+      }
+    }
+
+    // LEITOR DE NOTIFICAÇÃO
+    function parseAndSaveNotification() {
+      const input = document.getElementById('pasteNotificationInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const numbers = text.match(/\d+([.,]\d+)?/g);
+      const amount = numbers ? parseFloat(numbers[0].replace(',', '.')) : 25.00;
+
+      let bank = state.accounts[0];
+      if (/nubank/i.test(text)) bank = state.accounts.find(a => /nubank/i.test(a.name)) || state.accounts[0];
+      else if (/itau|itaú/i.test(text)) bank = state.accounts.find(a => /itau|itaú/i.test(a.name)) || state.accounts[0];
+      else if (/santander/i.test(text)) bank = state.accounts.find(a => /santander/i.test(a.name)) || state.accounts[0];
+
+      let title = "Compra no Cartão/Pix";
+      let cat = "Alimentação";
+      if (/supermercado|mercado/i.test(text)) { title = "Supermercado"; cat = "Alimentação"; }
+      else if (/farmacia|farmácia|droga/i.test(text)) { title = "Farmácia"; cat = "Saúde"; }
+      else if (/uber|99/i.test(text)) { title = "Uber / Corrida"; cat = "Transporte"; }
+      else if (/ifood|restaurante|lanche/i.test(text)) { title = "Alimentação / Delivery"; cat = "Alimentação"; }
+
+      bank.balance -= amount;
+
+      const budget = state.budgets.find(b => b.name.includes(cat));
+      if (budget) budget.spent += amount;
+
+      state.expensesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date: getTodayOffset(0),
+        sourceName: `${bank.name} (Automático)`,
+        category: cat,
+        type: "debit"
+      });
+
+      input.value = '';
+      saveState();
+
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      alert(`🎉 Notificação capturada com sucesso!\n\nLançado: ${title} - ${formatCurrency(amount)}\nDebitado de: ${bank.name}`);
+    }
+
+    // GESTÃO DE MARCA / BRANDING
+    function openBrandModal() {
+      document.getElementById('brandModal').classList.remove('hidden');
+    }
+    function closeBrandModal() {
+      document.getElementById('brandModal').classList.add('hidden');
+    }
+    function openPhoneShareModal() {
+      document.getElementById('phoneShareModal').classList.remove('hidden');
+    }
+    function closePhoneShareModal() {
+      document.getElementById('phoneShareModal').classList.add('hidden');
+    }
+
+    // OPEN FINANCE BANCO CENTRAL
+    function openOpenFinanceModal() {
+      document.getElementById('openFinanceModal').classList.remove('hidden');
+    }
+    function closeOpenFinanceModal() {
+      document.getElementById('openFinanceModal').classList.add('hidden');
+    }
+    function connectBankViaOpenFinance(bankName, initialBalance, cardName) {
+      let existingAcc = state.accounts.find(a => a.name.toLowerCase() === bankName.toLowerCase());
+      if (existingAcc) {
+        existingAcc.balance = initialBalance;
+      } else {
+        state.accounts.push({
+          id: Date.now(),
+          name: bankName,
+          balance: initialBalance,
+          icon: "landmark",
+          openFinance: true
+        });
+      }
+
+      saveState();
+      closeOpenFinanceModal();
+
+      confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+      alert(`🔒 Conexão Segura Concluída!\n\nO ${bankName} foi conectado via Open Finance com sucesso.\nSaldo sincronizado: ${formatCurrency(initialBalance)}.`);
+    }
+    function selectBrandName(name) {
+      document.getElementById('brandNameDisplay').innerText = name;
+      document.title = `${name} • Finanças Neurodivergentes`;
+      closeBrandModal();
+      confetti({ particleCount: 30, spread: 40, origin: { y: 0.8 } });
+    }
+
+    // CHAT MIIX IA
+    function askMiaPrompt(text) {
+      document.getElementById('miaInput').value = text;
+      handleSendMia();
+    }
+
+    function handleSendMia() {
+      const input = document.getElementById('miaInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatContainer = document.getElementById('miaChatMessages');
+      chatContainer.innerHTML += `
+        <div class="flex justify-end gap-2">
+          <div class="bg-indigo-600 text-white p-2.5 rounded-2xl max-w-[85%]">
+            ${text}
+          </div>
+        </div>
+      `;
+      input.value = '';
+
+      setTimeout(() => {
+        let reply = "";
+        const lower = text.toLowerCase();
+
+        const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+        const pendingBills = state.bills.filter(b => !b.paid).reduce((acc, b) => acc + Number(b.amount), 0);
+        const safe = Math.max(0, totalBank - pendingBills);
+        const totalInvoices = state.cards.reduce((acc, c) => acc + Number(c.usedLimit), 0);
+
+        if (lower.includes('livre') || lower.includes('posso gastar')) {
+          reply = `Você tem exatamente <strong>${formatCurrency(safe)}</strong> livres para gastar hoje sem comprometer suas contas fixas do mês! Pode respirar aliviado.`;
+        } else if (lower.includes('fatura') || lower.includes('cartão')) {
+          reply = `A soma de todas as suas faturas de cartão no momento é de <strong>${formatCurrency(totalInvoices)}</strong>. O limite disponível total em todos os seus cartões juntos é de <strong>${formatCurrency(state.cards.reduce((acc, c) => acc + Math.max(0, c.totalLimit - c.usedLimit), 0))}</strong>.`;
+        } else if (lower.includes('urgente') || lower.includes('vencer')) {
+          const urg = state.bills.filter(b => !b.paid);
+          if (urg.length > 0) {
+            reply = `A conta mais urgente no momento é a de <strong>${urg[0].name} (${formatCurrency(urg[0].amount)})</strong>. Se quiser resolver logo, toca em 'Resolver 1'!`;
+          } else {
+            reply = `Nenhuma conta urgente para vencer nos próximos dias! Parabéns, sua mente está totalmente livre! 🎉`;
+          }
+        } else if (lower.includes('pânico') || lower.includes('paralisia') || lower.includes('dica')) {
+          reply = `Dica de ouro da Miix IA: quando o TDAH bate e parece que tudo está desmoronando, <strong>faça apenas 1 micro-tarefa</strong>. Pague 1 boleto ou guarde R$ 10. O resto espera amanhã. Você está no controle! 💜`;
+        } else {
+          reply = `Entendi perfeitamente! Como sua assistente <strong>Miix IA</strong>, já atualizei os dados. Lembra: um passo de cada vez!`;
+        }
+
+        chatContainer.innerHTML += `
+          <div class="flex gap-2">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold shadow">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="dark:bg-slate-800 bg-white p-3 rounded-2xl dark:text-slate-200 text-slate-800 border dark:border-slate-700 border-slate-200 shadow-sm max-w-[85%]">
+              ${reply}
+            </div>
+          </div>
+        `;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        lucide.createIcons();
+      }, 500);
+    }
+
+    // MODAL GASTEI AGORA
+    function openFastSpendModal() {
+      const select = document.getElementById('spendPaymentSource');
+      select.innerHTML = '';
+
+      const bankGroup = document.createElement('optgroup');
+      bankGroup.label = "Contas Bancárias (Débito / Pix)";
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = `account:${a.id}`;
+        opt.innerText = `${a.name} (Saldo: ${formatCurrency(a.balance)})`;
+        bankGroup.appendChild(opt);
+      });
+      select.appendChild(bankGroup);
+
+      if (state.cards.length > 0) {
+        const cardGroup = document.createElement('optgroup');
+        cardGroup.label = "Cartões de Crédito (Na Fatura)";
+        state.cards.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = `card:${c.id}`;
+          opt.innerText = `${c.name} (${c.brand})`;
+          cardGroup.appendChild(opt);
+        });
+        select.appendChild(cardGroup);
+      }
+
+      selectSpendDateOption('today');
+      document.getElementById('fastSpendModal').classList.remove('hidden');
+    }
+
+    function closeFastSpendModal() {
+      document.getElementById('fastSpendModal').classList.add('hidden');
+    }
+
+    function selectSpendDateOption(opt) {
+      spendDateSelected = opt;
+      ['today', 'yesterday', 'custom'].forEach(o => {
+        const btn = document.getElementById(`date-opt-${o}`);
+        btn.className = 'py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300';
+      });
+
+      const activeBtn = document.getElementById(`date-opt-${opt}`);
+      activeBtn.className = 'py-1.5 px-2 rounded-xl text-center font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+
+      const customInput = document.getElementById('spendCustomDate');
+      if (opt === 'custom') {
+        customInput.classList.remove('hidden');
+        customInput.value = getTodayOffset(-2);
+      } else {
+        customInput.classList.add('hidden');
+      }
+    }
+
+    function handleSaveFastSpend(e) {
+      e.preventDefault();
+      const title = document.getElementById('spendTitle').value.trim();
+      const amount = parseFloat(document.getElementById('spendAmount').value);
+      const category = document.getElementById('spendCategory').value;
+      const sourceValue = document.getElementById('spendPaymentSource').value;
+
+      let date = getTodayOffset(0);
+      if (spendDateSelected === 'yesterday') date = getTodayOffset(-1);
+      else if (spendDateSelected === 'custom') date = document.getElementById('spendCustomDate').value;
+
+      const [sourceType, sourceId] = sourceValue.split(':');
+      let sourceName = "";
+
+      if (sourceType === 'account') {
+        const acc = state.accounts.find(a => a.id == sourceId);
+        if (acc) {
+          acc.balance -= amount;
+          sourceName = `${acc.name} (Débito/Pix)`;
+        }
+      } else if (sourceType === 'card') {
+        const card = state.cards.find(c => c.id == sourceId);
+        if (card) {
+          card.usedLimit += amount;
+          sourceName = `${card.name} (Crédito)`;
+        }
+      }
+
+      const budget = state.budgets.find(b => b.name.includes(category));
+      if (budget) budget.spent += amount;
+
+      state.expensesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date,
+        sourceName,
+        category,
+        type: sourceType === 'card' ? 'credit' : 'debit'
+      });
+
+      saveState();
+      closeFastSpendModal();
+      document.getElementById('spendTitle').value = '';
+      document.getElementById('spendAmount').value = '';
+
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+    }
+
+    // MODAL RECEITA
+    function openAddIncomeModal() {
+      const select = document.getElementById('incomeAccountSelect');
+      select.innerHTML = '';
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.innerText = a.name;
+        select.appendChild(opt);
+      });
+      document.getElementById('addIncomeModal').classList.remove('hidden');
+    }
+
+    function closeAddIncomeModal() {
+      document.getElementById('addIncomeModal').classList.add('hidden');
+    }
+
+    function handleSaveIncome(e) {
+      e.preventDefault();
+      const title = document.getElementById('incomeTitle').value.trim();
+      const amount = parseFloat(document.getElementById('incomeAmount').value);
+      const accId = document.getElementById('incomeAccountSelect').value;
+
+      const acc = state.accounts.find(a => a.id == accId);
+      if (acc) {
+        acc.balance += amount;
+      }
+
+      state.incomesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date: getTodayOffset(0),
+        accountName: acc ? acc.name : "Banco"
+      });
+
+      saveState();
+      closeAddIncomeModal();
+      document.getElementById('incomeTitle').value = '';
+      document.getElementById('incomeAmount').value = '';
+
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+    }
+
+    // CONTA A PAGAR
+    function openAddBillModal() {
+      const select = document.getElementById('billBankSourceInput');
+      select.innerHTML = '';
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.name;
+        opt.innerText = a.name;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('billDateInput').value = getTodayOffset(0);
+      document.getElementById('addBillModal').classList.remove('hidden');
+    }
+
+    function closeAddBillModal() {
+      document.getElementById('addBillModal').classList.add('hidden');
+    }
+
+    function handleSaveBill(e) {
+      e.preventDefault();
+      const name = document.getElementById('billNameInput').value.trim();
+      const amount = parseFloat(document.getElementById('billAmountInput').value);
+      const dueDate = document.getElementById('billDateInput').value;
+      const bankSource = document.getElementById('billBankSourceInput').value;
+      const repeatMonthly = document.getElementById('billRepeatMonthly').checked;
+      const code = document.getElementById('billCodeInput').value.trim() || ("PIX-" + Math.floor(Math.random() * 899999));
+
+      state.bills.push({
+        id: Date.now(),
+        name,
+        amount,
+        dueDate,
+        bankSource,
+        repeatMonthly,
+        code,
+        paid: false
+      });
+
+      saveState();
+      closeAddBillModal();
+    }
+
+    // CARTÕES & FATURAS
+    function openNewCardModal() {
+      document.getElementById('newCardModal').classList.remove('hidden');
+    }
+    function closeNewCardModal() {
+      document.getElementById('newCardModal').classList.add('hidden');
+    }
+
+    function handleSaveCard(e) {
+      e.preventDefault();
+      const name = document.getElementById('cardNameInput').value.trim();
+      const brand = document.getElementById('cardBrandInput').value;
+      const style = document.getElementById('cardColorInput').value;
+      const totalLimit = parseFloat(document.getElementById('cardTotalLimitInput').value);
+      const usedLimit = parseFloat(document.getElementById('cardUsedLimitInput').value);
+      const closingDay = parseInt(document.getElementById('cardClosingDayInput').value);
+      const dueDay = parseInt(document.getElementById('cardDueDayInput').value);
+
+      state.cards.push({
+        id: Date.now(),
+        name,
+        brand,
+        style,
+        totalLimit,
+        usedLimit,
+        closingDay,
+        dueDay
+      });
+
+      saveState();
+      closeNewCardModal();
+    }
+
+    function payCardInvoicePrompt(cardId) {
+      const card = state.cards.find(c => c.id === cardId);
+      if (!card) return;
+      if (card.usedLimit <= 0) {
+        alert("🎉 A fatura deste cartão já está zerada!");
+        return;
+      }
+
+      if (confirm(`Deseja pagar a fatura de ${formatCurrency(card.usedLimit)} do ${card.name}?\nO valor será debitado da sua conta principal.`)) {
+        if (state.accounts.length > 0) {
+          state.accounts[0].balance -= card.usedLimit;
+        }
+        card.usedLimit = 0;
+        saveState();
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+      }
+    }
+
+    function editCardPrompt(id) {
+      const card = state.cards.find(c => c.id === id);
+      if (!card) return;
+      const val = prompt(`Qual o valor atual da fatura em aberto do cartão "${card.name}"? (R$)`, card.usedLimit);
+      if (val !== null && !isNaN(parseFloat(val))) {
+        card.usedLimit = parseFloat(val);
+        saveState();
+      }
+    }
+
+    function deleteCard(id) {
+      if (confirm("Excluir este cartão de crédito?")) {
+        state.cards = state.cards.filter(c => c.id !== id);
+        saveState();
+      }
+    }
+
+    // BANCOS
+    function openNewAccountModal() {
+      document.getElementById('newAccountModal').classList.remove('hidden');
+    }
+    function closeNewAccountModal() {
+      document.getElementById('newAccountModal').classList.add('hidden');
+    }
+
+    function handleSaveAccount(e) {
+      e.preventDefault();
+      const name = document.getElementById('accNameInput').value.trim();
+      const balance = parseFloat(document.getElementById('accBalanceInput').value);
+
+      state.accounts.push({
+        id: Date.now(),
+        name,
+        balance,
+        icon: "landmark"
+      });
+
+      saveState();
+      closeNewAccountModal();
+    }
+
+    function editAccountPrompt(id) {
+      const acc = state.accounts.find(a => a.id === id);
+      if (!acc) return;
+      const val = prompt(`Qual o saldo disponível no ${acc.name} agora? (R$)`, acc.balance);
+      if (val !== null && !isNaN(parseFloat(val))) {
+        acc.balance = parseFloat(val);
+        saveState();
+      }
+    }
+
+    // TETOS
+    function openNewBudgetModal() {
+      document.getElementById('newBudgetModal').classList.remove('hidden');
+    }
+    function closeNewBudgetModal() {
+      document.getElementById('newBudgetModal').classList.add('hidden');
+    }
+
+    function handleSaveBudget(e) {
+      e.preventDefault();
+      const name = document.getElementById('budgetNameInput').value.trim();
+      const limit = parseFloat(document.getElementById('budgetLimitInput').value);
+
+      state.budgets.push({
+        id: Date.now(),
+        name,
+        limit,
+        spent: 0,
+        color: "from-blue-400 to-indigo-500",
+        stroke: "#3b82f6"
+      });
+
+      saveState();
+      closeNewBudgetModal();
+    }
+
+    // FOCO TOTAL
+    function startFocusPayFlow() {
+      const pending = state.bills.filter(b => !b.paid).sort((a,b) => getDaysUntil(a.dueDate) - getDaysUntil(b.dueDate));
+      if (pending.length === 0) {
+        alert("🎉 Nenhuma conta pendente para pagar agora!");
+        return;
+      }
+      openFocusBill(pending[0].id);
+    }
+
+    function openFocusBill(id) {
+      const bill = state.bills.find(b => b.id === id);
+      if (!bill) return;
+
+      currentFocusBill = bill;
+      document.getElementById('focusBillTitle').innerText = bill.name;
+      document.getElementById('focusBillAmount').innerText = formatCurrency(bill.amount);
+      document.getElementById('focusBillCode').value = bill.code || "PIX-CHAVE-COPIADA";
+      document.getElementById('focusBillBankName').innerText = bill.bankSource || "Qualquer Banco";
+
+      const days = getDaysUntil(bill.dueDate);
+      const desc = days <= 0 ? "🚨 Essa conta vence hoje/venceu! Copie o código abaixo e pague no app do banco." : `Vence em ${days} dias. Pague agora para tirar esse peso da mente!`;
+      document.getElementById('focusBillDesc').innerText = desc;
+
+      document.getElementById('copyBtn').innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar`;
+      document.getElementById('focusModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeFocusModal() {
+      document.getElementById('focusModal').classList.add('hidden');
+      currentFocusBill = null;
+    }
+
+    function copyFocusCode() {
+      const codeInput = document.getElementById('focusBillCode');
+      navigator.clipboard.writeText(codeInput.value);
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-300"></i> Copiado!`;
+      lucide.createIcons();
+    }
+
+    function confirmFocusPaid() {
+      if (!currentFocusBill) return;
+      currentFocusBill.paid = true;
+
+      const bank = state.accounts.find(a => a.name === currentFocusBill.bankSource);
+      if (bank) {
+        bank.balance -= currentFocusBill.amount;
+      }
+
+      saveState();
+      closeFocusModal();
+
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
+    function deleteBill(id) {
+      state.bills = state.bills.filter(b => b.id !== id);
+      saveState();
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.className = 'filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200';
+      });
+      const active = document.getElementById(`filter-${filter}`);
+      if (filter === 'urgent') {
+        active.className = 'filter-btn py-1 font-bold rounded-lg text-rose-300 bg-rose-500/20 border border-rose-500/40';
+      } else {
+        active.className = 'filter-btn py-1 font-bold rounded-lg text-indigo-300 bg-indigo-500/20 border border-indigo-500/40';
+      }
+      render();
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').innerText = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // REGISTRO DE PWA (INSTALAÇÃO SEGURA SEM BLOQUEIOS)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+
+    initTheme();
+    render();
+  </script>
+</body>
+</html>
