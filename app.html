@@ -139,6 +139,12 @@
     </div>
 
     <div class="flex items-center gap-1.5">
+      <!-- Botão Tutorial Rápido -->
+      <button onclick="openTutorialModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-amber-400 shadow-sm hover:opacity-90 transition" title="Tutorial Rápido TDAH">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Tutorial</span>
+      </button>
+
       <!-- Botão Site Oficial -->
       <a href="index.html" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-slate-300 hover:text-white shadow-sm transition" title="Ver Site Oficial & Download">
         <i data-lucide="globe" class="w-3.5 h-3.5 text-cyan-400"></i>
@@ -1222,6 +1228,65 @@
     </div>
   </div>
 
+  <!-- MODAL TUTORIAL RÁPIDO PARA TDAH (3 PASSOS ULTRA-VISUAIS) -->
+  <div id="tutorialModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="p-6 rounded-3xl bg-[#0b1122] border border-slate-800 max-w-sm w-full shadow-2xl relative text-center space-y-4">
+      
+      <!-- Indicador de Passos -->
+      <div class="flex items-center justify-center gap-1.5 pt-1">
+        <span id="tutStepDot1" class="w-6 h-1.5 rounded-full bg-emerald-500 transition-all"></span>
+        <span id="tutStepDot2" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
+        <span id="tutStepDot3" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
+      </div>
+
+      <!-- Passo 1 -->
+      <div id="tutStep1" class="space-y-3">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shadow-lg">
+          🧠
+        </div>
+        <h3 class="text-base font-black text-white">Sem Textos Longos.<br>Sem Paralisia Mental.</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          O <strong>FOKKO FIN</strong> foi desenhado para a mente com TDAH: zero planilhas, zero gráficos complexos e foco no que você pode gastar hoje.
+        </p>
+        <button onclick="nextTutorialStep(2)" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition active:scale-95 shadow-lg shadow-emerald-500/20">
+          Entendi, próximo ➔
+        </button>
+      </div>
+
+      <!-- Passo 2 -->
+      <div id="tutStep2" class="space-y-3 hidden">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl shadow-lg">
+          🛡️
+        </div>
+        <h3 class="text-base font-black text-white">Saldo Realmente Livre</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Nós somamos o que você tem no banco e subtraímos as contas do mês. O valor na tela é o que sobra para você viver sem culpa!
+        </p>
+        <button onclick="nextTutorialStep(3)" class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-black rounded-xl text-xs transition active:scale-95 shadow-lg shadow-indigo-500/20">
+          Como eu anoto? ➔
+        </button>
+      </div>
+
+      <!-- Passo 3 -->
+      <div id="tutStep3" class="space-y-3 hidden">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl shadow-lg">
+          ⚡
+        </div>
+        <h3 class="text-base font-black text-white">Gastei Agora (2 Segundos)</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Comprou algo no Pix ou no cartão? Toque no botão verde <strong>"Gastei Agora"</strong> no rodapé. Só digita o valor e pronto! Sem escolher data nem preencher burocracia.
+        </p>
+        <button onclick="closeTutorialModal()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs transition active:scale-95 shadow-xl shadow-emerald-500/25">
+          🚀 Começar Minhas Finanças!
+        </button>
+      </div>
+
+      <button onclick="closeTutorialModal()" class="text-[10px] text-slate-500 hover:text-slate-300 transition block mx-auto">
+        Pular introdução
+      </button>
+    </div>
+  </div>
+
   <!-- SCRIPT JS -->
   <script>
     lucide.createIcons();
@@ -1236,126 +1301,34 @@
     let currentMonthIndex = 10; // Novembro
     let currentYear = 2026;
 
-    // ESTADO PADRÃO
+    // ESTADO INICIAL 100% LIMPO PARA NOVOS USUÁRIOS
     const INITIAL_STATE = {
       isDarkMode: true,
       privacyMode: false,
-      savingsBalance: 3450.00,
+      savingsBalance: 0.00,
       accounts: [
-        { id: 1, name: "Nubank", balance: 1801.73, icon: "landmark" },
-        { id: 2, name: "Itaú", balance: 750.00, icon: "landmark" },
-        { id: 3, name: "Santander", balance: 620.00, icon: "landmark" },
-        { id: 4, name: "Mercado Pago", balance: 240.00, icon: "wallet" }
+        { id: 1, name: "Minha Conta Principal", balance: 0.00, icon: "landmark" }
       ],
-      cards: [
-        {
-          id: 1,
-          name: "Nubank Roxinho",
-          brand: "Mastercard",
-          style: "credit-card-nubank",
-          totalLimit: 15000.00,
-          usedLimit: 7586.78,
-          closingDay: 10,
-          dueDay: 17
-        },
-        {
-          id: 2,
-          name: "Santander SX",
-          brand: "Visa",
-          style: "credit-card-santander",
-          totalLimit: 3000.00,
-          usedLimit: 850.00,
-          closingDay: 1,
-          dueDay: 8
-        },
-        {
-          id: 3,
-          name: "Itaú Click",
-          brand: "Mastercard",
-          style: "credit-card-itau",
-          totalLimit: 6000.00,
-          usedLimit: 1250.00,
-          closingDay: 2,
-          dueDay: 10
-        }
-      ],
-      bills: [
-        {
-          id: 1,
-          name: "Conta de Energia (Luz)",
-          amount: 145.00,
-          dueDate: getTodayOffset(0),
-          bankSource: "Nubank",
-          code: "836100000010350001380020000123456789",
-          repeatMonthly: true,
-          paid: false
-        },
-        {
-          id: 2,
-          name: "Internet Fibra",
-          amount: 119.90,
-          dueDate: getTodayOffset(3),
-          bankSource: "Nubank",
-          code: "00020126580014br.gov.bcb.pix0136claro-fibra",
-          repeatMonthly: true,
-          paid: false
-        },
-        {
-          id: 3,
-          name: "Aluguel",
-          amount: 1200.00,
-          dueDate: getTodayOffset(7),
-          bankSource: "Itaú",
-          code: "PIX-ALUGUEL-DONO-12345",
-          repeatMonthly: true,
-          paid: false
-        }
-      ],
+      cards: [],
+      bills: [],
       budgets: [
-        { id: 1, name: "Alimentação & Mercado", limit: 2500.00, spent: 1850.00, color: "from-amber-400 to-orange-500", stroke: "#f59e0b" },
-        { id: 2, name: "Lazer & Dopamina", limit: 800.00, spent: 540.00, color: "from-purple-400 to-indigo-500", stroke: "#a855f7" },
-        { id: 3, name: "Saúde & Farmácia", limit: 450.00, spent: 185.00, color: "from-emerald-400 to-teal-500", stroke: "#10b981" },
-        { id: 4, name: "Transporte / Uber", limit: 400.00, spent: 260.00, color: "from-blue-400 to-cyan-500", stroke: "#3b82f6" }
+        { id: 1, name: "Alimentação & Mercado", limit: 1000.00, spent: 0.00, color: "from-amber-400 to-orange-500", stroke: "#f59e0b" },
+        { id: 2, name: "Lazer & Dopamina", limit: 400.00, spent: 0.00, color: "from-purple-400 to-indigo-500", stroke: "#a855f7" },
+        { id: 3, name: "Saúde & Farmácia", limit: 300.00, spent: 0.00, color: "from-emerald-400 to-teal-500", stroke: "#10b981" },
+        { id: 4, name: "Transporte & Uber", limit: 300.00, spent: 0.00, color: "from-blue-400 to-cyan-500", stroke: "#3b82f6" }
       ],
-      expensesHistory: [
-        {
-          id: 101,
-          title: "Supermercado Souza",
-          amount: 45.90,
-          date: getTodayOffset(0),
-          sourceName: "Nubank (Débito)",
-          category: "Alimentação",
-          type: "debit"
-        },
-        {
-          id: 102,
-          title: "Farmácia Remédios",
-          amount: 85.00,
-          date: getTodayOffset(-1),
-          sourceName: "Nubank Roxinho (Crédito)",
-          category: "Saúde",
-          type: "credit"
-        }
-      ],
-      incomesHistory: [
-        {
-          id: 201,
-          title: "Salário Mensal",
-          amount: 5400.00,
-          date: getTodayOffset(-5),
-          accountName: "Nubank"
-        }
-      ]
+      expensesHistory: [],
+      incomesHistory: []
     };
 
-    let state = JSON.parse(localStorage.getItem('focopay_v4')) || INITIAL_STATE;
+    let state = JSON.parse(localStorage.getItem('fokkofin_v5')) || INITIAL_STATE;
     let currentFilter = 'urgent';
     let currentFocusBill = null;
     let isPhoneFramed = true;
     let spendDateSelected = 'today';
 
     function saveState() {
-      localStorage.setItem('focopay_v4', JSON.stringify(state));
+      localStorage.setItem('fokkofin_v5', JSON.stringify(state));
       render();
     }
 
@@ -2504,9 +2477,49 @@
       showAuthScreen();
     }
 
+    // ==========================================
+    // TUTORIAL RÁPIDO PARA TDAH (3 PASSOS)
+    // ==========================================
+    function openTutorialModal() {
+      const modal = document.getElementById('tutorialModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        nextTutorialStep(1);
+      }
+    }
+
+    function closeTutorialModal() {
+      const modal = document.getElementById('tutorialModal');
+      if (modal) modal.classList.add('hidden');
+      localStorage.setItem('fokko_tut_seen', 'true');
+    }
+
+    function nextTutorialStep(step) {
+      const s1 = document.getElementById('tutStep1');
+      const s2 = document.getElementById('tutStep2');
+      const s3 = document.getElementById('tutStep3');
+      if (s1) s1.classList.toggle('hidden', step !== 1);
+      if (s2) s2.classList.toggle('hidden', step !== 2);
+      if (s3) s3.classList.toggle('hidden', step !== 3);
+
+      const d1 = document.getElementById('tutStepDot1');
+      const d2 = document.getElementById('tutStepDot2');
+      const d3 = document.getElementById('tutStepDot3');
+      if (d1) d1.className = step === 1 ? 'w-6 h-1.5 rounded-full bg-emerald-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+      if (d2) d2.className = step === 2 ? 'w-6 h-1.5 rounded-full bg-indigo-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+      if (d3) d3.className = step === 3 ? 'w-6 h-1.5 rounded-full bg-cyan-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+    }
+
     initTheme();
     render();
     initAuth();
+
+    // Abre o tutorial simplificado automaticamente na primeira vez
+    setTimeout(() => {
+      if (!localStorage.getItem('fokko_tut_seen')) {
+        openTutorialModal();
+      }
+    }, 600);
   </script>
 </body>
 </html>
