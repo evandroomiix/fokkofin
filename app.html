@@ -1876,33 +1876,128 @@
         const daysLeftInMonth = Math.max(1, 30 - new Date().getDate());
         const dailySafe = (safe / daysLeftInMonth).toFixed(2);
 
-        // 1. RECONHECIMENTO DE AÇÃO: Lançamento de Gasto ("Gastei 50 no almoço")
-        const spendMatch = lower.match(/(?:gastei|comprei|paguei)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:no|na|em|de|com)\s+(.+))?/);
-        if (spendMatch) {
+        // 1. RECONHECIMENTO INTELIGENTE: ENTRADAS (RECEITAS) E SAÍDAS (GASTOS)
+        const incomeMatch = lower.match(/(?:ganhei|recebi|caiu|entrou|salario|salário|depositei)\s+(?:um\s+pix\s+de\s+|de\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:de|com|por|em|no|na)\s+([a-zá-ú0-9\s]+?)(?=(?:e\s+(?:gastei|comprei|paguei)|$)))?/);
+        const spendMatch = lower.match(/(?:gastei|comprei|paguei|saiu)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:no|na|em|de|com)\s+([a-zá-ú0-9\s]+))?/);
+
+        // CASO A: Usuário informou Ganho E Gasto na mesma frase (Ex: "Ganhei 4066 e gastei 25")
+        if (incomeMatch && spendMatch) {
+          const incVal = parseFloat(incomeMatch[1].replace(',', '.'));
+          const incDesc = (incomeMatch[2] ? incomeMatch[2].trim() : 'Receita').replace(/^[a-z]/, c => c.toUpperCase());
+          const spVal = parseFloat(spendMatch[1].replace(',', '.'));
+          const spDesc = (spendMatch[2] ? spendMatch[2].trim() : 'Gasto rápido').replace(/^[a-z]/, c => c.toUpperCase());
+
+          if (!isNaN(incVal) && !isNaN(spVal)) {
+            // Garante que exista ao menos uma conta
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
+            // Registra a Receita
+            state.accounts[0].balance += incVal;
+            state.incomesHistory.unshift({
+              id: Date.now(),
+              title: incDesc,
+              amount: incVal,
+              date: getTodayOffset(0),
+              accountName: state.accounts[0].name
+            });
+
+            // Registra a Despesa
+            state.accounts[0].balance = Math.max(0, state.accounts[0].balance - spVal);
+            state.expensesHistory.unshift({
+              id: Date.now() + 1,
+              title: spDesc,
+              amount: spVal,
+              date: getTodayOffset(0),
+              sourceName: state.accounts[0].name,
+              category: "Geral",
+              type: "debit"
+            });
+
+            saveState();
+            confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
+            const saldoLiquido = incVal - spVal;
+
+            reply = `🎉 <strong>Movimentação Dupla Registrada com Sucesso!</strong><br><br>
+            • 🟢 <strong>Entrada:</strong> +${formatCurrency(incVal)} <em>(${incDesc})</em><br>
+            • 🔴 <strong>Saída:</strong> -${formatCurrency(spVal)} <em>(${spDesc})</em><br>
+            • 📈 <strong>Resultado Líquido:</strong> <strong>+${formatCurrency(saldoLiquido)}</strong> adicionados ao seu caixa!<br><hr class="border-slate-700 my-2">
+            🛡️ <strong>Seu Novo Saldo Realmente Livre: ${formatCurrency(newSafe)}</strong><br>
+            💡 <em>Nova meta segura:</em> Você tem <strong>R$ ${newDaily}/dia</strong> até o final do mês. Parabéns pelo controle! 🚀`;
+          }
+        }
+
+        // CASO B: Apenas Entrada de Dinheiro (Ex: "Ganhei 4066" ou "Recebi meu salário")
+        else if (incomeMatch) {
+          const incVal = parseFloat(incomeMatch[1].replace(',', '.'));
+          const incDesc = (incomeMatch[2] ? incomeMatch[2].trim() : 'Receita').replace(/^[a-z]/, c => c.toUpperCase());
+
+          if (!isNaN(incVal) && incVal > 0) {
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
+            state.accounts[0].balance += incVal;
+            state.incomesHistory.unshift({
+              id: Date.now(),
+              title: incDesc,
+              amount: incVal,
+              date: getTodayOffset(0),
+              accountName: state.accounts[0].name
+            });
+
+            saveState();
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
+
+            reply = `💰 <strong>Entrada de Dinheiro Registrada com Sucesso!</strong><br><br>
+            • 🟢 <strong>Valor creditado:</strong> +${formatCurrency(incVal)} em <em>"${incDesc}"</em><br>
+            • 🏦 <strong>Creditado em:</strong> ${state.accounts[0].name}<br><br>
+            🛡️ <strong>Seu Novo Saldo Realmente Livre: ${formatCurrency(newSafe)}</strong><br>
+            💡 <em>Sua folga diária subiu para <strong>R$ ${newDaily}/dia</strong> nos próximos ${daysLeftInMonth} dias!</em> 🎯`;
+          }
+        }
+
+        // CASO C: Apenas Saída de Dinheiro (Ex: "Gastei 25 no lanche")
+        else if (spendMatch) {
           const val = parseFloat(spendMatch[1].replace(',', '.'));
           const desc = (spendMatch[2] ? spendMatch[2].trim() : 'Gasto Rápido').replace(/^[a-z]/, c => c.toUpperCase());
           
           if (!isNaN(val) && val > 0) {
-            // Registra automaticamente no histórico
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
             state.expensesHistory.unshift({
               id: Date.now(),
               title: desc,
               amount: val,
               date: getTodayOffset(0),
-              sourceName: state.accounts[0] ? state.accounts[0].name : "Conta Principal",
+              sourceName: state.accounts[0].name,
               category: "Geral",
               type: "debit"
             });
-            if (state.accounts[0]) {
-              state.accounts[0].balance = Math.max(0, state.accounts[0].balance - val);
-            }
+            state.accounts[0].balance = Math.max(0, state.accounts[0].balance - val);
+            
             saveState();
-            confetti({ particleCount: 35, spread: 50, origin: { y: 0.8 } });
+            confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
 
             reply = `✅ <strong>Gasto registrado com sucesso!</strong><br><br>
-            • Lançado: <strong>${formatCurrency(val)}</strong> em <em>"${desc}"</em><br>
-            • Novo Saldo Livre: <strong>${formatCurrency(Math.max(0, safe - val))}</strong><br>
-            • Meta segura para hoje: <strong>${formatCurrency(Math.max(0, (safe - val) / daysLeftInMonth))}</strong>/dia.<br><br>
+            • 🔴 <strong>Lançado:</strong> -${formatCurrency(val)} em <em>"${desc}"</em><br>
+            • 🛡️ <strong>Novo Saldo Livre:</strong> <strong>${formatCurrency(newSafe)}</strong><br>
+            • 💡 <strong>Meta segura para hoje:</strong> R$ ${newDaily}/dia.<br><br>
             <em>Já debitei da sua conta e atualizei seu painel na mesma hora!</em>`;
           }
         }
