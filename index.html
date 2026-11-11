@@ -2,6 +2,16 @@
 <html lang="pt-BR" class="dark" style="background-color: #060913 !important; color: #f1f5f9 !important;">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Se aberto de dentro do APK ou PWA instalado, entra direto no App sem abrir landing page
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true || 
+        document.referrer.includes('android-app://') || 
+        navigator.userAgent.includes('wv') ||
+        window.location.search.includes('source=pwa')) {
+      window.location.replace('app.html');
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FOKKO FIN • Organização Financeira para TDAH | Site Oficial</title>
   <link rel="icon" type="image/jpeg" href="fokko_icon.jpg">
