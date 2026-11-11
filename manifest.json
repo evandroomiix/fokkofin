@@ -3,7 +3,7 @@
   "short_name": "FOKKO FIN",
   "description": "Finanças descomplicadas e sem estresse para pessoas com TDAH e neurodivergentes.",
   "id": "/?source=pwa",
-  "start_url": "index.html",
+  "start_url": "app.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#060913",
