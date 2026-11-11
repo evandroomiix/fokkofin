@@ -214,23 +214,42 @@
         <!-- Alerta de Status -->
         <div id="authAlert" class="hidden p-3 rounded-2xl text-xs font-semibold border"></div>
 
-        <!-- Entrada Imediata em 1 Clique -->
+        <!-- Entrada Oficial: Google e E-mail -->
         <div class="p-5 rounded-3xl bg-[#0b1122] border border-slate-800 shadow-xl space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1.5">Como você prefere ser chamado?</label>
-            <input type="text" id="sbUserName" placeholder="Seu nome ou apelido (Ex: Evandro)" value="Evandro" class="w-full py-3 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1.5">Seu E-mail (opcional para backup)</label>
-            <input type="email" id="sbEmail" placeholder="seu@email.com" value="evandro@fokkofin.com" class="w-full py-3 px-3.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-          </div>
-
-          <!-- Botão Principal de Acesso Direto -->
-          <button onclick="handleInstantAccess()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/25 transition active:scale-95">
-            <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
-            <span>ENTRAR NO FOKKO FIN AGORA</span>
+          
+          <!-- Botão Oficial Google -->
+          <button id="btnGoogleAuth" onclick="signInWithGoogle()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow-xl transition active:scale-95">
+            <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+            <span>Continuar com a Conta Google</span>
           </button>
+
+          <div class="flex items-center gap-3 my-2">
+            <div class="flex-1 h-[1px] bg-slate-800"></div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">ou com e-mail</span>
+            <div class="flex-1 h-[1px] bg-slate-800"></div>
+          </div>
+
+          <!-- Campos E-mail e Senha -->
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Seu E-mail</label>
+              <input type="email" id="sbEmail" placeholder="seu@email.com" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Sua Senha</label>
+              <input type="password" id="sbPassword" placeholder="Sua senha secreta" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- Botões de Ação Email -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="handleEmailSignIn()" class="py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl text-xs transition">
+              Entrar
+            </button>
+            <button onclick="handleEmailSignUp()" class="py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+              Criar Conta
+            </button>
+          </div>
         </div>
 
       </div>
@@ -2321,30 +2340,74 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function handleInstantAccess() {
-      const nameInput = document.getElementById('sbUserName');
-      const emailInput = document.getElementById('sbEmail');
-      const userName = (nameInput && nameInput.value.trim()) || 'Evandro';
-      const userEmail = (emailInput && emailInput.value.trim()) || 'evandro@fokkofin.com';
-
-      currentUser = {
-        name: userName,
-        email: userEmail,
-        id: 'usr_' + Date.now()
-      };
-
-      localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
-
-      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+    async function signInWithGoogle() {
+      if (!sbClient) return alert('Cliente Supabase não inicializado.');
       hideAuthAlert();
-      hideAuthScreen();
+      showAuthAlert('Conectando ao Google...', 'info');
+      try {
+        const { error } = await sbClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/app.html'
+          }
+        });
+        if (error) {
+          showAuthAlert('Erro Google: ' + error.message, 'error');
+        }
+      } catch (e) {
+        showAuthAlert('Falha ao conectar: ' + e.message, 'error');
+      }
+    }
 
-      const emailSpan = document.getElementById('userEmailSpan');
-      if (emailSpan) emailSpan.innerText = userName;
+    async function handleEmailSignIn() {
+      if (!sbClient) return alert('Cliente Supabase indisponível.');
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password) {
+        return showAuthAlert('Por favor, informe seu e-mail e senha.');
+      }
+      showAuthAlert('Entrando...', 'info');
+      try {
+        const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthAlert(error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message);
+        } else {
+          currentUser = data.user;
+          hideAuthAlert();
+          hideAuthScreen();
+          loadCloudData();
+        }
+      } catch (e) {
+        showAuthAlert('Erro de conexão: ' + e.message);
+      }
+    }
 
-      // Sincronização silenciosa em background no Supabase
-      if (sbClient) {
-        sbClient.auth.signUp({ email: userEmail, password: 'FokkoUser@2026' }).catch(() => {});
+    async function handleEmailSignUp() {
+      if (!sbClient) return alert('Cliente Supabase indisponível.');
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password) {
+        return showAuthAlert('Por favor, preencha e-mail e crie uma senha.');
+      }
+      if (password.length < 6) {
+        return showAuthAlert('A senha deve ter no mínimo 6 caracteres.');
+      }
+      showAuthAlert('Criando sua conta...', 'info');
+      try {
+        const { data, error } = await sbClient.auth.signUp({ email, password });
+        if (error) {
+          showAuthAlert(error.message);
+        } else {
+          currentUser = data.user;
+          showAuthAlert('🎉 Conta criada com sucesso no Supabase!', 'success');
+          setTimeout(() => {
+            hideAuthAlert();
+            hideAuthScreen();
+            loadCloudData();
+          }, 800);
+        }
+      } catch (e) {
+        showAuthAlert('Erro ao cadastrar: ' + e.message);
       }
     }
 
@@ -2368,7 +2431,30 @@
       } catch (e) {}
     }
 
-    function initAuth() {
+    async function initAuth() {
+      if (sbClient) {
+        try {
+          const { data: { session } } = await sbClient.auth.getSession();
+          if (session && session.user) {
+            currentUser = session.user;
+            hideAuthScreen();
+            const emailSpan = document.getElementById('userEmailSpan');
+            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
+            loadCloudData();
+            return;
+          }
+          sbClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+              currentUser = session.user;
+              hideAuthScreen();
+              const emailSpan = document.getElementById('userEmailSpan');
+              if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
+              loadCloudData();
+            }
+          });
+        } catch (e) {}
+      }
+
       const savedSession = localStorage.getItem('fokko_user_session');
       if (savedSession) {
         try {
