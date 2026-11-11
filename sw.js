@@ -1,23 +1,6 @@
-const CACHE_NAME = 'fokko-fin-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './app.html',
-  './landing.html',
-  './fokko_icon.jpg',
-  './fokko_logo.jpg',
-  './icon-192.png',
-  './icon-512.png',
-  './icon-512-maskable.png',
-  './manifest.json'
-];
+const CACHE_NAME = 'fokko-fin-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -36,12 +19,25 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Estratégia Network First: sempre busca o mais atualizado da rede
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    }).catch(() => {
-      return caches.match('./index.html');
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, copy);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
