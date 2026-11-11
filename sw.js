@@ -2,6 +2,7 @@ const CACHE_NAME = 'fokko-fin-v1';
 const ASSETS = [
   './',
   './index.html',
+  './app.html',
   './landing.html',
   './fokko_icon.jpg',
   './fokko_logo.jpg',
