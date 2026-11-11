@@ -435,13 +435,20 @@
           <div id="billsContainer" class="space-y-2"></div>
         </div>
 
-        <!-- HISTÓRICO DE GASTOS AVULSOS EFETUADOS -->
+        <!-- HISTÓRICO DE MOVIMENTAÇÕES (ENTRADAS E SAÍDAS) -->
         <div class="pt-1">
           <div class="flex items-center justify-between mb-2">
             <h2 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="receipt" class="w-3.5 h-3.5 text-emerald-400"></i> Últimos Gastos Efetuados
+              <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-cyan-400"></i> Últimas Movimentações
             </h2>
-            <span class="text-[10px] text-slate-500">Sem data de vencimento</span>
+            <div class="flex items-center gap-1.5 text-[10px]">
+              <span class="inline-flex items-center gap-1 text-emerald-400 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Entradas
+              </span>
+              <span class="inline-flex items-center gap-1 text-rose-400 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Saídas
+              </span>
+            </div>
           </div>
           <div id="expensesHistoryContainer" class="space-y-1.5"></div>
         </div>
@@ -1522,27 +1529,53 @@
         });
       }
 
-      // Renderizar Gastos Avulsos
+      // Renderizar Últimas Movimentações (Entradas e Saídas Unificadas)
       const historyContainer = document.getElementById('expensesHistoryContainer');
       historyContainer.innerHTML = '';
-      if (state.expensesHistory.length === 0) {
-        historyContainer.innerHTML = `<div class="text-[11px] text-slate-500 py-2 text-center">Nenhum gasto avulso registrado ainda.</div>`;
+
+      // Unifica receitas e despesas ordenadas por data/id
+      const allMovements = [
+        ...(state.incomesHistory || []).map(inc => ({
+          id: inc.id,
+          title: inc.title,
+          amount: Number(inc.amount),
+          date: inc.date,
+          source: inc.accountName || "Conta",
+          category: "Receita",
+          isIncome: true
+        })),
+        ...(state.expensesHistory || []).map(exp => ({
+          id: exp.id,
+          title: exp.title,
+          amount: Number(exp.amount),
+          date: exp.date,
+          source: exp.sourceName || "Conta",
+          category: exp.category || "Gasto",
+          isIncome: false,
+          isCredit: exp.type === 'credit'
+        }))
+      ].sort((a, b) => b.id - a.id);
+
+      if (allMovements.length === 0) {
+        historyContainer.innerHTML = `<div class="text-[11px] text-slate-500 py-3 text-center dark:bg-slate-900/50 bg-slate-100 rounded-xl border border-dashed dark:border-slate-800 border-slate-300">Nenhuma movimentação registrada ainda. Use o chat da Miix IA ou o botão verde abaixo!</div>`;
       } else {
-        state.expensesHistory.slice(0, 5).forEach(exp => {
+        allMovements.slice(0, 7).forEach(mov => {
           const item = document.createElement('div');
           item.className = 'p-2.5 rounded-xl dark:bg-slate-900/70 bg-white border dark:border-slate-800/80 border-slate-200 flex items-center justify-between text-xs shadow-sm';
           item.innerHTML = `
             <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-lg ${exp.type === 'credit' ? 'bg-purple-500/20 text-purple-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center shrink-0">
-                <i data-lucide="${exp.type === 'credit' ? 'credit-card' : 'shopping-bag'}" class="w-3.5 h-3.5"></i>
+              <div class="w-7 h-7 rounded-lg ${mov.isIncome ? 'bg-emerald-500/20 text-emerald-400' : (mov.isCredit ? 'bg-purple-500/20 text-purple-400' : 'bg-rose-500/20 text-rose-400')} flex items-center justify-center shrink-0">
+                <i data-lucide="${mov.isIncome ? 'arrow-down-left' : (mov.isCredit ? 'credit-card' : 'arrow-up-right')}" class="w-3.5 h-3.5"></i>
               </div>
               <div>
-                <span class="font-bold dark:text-slate-200 text-slate-800 block text-xs">${exp.title}</span>
-                <span class="text-[10px] text-slate-400">${exp.sourceName} • ${exp.category || 'Gasto'}</span>
+                <span class="font-bold dark:text-slate-200 text-slate-800 block text-xs">${mov.title}</span>
+                <span class="text-[10px] text-slate-400">${mov.source} • ${mov.category}</span>
               </div>
             </div>
             <div class="text-right">
-              <span class="font-extrabold ${exp.type === 'credit' ? 'text-purple-400' : 'dark:text-slate-200 text-slate-800'}">-${formatCurrency(exp.amount)}</span>
+              <span class="font-extrabold ${mov.isIncome ? 'text-emerald-400' : (mov.isCredit ? 'text-purple-400' : 'text-rose-400')}">
+                ${mov.isIncome ? '+' : '-'}${formatCurrency(mov.amount)}
+              </span>
             </div>
           `;
           historyContainer.appendChild(item);
