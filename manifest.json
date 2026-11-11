@@ -3,6 +3,8 @@
   "short_name": "FOKKO FIN",
   "description": "Finanças descomplicadas e sem estresse para pessoas com TDAH e neurodivergentes.",
   "id": "/?source=pwa",
+  "version": "1.0.0",
+  "author": "Evandro Miix",
   "start_url": "app.html",
   "scope": "./",
   "display": "standalone",

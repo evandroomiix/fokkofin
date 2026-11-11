@@ -168,8 +168,8 @@
         <span id="frameToggleText">Expandir</span>
       </button>
 
-      <!-- Restaurar Dados Demo -->
-      <button onclick="resetDemoData()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 bg-white border-slate-300 text-slate-500 hover:opacity-90 transition" title="Restaurar dados demo">
+      <!-- Restaurar Dados Padrão -->
+      <button onclick="resetDemoData()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 bg-white border-slate-300 text-slate-500 hover:opacity-90 transition" title="Redefinir Dados">
         <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
       </button>
     </div>
@@ -438,6 +438,42 @@
             <span class="text-[10px] text-slate-500">Sem data de vencimento</span>
           </div>
           <div id="expensesHistoryContainer" class="space-y-1.5"></div>
+        </div>
+
+        <!-- PAINEL OFICIAL DE PRODUÇÃO & DESENVOLVEDOR -->
+        <div class="p-4 rounded-3xl bg-[#090e1c] border border-slate-800 space-y-3 mt-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-2xl overflow-hidden border border-emerald-500/40 shadow-lg shadow-emerald-500/20 shrink-0">
+                <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <span class="font-black text-white block text-xs tracking-tight">FOKKO <span class="text-cyan-400">FIN</span></span>
+                <span class="text-[9px] text-emerald-400 font-bold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+                  v1.0.0 Oficial (Produção)
+                </span>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[9px] text-emerald-300 font-black uppercase tracking-wider">Homologado</span>
+          </div>
+
+          <div class="border-t border-slate-800/80 pt-2.5 space-y-1.5 text-[10px]">
+            <div class="flex items-center justify-between text-slate-400">
+              <span>Desenvolvedor Principal:</span>
+              <span class="font-extrabold text-white">Evandro Miix</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+              <span>Assistente Financeira:</span>
+              <span class="font-bold text-cyan-300">Miix IA Integrada</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+              <span>Status do Banco na Nuvem:</span>
+              <span class="font-bold text-emerald-400 flex items-center gap-1">
+                <i data-lucide="check" class="w-3 h-3"></i> Supabase Cloud Conectado
+              </span>
+            </div>
+          </div>
         </div>
 
       </div>
