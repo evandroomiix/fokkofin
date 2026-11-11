@@ -372,19 +372,7 @@
     lucide.createIcons();
 
     function openAuthModal(mode) {
-      const modal = document.getElementById('authModal');
-      const title = document.getElementById('authModalTitle');
-      const desc = document.getElementById('authModalDesc');
-
-      if (mode === 'login') {
-        title.innerText = "Entrar no FOKKO FIN";
-        desc.innerText = "Bem-vindo de volta! Acesse suas contas com facilidade.";
-      } else {
-        title.innerText = "Criar Minha Conta";
-        desc.innerText = "Crie sua conta em segundos e acerte suas finanças.";
-      }
-
-      modal.classList.remove('hidden');
+      window.location.href = 'app.html';
     }
 
     function closeAuthModal() {
