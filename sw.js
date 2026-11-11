@@ -6,6 +6,9 @@ const ASSETS = [
   './landing.html',
   './fokko_icon.jpg',
   './fokko_logo.jpg',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-512-maskable.png',
   './manifest.json'
 ];
 

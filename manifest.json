@@ -3,31 +3,48 @@
   "short_name": "FOKKO FIN",
   "description": "Finanças descomplicadas e sem estresse para pessoas com TDAH e neurodivergentes.",
   "id": "/?source=pwa",
-  "start_url": "./app.html",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#060913",
   "theme_color": "#0f172a",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "categories": ["finance", "productivity", "utilities"],
   "icons": [
     {
-      "src": "fokko_icon.jpg",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "fokko_icon.jpg",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "fokko_icon.jpg",
+      "src": "icon-512-maskable.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "FOKKO FIN Mobile"
+    },
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "FOKKO FIN Web"
     }
   ]
 }
