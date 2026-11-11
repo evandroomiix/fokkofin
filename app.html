@@ -1822,7 +1822,7 @@
       confetti({ particleCount: 30, spread: 40, origin: { y: 0.8 } });
     }
 
-    // CHAT MIIX IA
+    // CHAT MIIX IA - MOTOR DE INTELIGÊNCIA FINANCEIRA DE ALTA VELOCIDADE
     function askMiaPrompt(text) {
       document.getElementById('miaInput').value = text;
       handleSendMia();
@@ -1834,54 +1834,170 @@
       if (!text) return;
 
       const chatContainer = document.getElementById('miaChatMessages');
+      
+      // Mensagem do Usuário
       chatContainer.innerHTML += `
         <div class="flex justify-end gap-2">
-          <div class="bg-indigo-600 text-white p-2.5 rounded-2xl max-w-[85%]">
+          <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-3 rounded-2xl rounded-tr-sm max-w-[85%] text-xs shadow-md">
             ${text}
           </div>
         </div>
       `;
       input.value = '';
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
+      // Indicador de "Digitando" imediato
+      const typingId = 'mia-typing-' + Date.now();
+      chatContainer.innerHTML += `
+        <div id="${typingId}" class="flex gap-2 items-center text-xs text-slate-400 py-1">
+          <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-pulse"></i>
+          </div>
+          <span class="text-[11px] font-semibold text-emerald-400">Miix IA analisando finanças...</span>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      if (window.lucide) lucide.createIcons();
+
+      // Processamento Inteligente em 350ms (Ultra-rápido)
       setTimeout(() => {
-        let reply = "";
-        const lower = text.toLowerCase();
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
 
+        const lower = text.toLowerCase();
+        let reply = "";
+
+        // Métricas financeiras em tempo real do usuário
         const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
         const pendingBills = state.bills.filter(b => !b.paid).reduce((acc, b) => acc + Number(b.amount), 0);
         const safe = Math.max(0, totalBank - pendingBills);
         const totalInvoices = state.cards.reduce((acc, c) => acc + Number(c.usedLimit), 0);
+        const totalSavings = state.savingsBalance || 0;
+        const daysLeftInMonth = Math.max(1, 30 - new Date().getDate());
+        const dailySafe = (safe / daysLeftInMonth).toFixed(2);
 
-        if (lower.includes('livre') || lower.includes('posso gastar')) {
-          reply = `Você tem exatamente <strong>${formatCurrency(safe)}</strong> livres para gastar hoje sem comprometer suas contas fixas do mês! Pode respirar aliviado.`;
-        } else if (lower.includes('fatura') || lower.includes('cartão')) {
-          reply = `A soma de todas as suas faturas de cartão no momento é de <strong>${formatCurrency(totalInvoices)}</strong>. O limite disponível total em todos os seus cartões juntos é de <strong>${formatCurrency(state.cards.reduce((acc, c) => acc + Math.max(0, c.totalLimit - c.usedLimit), 0))}</strong>.`;
-        } else if (lower.includes('urgente') || lower.includes('vencer')) {
-          const urg = state.bills.filter(b => !b.paid);
-          if (urg.length > 0) {
-            reply = `A conta mais urgente no momento é a de <strong>${urg[0].name} (${formatCurrency(urg[0].amount)})</strong>. Se quiser resolver logo, toca em 'Resolver 1'!`;
-          } else {
-            reply = `Nenhuma conta urgente para vencer nos próximos dias! Parabéns, sua mente está totalmente livre! 🎉`;
+        // 1. RECONHECIMENTO DE AÇÃO: Lançamento de Gasto ("Gastei 50 no almoço")
+        const spendMatch = lower.match(/(?:gastei|comprei|paguei)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:no|na|em|de|com)\s+(.+))?/);
+        if (spendMatch) {
+          const val = parseFloat(spendMatch[1].replace(',', '.'));
+          const desc = (spendMatch[2] ? spendMatch[2].trim() : 'Gasto Rápido').replace(/^[a-z]/, c => c.toUpperCase());
+          
+          if (!isNaN(val) && val > 0) {
+            // Registra automaticamente no histórico
+            state.expensesHistory.unshift({
+              id: Date.now(),
+              title: desc,
+              amount: val,
+              date: getTodayOffset(0),
+              sourceName: state.accounts[0] ? state.accounts[0].name : "Conta Principal",
+              category: "Geral",
+              type: "debit"
+            });
+            if (state.accounts[0]) {
+              state.accounts[0].balance = Math.max(0, state.accounts[0].balance - val);
+            }
+            saveState();
+            confetti({ particleCount: 35, spread: 50, origin: { y: 0.8 } });
+
+            reply = `✅ <strong>Gasto registrado com sucesso!</strong><br><br>
+            • Lançado: <strong>${formatCurrency(val)}</strong> em <em>"${desc}"</em><br>
+            • Novo Saldo Livre: <strong>${formatCurrency(Math.max(0, safe - val))}</strong><br>
+            • Meta segura para hoje: <strong>${formatCurrency(Math.max(0, (safe - val) / daysLeftInMonth))}</strong>/dia.<br><br>
+            <em>Já debitei da sua conta e atualizei seu painel na mesma hora!</em>`;
           }
-        } else if (lower.includes('pânico') || lower.includes('paralisia') || lower.includes('dica')) {
-          reply = `Dica de ouro da Miix IA: quando o TDAH bate e parece que tudo está desmoronando, <strong>faça apenas 1 micro-tarefa</strong>. Pague 1 boleto ou guarde R$ 10. O resto espera amanhã. Você está no controle! 💜`;
-        } else {
-          reply = `Entendi perfeitamente! Como sua assistente <strong>Miix IA</strong>, já atualizei os dados. Lembra: um passo de cada vez!`;
         }
 
+        // 2. DIAGNÓSTICO FINANCEIRO COMPLETO
+        else if (lower.includes('diagnostico') || lower.includes('diagnóstico') || lower.includes('situa') || lower.includes('resumo') || lower.includes('analise') || lower.includes('análise') || lower.includes('como estou')) {
+          reply = `📊 <strong>Raio-X das Suas Finanças Hoje:</strong><br><br>
+          • <strong>Dinheiro em Conta:</strong> ${formatCurrency(totalBank)}<br>
+          • <strong>Contas do Mês:</strong> ${formatCurrency(pendingBills)} (${state.bills.filter(b => !b.paid).length} pendentes)<br>
+          • <strong>Faturas de Cartão:</strong> ${formatCurrency(totalInvoices)}<br>
+          • <strong>Caixinha da Paz:</strong> ${formatCurrency(totalSavings)}<br><hr class="border-slate-700 my-2">
+          🛡️ <strong>Saldo Realmente Livre: ${formatCurrency(safe)}</strong><br>
+          💡 <em>Seu teto diário:</em> Você pode gastar até <strong>R$ ${dailySafe}/dia</strong> até o final do mês sem ficar no vermelho!`;
+        }
+
+        // 3. SALDO LIVRE / QUANTO POSSO GASTAR
+        else if (lower.includes('livre') || lower.includes('posso gastar') || lower.includes('quanto tenho') || lower.includes('sobrou')) {
+          reply = `🛡️ <strong>Seu Saldo Realmente Livre:</strong><br><br>
+          Você tem <strong>${formatCurrency(safe)}</strong> limpos para viver!<br>
+          Isso significa <strong>R$ ${dailySafe} por dia</strong> nos próximos ${daysLeftInMonth} dias.<br><br>
+          💡 <em>Regra de ouro TDAH:</em> Se comprar algo acima de R$ ${dailySafe}, compense gastando menos no dia seguinte!`;
+        }
+
+        // 4. DÍVIDAS / RENEGOCIAÇÃO / SERASA / JUROS
+        else if (lower.includes('divida') || lower.includes('dívida') || lower.includes('juros') || lower.includes('serasa') || lower.includes('negociar') || lower.includes('atrasad') || lower.includes('rotativo')) {
+          reply = `🚨 <strong>Plano Anti-Dívidas Inteligente:</strong><br><br>
+          1. <strong>Água, Luz e Teto nunca atrasam:</strong> São sua sobrevivência imediata.<br>
+          2. <strong>Cuidado com o Rotativo do Cartão:</strong> Os juros passam de 400% ao ano! Se a fatura apertar, parcele a fatura em taxa fixa pelo app do banco antes do vencimento.<br>
+          3. <strong>Feirões do Serasa/Desenrola:</strong> Dívidas antigas chegam a ter até 90% de desconto à vista. Nunca pegue outro empréstimo para pagar o anterior!`;
+        }
+
+        // 5. ONDE INVESTIR / RESERVA DE EMERGÊNCIA
+        else if (lower.includes('invest') || lower.includes('onde guardar') || lower.includes('cdb') || lower.includes('selic') || lower.includes('poupan') || lower.includes('render')) {
+          reply = `💰 <strong>Onde Guardar Dinheiro com Segurança (Sem Perder pra Inflação):</strong><br><br>
+          • <strong>Caixinha / Porquinho (100% do CDI):</strong> Rende todo dia útil e você saca quando precisar (Nubank, Inter, Sofisa).<br>
+          • <strong>Tesouro Selic:</strong> O investimento mais seguro do Brasil, garantido pelo Governo Federal.<br>
+          • <strong>Foge da Poupança:</strong> Ela rende quase metade do CDI e você perde poder de compra com o tempo!`;
+        }
+
+        // 6. IMPULSO / VONTADE DE COMPRAR (TDAH)
+        else if (lower.includes('impulso') || lower.includes('comprar') || lower.includes('vontade') || lower.includes('ansiedade') || lower.includes('trava') || lower.includes('dopamina')) {
+          reply = `🧠 <strong>Técnica dos 3 Dias para a Mente com TDAH:</strong><br><br>
+          A vontade de comprar é um pico de dopamina rápida no cérebro. Para não se arrepender depois:<br>
+          1. <strong>Coloque no carrinho e feche o navegador por 72 horas.</strong><br>
+          2. Se daqui a 3 dias você ainda lembrar e tiver saldo livre para ela, compre.<br>
+          3. Em 80% das vezes, o impulso passa e você poupa centenas de reais! 🎯`;
+        }
+
+        // 7. CARTÕES DE CRÉDITO & FATURAS
+        else if (lower.includes('cartao') || lower.includes('cartão') || lower.includes('fatura') || lower.includes('limite')) {
+          reply = `💳 <strong>Dominando seus Cartões de Crédito:</strong><br><br>
+          • Faturas em aberto somadas: <strong>${formatCurrency(totalInvoices)}</strong>.<br>
+          • <em>Regra FOKKO:</em> Cartão de crédito não é extensão de salário, é apenas um meio de pagamento com prazo.<br>
+          • O melhor dia de compra é sempre <strong>1 dia após o fechamento da fatura</strong> (você ganha até 40 dias de prazo para pagar).`;
+        }
+
+        // 8. PARALISIA / PÂNICO / TRAVEI
+        else if (lower.includes('panico') || lower.includes('pânico') || lower.includes('paralis') || lower.includes('travei') || lower.includes('socorro') || lower.includes('medo') || lower.includes('ajuda')) {
+          reply = `💜 <strong>Calma! Respira fundo. Eu estou aqui com você.</strong><br><br>
+          A paralisia do TDAH acontece quando o cérebro tenta resolver 10 problemas ao mesmo tempo.<br><br>
+          👉 <strong>Faça apenas 1 coisa agora:</strong><br>
+          Toque no botão <strong>"Resolver 1"</strong> no topo do app. Pague apenas o boleto mais urgente e feche o banco. O resto a gente resolve amanhã. Um passo de cada vez!`;
+        }
+
+        // 9. DICAS DE ECONOMIA SEM SOFRER
+        else if (lower.includes('economiz') || lower.includes('cortar') || lower.includes('juntar') || lower.includes('poup')) {
+          reply = `💡 <strong>3 Hacks de Economia que Funcionam para TDAH:</strong><br><br>
+          1. <strong>Desinstale apps de delivery nos dias de semana:</strong> A fricção de ter que baixar de novo evita pedidos no tédio.<br>
+          2. <strong>Cancele assinaturas esquecidas:</strong> Dê uma olhada no extrato do cartão. Streamings e serviços que você não usa há 1 mês podem economizar mais de R$ 100/mês.<br>
+          3. <strong>Caixinha da Paz:</strong> Sempre que sobrar R$ 10 ou R$ 20, jogue na Caixinha da Paz antes que vire lanche!`;
+        }
+
+        // 10. RESPOSTA INTELIGENTE CONSULTIVA PERSONALIZADA
+        else {
+          reply = `🤖 <strong>Consultoria Miix IA:</strong><br><br>
+          Entendi sua dúvida sobre: <em>"${text}"</em>.<br><br>
+          Com base na sua situação atual (você tem <strong>${formatCurrency(safe)}</strong> livres e <strong>${formatCurrency(pendingBills)}</strong> em contas previstas):<br><br>
+          • <strong>Dica Prática:</strong> Mantenha seus lançamentos diários atualizados tocando em <strong>"Gastei Agora"</strong>.<br>
+          • <strong>Próximo Passo:</strong> Se precisar simular um cálculo, perguntar sobre dívidas, cartões ou investimentos, só me mandar!`;
+        }
+
+        // Renderiza a resposta com estilo elegante
         chatContainer.innerHTML += `
-          <div class="flex gap-2">
-            <div class="w-7 h-7 rounded-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold shadow">
+          <div class="flex gap-2.5 items-start">
+            <div class="w-7 h-7 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-slate-950 flex items-center justify-center shrink-0 text-xs font-black shadow-md shadow-emerald-500/20">
               <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             </div>
-            <div class="dark:bg-slate-800 bg-white p-3 rounded-2xl dark:text-slate-200 text-slate-800 border dark:border-slate-700 border-slate-200 shadow-sm max-w-[85%]">
+            <div class="dark:bg-[#0b1122] bg-white p-3.5 rounded-2xl rounded-tl-sm dark:text-slate-200 text-slate-800 border dark:border-slate-800 border-slate-200 shadow-lg max-w-[88%] text-xs leading-relaxed">
               ${reply}
             </div>
           </div>
         `;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-        lucide.createIcons();
-      }, 500);
+        if (window.lucide) lucide.createIcons();
+      }, 350);
     }
 
     // MODAL GASTEI AGORA
