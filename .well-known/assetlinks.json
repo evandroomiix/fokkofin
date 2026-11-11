@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "dev.pages.fokkofin.twa",
+        "sha256_cert_fingerprints": ["CF:30:4B:3E:71:75:2A:A8:B9:BC:4A:66:0F:5D:40:E6:EE:60:3E:E3:08:46:A0:C7:C4:AB:E7:BF:BE:1F:D1:E0"]
+      }
+    }]
