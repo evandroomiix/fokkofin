@@ -42,17 +42,7 @@ jobs:
       - name: Build Android APK
         run: |
           cd android
-          mkdir -p ../download
-          ./gradlew assembleDebug --no-daemon --stacktrace > ../download/error.txt 2>&1 || {
-            echo "GRADLE_FAILED"
-            cd ..
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add download/error.txt
-            git commit -m "ci: capture gradle build log [skip ci]" || true
-            git push origin main || true
-            exit 1
-          }
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -67,5 +57,4 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add download/fokkofin.apk
-          git commit -m "chore(apk): update native Android APK binary v2.0.0 [skip ci]" || true
-          git push origin main || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(apk): update native Android APK binary v2.0.0 [skip ci]" && git push)
