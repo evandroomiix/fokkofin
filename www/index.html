@@ -2946,19 +2946,25 @@
 
     function showAuthScreen() {
       const authScreen = document.getElementById('authScreen');
-      if (authScreen) authScreen.classList.remove('hidden');
+      if (authScreen) {
+        authScreen.classList.remove('hidden');
+        authScreen.style.display = 'flex';
+      }
       const badge = document.getElementById('userProfileBadge');
       if (badge) badge.classList.add('hidden');
     }
 
     function hideAuthScreen() {
       const authScreen = document.getElementById('authScreen');
-      if (authScreen) authScreen.classList.add('hidden');
+      if (authScreen) {
+        authScreen.classList.add('hidden');
+        authScreen.style.display = 'none';
+      }
       const badge = document.getElementById('userProfileBadge');
       const emailSpan = document.getElementById('userEmailSpan');
       if (badge && currentUser) {
         badge.classList.remove('hidden');
-        emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+        emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Logado');
       }
       if (window.lucide) lucide.createIcons();
     }
@@ -3196,7 +3202,7 @@
             hideAuthScreen();
             const emailSpan = document.getElementById('userEmailSpan');
             if (emailSpan && currentUser) {
-              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Logado');
             }
             loadCloudData();
             if (window.location.hash.includes('access_token')) {
@@ -3227,12 +3233,46 @@
 
         // 2. Trata retorno com token no Hash (#access_token)
         if (window.location.hash.includes('access_token')) {
-          showAuthAlert('Autenticando Conta Google...', 'info');
-          // Dá 300ms para o SDK extrair a sessão da URL
-          await new Promise(r => setTimeout(r, 300));
+          showAuthAlert('Entrando com sua Conta Google... Quase pronto!', 'info');
+          const hashStr = window.location.hash.substring(1);
+          const hashParams = new URLSearchParams(hashStr);
+          const access_token = hashParams.get('access_token');
+          const refresh_token = hashParams.get('refresh_token');
+
+          if (access_token) {
+            try {
+              if (refresh_token) {
+                const { data } = await sbClient.auth.setSession({ access_token, refresh_token });
+                if (data && data.session && data.session.user) {
+                  currentUser = data.session.user;
+                  localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+                  hideAuthScreen();
+                  loadCloudData();
+                  window.history.replaceState({}, document.title, window.location.pathname);
+                  return;
+                }
+              }
+              // Decodificação direta do JWT do Google/Supabase
+              const payload = JSON.parse(atob(access_token.split('.')[1]));
+              if (payload && (payload.sub || payload.email)) {
+                currentUser = {
+                  id: payload.sub,
+                  email: payload.email,
+                  name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Google User')
+                };
+                localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+                hideAuthScreen();
+                loadCloudData();
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+              }
+            } catch (err) {
+              console.warn('Erro ao processar tokens do hash:', err);
+            }
+          }
         }
 
-        // 3. Tenta obter a sessão ativa
+        // 3. Tenta obter a sessão ativa existente
         try {
           const { data: { session } } = await sbClient.auth.getSession();
           if (session && session.user) {
@@ -3240,7 +3280,7 @@
             localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
             const emailSpan = document.getElementById('userEmailSpan');
-            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
+            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
             loadCloudData();
             return;
           }
@@ -3256,7 +3296,7 @@
           currentUser = JSON.parse(savedSession);
           hideAuthScreen();
           const emailSpan = document.getElementById('userEmailSpan');
-          if (emailSpan && currentUser) emailSpan.innerText = currentUser.name || currentUser.email.split('@')[0];
+          if (emailSpan && currentUser) emailSpan.innerText = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Logado');
           loadCloudData();
           return;
         } catch (e) {}
