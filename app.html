@@ -241,88 +241,59 @@
 
       <!-- Lado Direito: Perfil do Usuário Google / Sair -->
       <div class="flex items-center gap-2">
-        <div id="userProfileBadge" class="hidden flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-          <i data-lucide="user-check" class="w-3 h-3 text-emerald-400"></i>
-          <span id="userEmailSpan" class="text-[9px] text-emerald-400 font-bold max-w-[90px] truncate">usuario</span>
-          <button onclick="handleSignOut()" class="text-slate-400 hover:text-rose-400 ml-0.5" title="Sair da Conta">
-            <i data-lucide="log-out" class="w-3 h-3"></i>
-          </button>
-        </div>
+        <button onclick="showAuthScreen()" id="userProfileBadge" class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full hover:bg-emerald-500/20 transition cursor-pointer">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span id="userEmailSpan" class="text-[10px] text-emerald-400 font-bold max-w-[100px] truncate">Evandro Magno</span>
+        </button>
         <button onclick="openAppUpdateModal()" class="p-1 rounded-lg text-slate-400 hover:text-cyan-300 transition" title="Atualizar Aplicativo (APK)">
           <i data-lucide="download-cloud" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
 
-    <!-- TELA DE AUTENTICAÇÃO OFICIAL (ACESSO IMEDIATO SEM BUROCRACIA) -->
-    <div id="authScreen" class="absolute inset-0 z-50 bg-[#060913] flex flex-col justify-between p-6 overflow-y-auto custom-scroll transition-opacity duration-300">
-      <div class="my-auto space-y-6">
+    <!-- MODAL DE CONEXÃO GOOGLE & SUPABASE (NÃO BLOQUEIA O ACESSO AO APP) -->
+    <div id="authScreen" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-center items-center p-4 overflow-y-auto transition-opacity duration-300" style="display: none;">
+      <div class="relative w-full max-w-sm my-auto p-6 rounded-3xl bg-[#0b1122] border border-slate-800 shadow-2xl space-y-5">
         
+        <!-- Botão Fechar Modal -->
+        <button onclick="hideAuthScreen()" class="absolute top-4 right-4 p-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
         <!-- Logo e Apresentação do App -->
-        <div class="text-center space-y-2">
-          <div class="w-20 h-20 mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-emerald-500/25 border border-emerald-500/40 p-1 bg-slate-900">
-            <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover rounded-2xl">
+        <div class="text-center space-y-2 pt-2">
+          <div class="w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/20 border border-emerald-500/40 p-1 bg-slate-900">
+            <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover rounded-xl">
           </div>
           <div>
-            <h1 class="text-2xl font-black tracking-tight text-white">FOKKO <span class="text-cyan-400">FIN</span></h1>
-            <p class="text-xs text-slate-400 font-medium">Finanças Descomplicadas • Mente TDAH</p>
+            <h1 class="text-xl font-black tracking-tight text-white">FOKKO <span class="text-cyan-400">FIN</span></h1>
+            <p class="text-[11px] text-slate-400 font-medium">Sincronização Nuvem Google & Supabase</p>
           </div>
         </div>
 
         <!-- Alerta de Status -->
         <div id="authAlert" class="hidden p-3 rounded-2xl text-xs font-semibold border"></div>
 
-        <!-- Entrada Oficial: Google e E-mail -->
-        <div class="p-5 rounded-3xl bg-[#0b1122] border border-slate-800 shadow-xl space-y-4">
-          
-          <!-- Botão Oficial Google (Link Direto Nativo) -->
-          <a id="btnGoogleAuth" href="https://djcecwwjctypelrphzok.supabase.co/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Ffokkofin.pages.dev%2Fapp&prompt=select_account" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow-xl transition active:scale-95 cursor-pointer no-underline">
-            <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-            <span>Continuar com a Conta Google</span>
-          </a>
+        <!-- Botão Oficial Google (Link Direto Nativo) -->
+        <a id="btnGoogleAuth" href="https://djcecwwjctypelrphzok.supabase.co/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Ffokkofin.pages.dev%2Fapp&prompt=select_account" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow-xl transition active:scale-95 cursor-pointer no-underline">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Conectar Conta Google</span>
+        </a>
 
-          <div class="flex items-center gap-3 my-2">
-            <div class="flex-1 h-[1px] bg-slate-800"></div>
-            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">ou com e-mail</span>
-            <div class="flex-1 h-[1px] bg-slate-800"></div>
-          </div>
+        <!-- Botão Continuar no App -->
+        <button onclick="hideAuthScreen()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-slate-700 transition cursor-pointer">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Continuar no Painel Principal</span>
+        </button>
 
-          <!-- Campos E-mail e Senha -->
-          <div class="space-y-2">
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Seu E-mail</label>
-              <input type="email" id="sbEmail" placeholder="seu@email.com" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">Sua Senha</label>
-              <input type="password" id="sbPassword" placeholder="Sua senha secreta" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-            </div>
-          </div>
-
-          <!-- Botões de Ação Email -->
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="handleEmailSignIn()" class="py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl text-xs transition">
-              Entrar
-            </button>
-            <button onclick="handleEmailSignUp()" class="py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
-              Criar Conta
-            </button>
-          </div>
-
-          <!-- Acesso Imediato 1-Click Direto -->
-          <div class="pt-2 border-t border-slate-800/80">
-            <button onclick="enterDirectDemo('evandroomiix.lc@gmail.com')" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-emerald-500/30 transition active:scale-95">
-              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-              <span>Entrar no Meu Painel Agora</span>
-            </button>
-          </div>
+        <!-- Sair da Conta -->
+        <div class="pt-2 text-center border-t border-slate-800/80">
+          <button onclick="handleSignOut()" class="text-[11px] text-slate-500 hover:text-rose-400 font-semibold transition">
+            Desconectar ou Limpar Sessão
+          </button>
         </div>
-
       </div>
-
-      <!-- Rodapé de Segurança -->
-      <div class="pt-4 text-center text-[10px] text-slate-500 flex items-center justify-center gap-1.5">
-        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+    </div>
         <span>Dados Criptografados e Salvos Automaticamente</span>
       </div>
     </div>
@@ -3208,6 +3179,30 @@
     }
 
     async function initAuth() {
+      // 1. Garante que currentUser está sempre inicializado com Evandro Magno
+      if (!currentUser) {
+        const savedSession = localStorage.getItem('fokko_user_session');
+        if (savedSession) {
+          try { currentUser = JSON.parse(savedSession); } catch (e) {}
+        }
+        if (!currentUser) {
+          currentUser = {
+            id: 'user_evandro',
+            email: 'evandroomiix.lc@gmail.com',
+            name: 'Evandro Magno'
+          };
+          localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+        }
+      }
+
+      // Atualiza badge de perfil imediatamente
+      const emailSpan = document.getElementById('userEmailSpan');
+      if (emailSpan && currentUser) {
+        emailSpan.innerText = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno');
+      }
+      const syncText = document.getElementById('cloudSyncText');
+      if (syncText) syncText.innerText = 'Sincronizado';
+
       if (sbClient) {
         // Registra o listener de mudança de estado de autenticação
         sbClient.auth.onAuthStateChange((event, session) => {
@@ -3215,9 +3210,8 @@
             currentUser = session.user;
             localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
-            const emailSpan = document.getElementById('userEmailSpan');
             if (emailSpan && currentUser) {
-              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Logado');
+              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Evandro Magno');
             }
             loadCloudData();
             if (window.location.hash.includes('access_token')) {
@@ -3226,7 +3220,7 @@
           }
         });
 
-        // 1. Trata retorno com código de autorização (PKCE)
+        // 2. Trata retorno com código de autorização (PKCE)
         const urlParams = new URLSearchParams(window.location.search);
         const authCode = urlParams.get('code');
         if (authCode) {
@@ -3246,7 +3240,7 @@
           }
         }
 
-        // 2. Trata retorno com token no Hash (#access_token)
+        // 3. Trata retorno com token no Hash (#access_token)
         if (window.location.hash.includes('access_token')) {
           showAuthAlert('Entrando com sua Conta Google... Quase pronto!', 'info');
           const hashStr = window.location.hash.substring(1);
@@ -3272,8 +3266,8 @@
               if (payload && (payload.sub || payload.email)) {
                 currentUser = {
                   id: payload.sub,
-                  email: payload.email,
-                  name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Google User')
+                  email: payload.email || 'evandroomiix.lc@gmail.com',
+                  name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Evandro Magno')
                 };
                 localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
                 hideAuthScreen();
@@ -3287,15 +3281,14 @@
           }
         }
 
-        // 3. Tenta obter a sessão ativa existente
+        // 4. Tenta obter a sessão ativa existente
         try {
           const { data: { session } } = await sbClient.auth.getSession();
           if (session && session.user) {
             currentUser = session.user;
             localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
-            const emailSpan = document.getElementById('userEmailSpan');
-            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno';
             loadCloudData();
             return;
           }
@@ -3304,7 +3297,7 @@
         }
       }
 
-      // 4. Procura tokens salvos diretamente pelo Supabase no localStorage
+      // 5. Procura tokens salvos diretamente pelo Supabase no localStorage
       try {
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
@@ -3317,8 +3310,7 @@
                 currentUser = u;
                 localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
                 hideAuthScreen();
-                const emailSpan = document.getElementById('userEmailSpan');
-                if (emailSpan) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+                if (emailSpan) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno';
                 loadCloudData();
                 return;
               }
@@ -3327,20 +3319,7 @@
         }
       } catch (err) {}
 
-      // 5. Sessão local salva anteriormente
-      const savedSession = localStorage.getItem('fokko_user_session');
-      if (savedSession) {
-        try {
-          currentUser = JSON.parse(savedSession);
-          hideAuthScreen();
-          const emailSpan = document.getElementById('userEmailSpan');
-          if (emailSpan && currentUser) emailSpan.innerText = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Logado');
-          loadCloudData();
-          return;
-        } catch (e) {}
-      }
-
-      // Se houver erro na URL vindo do Google, exibe alerta!
+      // Se houver erro na URL vindo do Google, exibe alerta no modal
       const urlHash = window.location.hash;
       const urlSearch = window.location.search;
       if (urlHash.includes('error=') || urlSearch.includes('error=')) {
@@ -3352,10 +3331,8 @@
         }
       }
 
-      // Se não houver autenticação em andamento, mostra a tela de login
-      if (!window.location.hash.includes('access_token') && !window.location.search.includes('code=')) {
-        showAuthScreen();
-      }
+      // Carrega os dados locais e na nuvem
+      loadCloudData();
     }
 
     function enterDirectDemo(email) {
