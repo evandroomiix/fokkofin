@@ -594,8 +594,8 @@
             <button onclick="triggerNativeInstall()" class="py-2.5 px-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95">
               <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Instalar no Celular
             </button>
-            <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
-              <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i> Baixar APK (2.6M)
+            <a href="download/fokkofin-v2.0.0.apk" download="fokkofin-v2.0.0.apk" onclick="trackApkDownload()" class="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
+              <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i> Baixar APK v2.0.0
             </a>
           </div>
 
@@ -1026,25 +1026,25 @@
         </div>
         <div class="flex items-center justify-between">
           <span class="text-slate-400 text-[11px]">Pacote Android:</span>
-          <span class="font-bold dark:text-slate-200 text-slate-700">fokkofin.apk (2.6 MB)</span>
+          <span class="font-bold dark:text-slate-200 text-slate-700">fokkofin-v2.0.0.apk (5.5 MB)</span>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-slate-400 text-[11px]">Status do Sistema:</span>
-          <span class="font-bold text-cyan-300">Atualizado e Homologado</span>
+          <span class="font-bold text-cyan-300">Compilado e Homologado</span>
         </div>
       </div>
 
       <!-- Ações do Modal -->
       <div class="space-y-2 pt-1">
-        <!-- Botão Instalar App Nativo (WebAPK) -->
-        <button id="btnInstallNativeApp" onclick="triggerNativeInstall()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i> Instalar Aplicativo no Celular
-        </button>
-
-        <!-- Botão Baixar APK Físico Direto -->
-        <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2">
-          <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i> Baixar Arquivo APK Físico
+        <!-- Botão Baixar APK Físico Versionado -->
+        <a href="download/fokkofin-v2.0.0.apk" download="fokkofin-v2.0.0.apk" onclick="trackApkDownload()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+          <i data-lucide="package" class="w-4 h-4"></i> Baixar APK Físico v2.0.0 (5.5 MB)
         </a>
+
+        <!-- Botão Instalar App Nativo (WebAPK) -->
+        <button id="btnInstallNativeApp" onclick="triggerNativeInstall()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+          <i data-lucide="smartphone" class="w-4 h-4 text-cyan-400"></i> Instalar via Atalho do Celular
+        </button>
 
         <!-- Botão Forçar Sincronização Google -->
         <button onclick="forceCloudSync()" class="w-full py-2 text-slate-400 hover:text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1 transition">

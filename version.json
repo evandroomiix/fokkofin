@@ -2,11 +2,12 @@
   "version": "2.0.0",
   "name": "FOKKO FIN",
   "releaseDate": "2026-11-15",
-  "apkUrl": "download/fokkofin.apk",
+  "apkUrl": "download/fokkofin-v2.0.0.apk",
+  "apkFallbackUrl": "download/fokkofin.apk",
   "changelog": [
+    "Compilação física nativa com APK versionado v2.0.0",
     "Sincronização automática em nuvem vinculada à Conta Google",
-    "Instalador e atualizador de APK embutido direto no app",
-    "Experiência nativa em tela cheia sem barra de navegador",
+    "Acesso direto e imediato ao painel sem bloqueio de tela de login",
     "Abas Inicial, Saldo e Previsto com detalhamento inteligente",
     "Linha do tempo de vencimentos e alertas automáticos"
   ]
