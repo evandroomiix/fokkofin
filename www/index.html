@@ -1,0 +1,3269 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>FOKKO FIN • Organização Financeira para TDAH</title>
+  <link rel="icon" type="image/jpeg" href="fokko_icon.jpg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#060913">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="FOKKO FIN">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    // Desregistra Service Workers antigos e limpa caches para carregar sempre a versão mais nova
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var i = 0; i < regs.length; i++) {
+          regs[i].unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var i = 0; i < names.length; i++) {
+          caches.delete(names[i]);
+        }
+      });
+    }
+  </script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Supabase Cloud JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html.dark body {
+      background-color: #060913;
+      color: #f1f5f9;
+    }
+    html.dark .phone-wrapper {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 0 12px #1e293b, 0 0 0 14px #334155;
+      background-color: #0f172a;
+    }
+
+    html:not(.dark) body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    html:not(.dark) .phone-wrapper {
+      box-shadow: 0 25px 50px -12px rgba(100, 116, 139, 0.3), 0 0 0 12px #cbd5e1, 0 0 0 14px #94a3b8;
+      background-color: #ffffff;
+    }
+
+    .phone-wrapper {
+      max-width: 440px;
+      height: 920px;
+      border-radius: 50px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s ease;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 0 !important;
+        margin: 0 !important;
+        overscroll-behavior-y: none !important;
+        -webkit-tap-highlight-color: transparent;
+      }
+      header.w-full.max-w-4xl {
+        display: none !important;
+      }
+      .phone-wrapper {
+        max-width: 100% !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .simulated-notch {
+        display: none !important;
+      }
+    }
+
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .pulse-urgent {
+      animation: pulse-border 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.4); }
+      50% { border-color: rgba(239, 68, 68, 0.9); box-shadow: 0 0 12px rgba(239, 68, 68, 0.35); }
+    }
+
+    /* Cartões */
+    .credit-card-nubank { background: linear-gradient(135deg, #820ad1 0%, #4a037b 100%); }
+    .credit-card-itau { background: linear-gradient(135deg, #ec7000 0%, #9e3d00 100%); }
+    .credit-card-inter { background: linear-gradient(135deg, #ff7a00 0%, #1e1e24 100%); }
+    .credit-card-mercadopago { background: linear-gradient(135deg, #009ee3 0%, #005680 100%); }
+    .credit-card-black { background: linear-gradient(135deg, #27272a 0%, #09090b 100%); border: 1px solid #3f3f46; }
+    .credit-card-santander { background: linear-gradient(135deg, #cc0000 0%, #700000 100%); }
+
+    /* SVG Donut Chart */
+    .donut-segment {
+      transition: stroke-dasharray 0.8s ease, stroke-dashoffset 0.8s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
+
+  <!-- Header Superior de Controle -->
+  <header class="w-full max-w-4xl flex items-center justify-between py-2 px-4 mb-2 text-xs sm:text-sm">
+    <div class="flex items-center gap-2.5">
+      <!-- Ícone Oficial FOKKO FIN -->
+      <div class="relative w-9 h-9 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/25 border border-cyan-400/40 shrink-0">
+        <img src="fokko_icon.jpg" alt="Ícone FOKKO FIN" class="w-full h-full object-cover">
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-black text-sm tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+          <span class="text-[9px] text-slate-400 font-semibold">Organização Financeira • Miix IA</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <!-- Botão Tutorial Rápido -->
+      <button onclick="openTutorialModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-amber-400 shadow-sm hover:opacity-90 transition" title="Tutorial Rápido TDAH">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Tutorial</span>
+      </button>
+
+      <!-- Botão Site Oficial -->
+      <a href="index.html" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-slate-300 hover:text-white shadow-sm transition" title="Ver Site Oficial & Download">
+        <i data-lucide="globe" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span class="hidden sm:inline">Site Oficial</span>
+      </a>
+
+      <!-- Botão Abrir no Celular (QR Code) -->
+      <button onclick="openPhoneShareModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 bg-white border-slate-300 text-xs font-bold text-emerald-400 shadow-sm hover:opacity-90 transition" title="Abrir no Celular">
+        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+        <span>No Celular</span>
+      </button>
+
+      <!-- Botão Olho de Privacidade (Mobills / Organizze) -->
+      <button onclick="togglePrivacyMode()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm hover:opacity-80 transition" title="Ocultar/Mostrar Valores">
+        <i id="privacyIcon" data-lucide="eye" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Toggle Tema Escuro / Claro -->
+      <button onclick="toggleTheme()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm text-xs font-semibold hover:opacity-90 transition">
+        <i id="themeIcon" data-lucide="moon" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span id="themeText">Escuro</span>
+      </button>
+
+      <!-- Toggle Moldura Celular / Tela Cheia -->
+      <button id="toggleFrameBtn" onclick="togglePhoneFrame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 bg-white border-slate-300 text-slate-700 shadow-sm text-xs font-semibold hover:opacity-90 transition">
+        <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+        <span id="frameToggleText">Expandir</span>
+      </button>
+
+      <!-- Restaurar Dados Padrão -->
+      <button onclick="resetDemoData()" class="p-1.5 rounded-xl border dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 bg-white border-slate-300 text-slate-500 hover:opacity-90 transition" title="Redefinir Dados">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTAINER DO APLICATIVO -->
+  <main id="appContainer" class="phone-wrapper w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-200">
+    
+    <!-- Barra Superior do Aplicativo (Adaptação Inteligente: Desktop e Celular Nativo) -->
+    <div class="relative z-30 pt-2.5 px-4 pb-2 dark:bg-slate-900/95 bg-white/95 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
+      
+      <!-- Lado Esquerdo: Identidade do App e Status Cloud -->
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg overflow-hidden border border-cyan-500/40 shrink-0">
+          <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <div class="flex items-center gap-1">
+            <span class="font-black text-xs tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+            <button onclick="openAppUpdateModal()" class="text-[9px] px-1.5 py-0.2 bg-cyan-500/10 text-cyan-300 font-extrabold rounded-md border border-cyan-500/30 hover:bg-cyan-500/20 transition" title="Verificar Atualizações do App">v2.0.0</button>
+          </div>
+          <!-- Indicador Dinâmico da Conta Google / Supabase -->
+          <div id="cloudSyncIndicator" class="flex items-center gap-1 text-[8.5px] text-slate-400 font-semibold">
+            <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span id="cloudSyncText">Conectando...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notch Simulado (Exibido apenas na moldura de Desktop) -->
+      <div class="simulated-notch w-20 h-3.5 bg-black rounded-full flex items-center justify-center">
+        <div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+      </div>
+
+      <!-- Lado Direito: Perfil do Usuário Google / Sair -->
+      <div class="flex items-center gap-2">
+        <div id="userProfileBadge" class="hidden flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+          <i data-lucide="user-check" class="w-3 h-3 text-emerald-400"></i>
+          <span id="userEmailSpan" class="text-[9px] text-emerald-400 font-bold max-w-[90px] truncate">usuario</span>
+          <button onclick="handleSignOut()" class="text-slate-400 hover:text-rose-400 ml-0.5" title="Sair da Conta">
+            <i data-lucide="log-out" class="w-3 h-3"></i>
+          </button>
+        </div>
+        <button onclick="openAppUpdateModal()" class="p-1 rounded-lg text-slate-400 hover:text-cyan-300 transition" title="Atualizar Aplicativo (APK)">
+          <i data-lucide="download-cloud" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- TELA DE AUTENTICAÇÃO OFICIAL (ACESSO IMEDIATO SEM BUROCRACIA) -->
+    <div id="authScreen" class="absolute inset-0 z-50 bg-[#060913] flex flex-col justify-between p-6 overflow-y-auto custom-scroll transition-opacity duration-300">
+      <div class="my-auto space-y-6">
+        
+        <!-- Logo e Apresentação do App -->
+        <div class="text-center space-y-2">
+          <div class="w-20 h-20 mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-emerald-500/25 border border-emerald-500/40 p-1 bg-slate-900">
+            <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover rounded-2xl">
+          </div>
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-white">FOKKO <span class="text-cyan-400">FIN</span></h1>
+            <p class="text-xs text-slate-400 font-medium">Finanças Descomplicadas • Mente TDAH</p>
+          </div>
+        </div>
+
+        <!-- Alerta de Status -->
+        <div id="authAlert" class="hidden p-3 rounded-2xl text-xs font-semibold border"></div>
+
+        <!-- Entrada Oficial: Google e E-mail -->
+        <div class="p-5 rounded-3xl bg-[#0b1122] border border-slate-800 shadow-xl space-y-4">
+          
+          <!-- Botão Oficial Google -->
+          <button id="btnGoogleAuth" onclick="signInWithGoogle()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow-xl transition active:scale-95">
+            <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+            <span>Continuar com a Conta Google</span>
+          </button>
+
+          <div class="flex items-center gap-3 my-2">
+            <div class="flex-1 h-[1px] bg-slate-800"></div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">ou com e-mail</span>
+            <div class="flex-1 h-[1px] bg-slate-800"></div>
+          </div>
+
+          <!-- Campos E-mail e Senha -->
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Seu E-mail</label>
+              <input type="email" id="sbEmail" placeholder="seu@email.com" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Sua Senha</label>
+              <input type="password" id="sbPassword" placeholder="Sua senha secreta" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- Botões de Ação Email -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="handleEmailSignIn()" class="py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl text-xs transition">
+              Entrar
+            </button>
+            <button onclick="handleEmailSignUp()" class="py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+              Criar Conta
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Rodapé de Segurança -->
+      <div class="pt-4 text-center text-[10px] text-slate-500 flex items-center justify-center gap-1.5">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span>Dados Criptografados e Salvos Automaticamente</span>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO ROLÁVEL -->
+    <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4 pb-28">
+
+      <!-- ==================== ABA 1: DASHBOARD / INÍCIO ==================== -->
+      <div id="view-dashboard" class="space-y-4">
+        
+        <!-- Navegador de Mês (Inspirado em Organizze & Minhas Finanças) -->
+        <div class="flex items-center justify-between dark:bg-slate-800/80 bg-white p-2 px-3 rounded-2xl border dark:border-slate-700/80 border-slate-200 shadow-sm">
+          <button onclick="changeMonth(-1)" class="p-1 rounded-lg hover:bg-slate-700/30 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <div class="text-center">
+            <span class="text-xs font-black dark:text-white text-slate-900 uppercase tracking-wider" id="currentMonthName">Novembro 2026</span>
+          </div>
+          <button onclick="changeMonth(1)" class="p-1 rounded-lg hover:bg-slate-700/30 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Logo compacta no topo -->
+        <div class="flex items-center justify-center gap-2 py-1">
+          <div class="w-7 h-7 rounded-xl overflow-hidden border border-cyan-500/30 shadow-sm">
+            <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+          </div>
+          <span class="font-black text-sm tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+        </div>
+
+        <!-- NAVEGAÇÃO: INICIAL / SALDO / PREVISTO -->
+        <div class="grid grid-cols-3 gap-1 dark:bg-slate-800/60 bg-slate-200/70 p-1 rounded-2xl border dark:border-slate-700/60 border-slate-300">
+          <button onclick="switchFinTab('inicial')" id="fin-tab-inicial" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Inicial</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabInicialValue">R$ 0,00</strong>
+          </button>
+          <button onclick="switchFinTab('saldo')" id="fin-tab-saldo" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Saldo</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabSaldoValue">R$ 0,00</strong>
+          </button>
+          <button onclick="switchFinTab('previsto')" id="fin-tab-previsto" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Previsto</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabPrevistoValue">R$ 0,00</strong>
+          </button>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba INICIAL (detalhamento do saldo) -->
+        <div id="finPanel-inicial" class="fin-panel p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-400"></i> Detalhamento do Saldo Inicial
+          </h3>
+          <div id="inicialDetailContainer" class="space-y-1.5 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba SALDO (extrato do período) -->
+        <div id="finPanel-saldo" class="fin-panel hidden p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="receipt" class="w-3.5 h-3.5 text-cyan-400"></i> Extrato do Período
+          </h3>
+          <div id="saldoExtratoContainer" class="space-y-1.5 text-xs max-h-48 overflow-y-auto custom-scroll">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba PREVISTO (detalhamento do saldo previsto) -->
+        <div id="finPanel-previsto" class="fin-panel hidden p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-indigo-400"></i> Detalhamento do Saldo Previsto
+          </h3>
+          <div id="previstoDetailContainer" class="space-y-1.5 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- LINHA DO TEMPO: Datas com débitos a pagar -->
+        <div class="p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5 mb-2">
+            <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-amber-400"></i> Linha do Tempo de Débitos
+          </h3>
+          <div id="debitTimelineContainer" class="flex gap-2 overflow-x-auto pb-2 custom-scroll">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- ALERTA DE DESPESAS PENDENTES -->
+        <div id="pendingExpensesAlert" class="p-4 rounded-2xl bg-gradient-to-r from-rose-950/40 via-slate-800/80 to-slate-800/40 border border-rose-500/30 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-bold dark:text-slate-100 text-slate-800" id="pendingExpensesText">Você tem 0 despesas pendentes no total de R$ 0,00</p>
+            </div>
+          </div>
+          <button onclick="setFilter('all'); switchView('dashboard');" class="w-full mt-3 py-2.5 bg-rose-500 hover:bg-rose-400 active:scale-95 text-white font-black rounded-xl text-xs transition shadow-lg shadow-rose-500/20 flex items-center justify-center gap-1.5">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i> Verificar
+          </button>
+        </div>
+
+        <!-- CARD PRINCIPAL: SALDO REALMENTE LIVRE (SAFE-TO-SPEND) COM OLHINHO DE PRIVACIDADE -->
+        <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 p-4 rounded-3xl border border-indigo-500/40 shadow-xl relative overflow-hidden text-white">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] uppercase tracking-wider text-indigo-300 font-bold flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Saldo Realmente Livre
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="togglePrivacyMode()" class="text-slate-400 hover:text-white text-xs">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              </button>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">Sem Culpa</span>
+            </div>
+          </div>
+
+          <div class="flex items-baseline gap-2 mb-2">
+            <span class="text-3xl font-black text-white" id="safeToSpendDisplay">R$ 0,00</span>
+            <span class="text-xs text-slate-300 font-medium">p/ gastar</span>
+          </div>
+
+          <!-- Barra Visual de Conforto -->
+          <div class="w-full bg-slate-950/80 rounded-full h-2 mb-3 overflow-hidden border border-slate-800">
+            <div id="safeProgressBar" class="bg-gradient-to-r from-emerald-400 to-indigo-400 h-full rounded-full transition-all duration-700" style="width: 50%;"></div>
+          </div>
+
+          <!-- 4 Métricas Chave (Mobills + Organizze + Minhas Finanças) -->
+          <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-800 text-[10px]">
+            <div>
+              <span class="text-emerald-400 flex items-center gap-0.5 font-bold"><i data-lucide="arrow-down-left" class="w-3 h-3"></i> Receitas</span>
+              <strong id="totalIncomeDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="text-rose-400 flex items-center gap-0.5 font-bold"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> Contas</span>
+              <strong id="totalBillsDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="text-purple-300 flex items-center gap-0.5 font-bold"><i data-lucide="credit-card" class="w-3 h-3"></i> Faturas</span>
+              <strong id="totalCardInvoicesDisplay" class="text-[11px] font-black text-slate-100 block mt-0.5">R$ 0,00</strong>
+            </div>
+            <div class="text-right">
+              <span class="text-amber-300 flex items-center justify-end gap-0.5 font-bold"><i data-lucide="piggy-bank" class="w-3 h-3"></i> Guardado</span>
+              <strong id="totalSavingsDisplay" class="text-[11px] font-black text-amber-300 block mt-0.5">R$ 0,00</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- OS TRÊS BOTÕES DE AÇÃO RÁPIDA (ZERO BUROCRACIA) -->
+        <div class="grid grid-cols-3 gap-2">
+          <!-- 1: GASTEI AGORA -->
+          <button onclick="openFastSpendModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-emerald-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1">
+              <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">Gastei Agora</span>
+            <span class="text-[9px] text-slate-400">Sem vencimento</span>
+          </button>
+
+          <!-- 2: RECEBI DINHEIRO -->
+          <button onclick="openAddIncomeModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-blue-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">+ Recebi</span>
+            <span class="text-[9px] text-slate-400">Salário / Pix</span>
+          </button>
+
+          <!-- 3: CONTA A PAGAR -->
+          <button onclick="openAddBillModal()" class="p-2.5 dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 hover:border-indigo-500 rounded-2xl text-center transition group active:scale-95 shadow-sm flex flex-col items-center">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-1">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+            </div>
+            <span class="text-[11px] font-bold dark:text-white text-slate-800">Conta Fixa</span>
+            <span class="text-[9px] text-slate-400">Tem vencimento</span>
+          </button>
+        </div>
+
+        <!-- CONCILIAÇÃO AUTOMÁTICA EM 1 CLIQUE (INSPIRADO NO ORGANIZZE PRINT 10) -->
+        <div id="smartConciliationBanner" class="p-3 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between gap-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-200 block">Conciliação Automática</span>
+              <span class="text-[10px] text-slate-400">Seus pagamentos são sincronizados sem trabalho manual.</span>
+            </div>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/30 shrink-0">Em dia ✓</span>
+        </div>
+
+        <!-- RECURSO MÁGICO: LEITOR DE NOTIFICAÇÕES (ORGANIZZE / MINHAS FINANÇAS) -->
+        <div class="dark:bg-slate-800/60 bg-white border dark:border-slate-700/70 border-slate-200 rounded-2xl p-3 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-400"></i> Leitor de Notificação Bancária
+            </span>
+            <span class="text-[10px] text-slate-400">Zero digitação</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mb-2">Comprou no cartão ou Pix? Cole a notificação do banco aqui:</p>
+          <div class="flex gap-2">
+            <input type="text" id="pasteNotificationInput" placeholder="Ex: Compra de R$ 45,90 aprovada em Supermercado no Nubank" class="flex-1 dark:bg-slate-900 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-2.5 py-1.5 text-xs dark:text-white text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-400">
+            <button onclick="parseAndSaveNotification()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow transition">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Lançar
+            </button>
+          </div>
+        </div>
+
+        <!-- DESTRAVADOR DE PARALISIA (BODY DOUBLING) -->
+        <div class="bg-gradient-to-r from-amber-500/15 via-slate-800/80 to-slate-800/40 border border-amber-500/30 rounded-2xl p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold dark:text-slate-100 text-slate-800">Travei pra pagar conta?</h3>
+              <p class="text-[10px] text-slate-400">Isola 1 conta e copia o Pix em 1 toque.</p>
+            </div>
+          </div>
+          <button onclick="startFocusPayFlow()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 transition shadow-md shadow-amber-500/20">
+            <span>Resolver 1</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- LISTA DE CONTAS COM VENCIMENTO (ORGANIZADO POR URGÊNCIA) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-indigo-400"></i> Contas a Vencer
+            </h2>
+            <span class="text-[11px] text-slate-400" id="pendingCountBadge">0 pendentes</span>
+          </div>
+
+          <!-- Filtro rápido temporal -->
+          <div class="grid grid-cols-3 gap-1.5 mb-2.5 dark:bg-slate-900 bg-slate-200/70 p-1 rounded-xl border dark:border-slate-800 border-slate-300 text-xs">
+            <button onclick="setFilter('urgent')" id="filter-urgent" class="filter-btn py-1 font-bold rounded-lg text-rose-300 bg-rose-500/20 border border-rose-500/40">Hoje / Urgente</button>
+            <button onclick="setFilter('week')" id="filter-week" class="filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200">Próximos 7d</button>
+            <button onclick="setFilter('all')" id="filter-all" class="filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200">Todas</button>
+          </div>
+
+          <!-- Lista de Itens -->
+          <div id="billsContainer" class="space-y-2"></div>
+        </div>
+
+        <!-- HISTÓRICO DE MOVIMENTAÇÕES (ENTRADAS E SAÍDAS) -->
+        <div class="pt-1">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="arrow-left-right" class="w-3.5 h-3.5 text-cyan-400"></i> Últimas Movimentações
+            </h2>
+            <div class="flex items-center gap-1.5 text-[10px]">
+              <span class="inline-flex items-center gap-1 text-emerald-400 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Entradas
+              </span>
+              <span class="inline-flex items-center gap-1 text-rose-400 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Saídas
+              </span>
+            </div>
+          </div>
+          <div id="expensesHistoryContainer" class="space-y-1.5"></div>
+        </div>
+
+        <!-- PAINEL OFICIAL: APLICATIVO FÍSICO & NUVEM GOOGLE (v2.0.0) -->
+        <div class="p-4 rounded-3xl bg-gradient-to-br from-[#090e1c] via-[#0b1226] to-[#070b16] border border-cyan-500/30 space-y-3 mt-4 shadow-xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-2xl overflow-hidden border border-cyan-400/40 shadow-lg shadow-cyan-500/20 shrink-0">
+                <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <span class="font-black text-white block text-xs tracking-tight">FOKKO <span class="text-cyan-400">FIN</span></span>
+                <span class="text-[9px] text-cyan-300 font-bold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block animate-pulse"></span>
+                  v2.0.0 Aplicativo Oficial
+                </span>
+              </div>
+            </div>
+            <button onclick="openAppUpdateModal()" class="px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[9px] text-cyan-300 font-black uppercase tracking-wider hover:bg-cyan-500/20 transition flex items-center gap-1">
+              <i data-lucide="download" class="w-3 h-3"></i> Atualizar APK
+            </button>
+          </div>
+
+          <!-- Status da Conta Google e Nuvem -->
+          <div class="p-2.5 rounded-2xl dark:bg-slate-900/80 bg-white/5 border dark:border-slate-800 border-slate-700/50 space-y-1.5 text-[10px]">
+            <div class="flex items-center justify-between text-slate-300">
+              <span class="flex items-center gap-1"><i data-lucide="cloud" class="w-3 h-3 text-cyan-400"></i> Sincronização Google:</span>
+              <span id="cloudSyncStatusFooter" class="font-bold text-emerald-400">Ativa & Conectada ✓</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+              <span>Última sincronização:</span>
+              <span id="lastSyncTimeFooter" class="font-mono text-slate-300">Em tempo real</span>
+            </div>
+          </div>
+
+          <!-- Botões Rápidos de Aplicativo -->
+          <div class="grid grid-cols-2 gap-2 pt-0.5">
+            <button onclick="triggerNativeInstall()" class="py-2.5 px-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Instalar no Celular
+            </button>
+            <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
+              <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i> Baixar APK (2.6M)
+            </a>
+          </div>
+
+          <div class="border-t border-slate-800/80 pt-2 text-[10px] text-slate-400 flex items-center justify-between">
+            <span>Desenvolvedor: <strong>Evandro Miix</strong></span>
+            <button onclick="forceCloudSync()" class="text-cyan-400 hover:underline flex items-center gap-0.5 font-semibold">
+              <i data-lucide="refresh-cw" class="w-2.5 h-2.5"></i> Sincronizar Agora
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== ABA 2: CARTÕES DE CRÉDITO (MOBILLS + ORGANIZZE) ==================== -->
+      <div id="view-cards" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Meus Cartões 💳</h2>
+            <p class="text-xs text-slate-400">Faturas abertas e fechadas sem sustos.</p>
+          </div>
+          <button onclick="openNewCardModal()" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Cartão
+          </button>
+        </div>
+
+        <!-- Resumo Geral de Cartões -->
+        <div class="dark:bg-slate-800/80 bg-white p-3.5 rounded-2xl border dark:border-slate-700/80 border-slate-200 flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Faturas em Aberto:</span>
+            <div class="text-xl font-black text-rose-400" id="totalCreditUsedDisplay">R$ 0,00</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Limite Disponível Total:</span>
+            <div class="text-xl font-black text-emerald-400" id="totalCreditAvailableDisplay">R$ 0,00</div>
+          </div>
+        </div>
+
+        <!-- Lista de Cartões Visuais -->
+        <div id="cardsListContainer" class="space-y-3.5"></div>
+      </div>
+
+      <!-- ==================== ABA 3: RELATÓRIOS & RAIO-X (GRÁFICO DE ROSCA SVG - MOBILLS/ORGANIZZE) ==================== -->
+      <div id="view-reports" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Raio-X de Gastos 📊</h2>
+            <p class="text-xs text-slate-400">Saiba para onde foi cada real, sem complicação.</p>
+          </div>
+          <button onclick="switchView('budgets')" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1">
+            Ver Tetos <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Gráfico de Rosca SVG Interativo -->
+        <div class="dark:bg-slate-800/80 bg-white p-4 rounded-3xl border dark:border-slate-700/80 border-slate-200 shadow-sm flex flex-col items-center">
+          <div class="relative w-48 h-48 my-1 flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="38" stroke="#1e293b" stroke-width="12" fill="none"/>
+              <!-- Segmentos Dinâmicos gerados via JS -->
+              <circle id="donutSeg1" class="donut-segment" cx="50" cy="50" r="38" stroke="#f59e0b" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg2" class="donut-segment" cx="50" cy="50" r="38" stroke="#a855f7" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg3" class="donut-segment" cx="50" cy="50" r="38" stroke="#10b981" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+              <circle id="donutSeg4" class="donut-segment" cx="50" cy="50" r="38" stroke="#3b82f6" stroke-width="12" stroke-dasharray="0 238" fill="none"/>
+            </svg>
+            <div class="absolute text-center">
+              <span class="text-[10px] text-slate-400 block uppercase font-bold">Total Gasto</span>
+              <span class="text-base font-black dark:text-white text-slate-900" id="donutTotalDisplay">R$ 0,00</span>
+            </div>
+          </div>
+
+          <!-- Legenda de Categorias -->
+          <div id="donutLegendContainer" class="w-full space-y-2 pt-3 border-t dark:border-slate-700/80 border-slate-200 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ABA 4: TETOS & CAIXINHA DA PAZ (ORGANIZZE PRINT 6 & 12) ==================== -->
+      <div id="view-budgets" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Tetos & Poupança 🎯</h2>
+            <p class="text-xs text-slate-400">Limites por categoria e sua caixinha protegida.</p>
+          </div>
+          <button onclick="openNewBudgetModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Teto
+          </button>
+        </div>
+
+        <!-- Caixinha da Paz (Reserva Separada para não gastar por impulso!) -->
+        <div class="bg-gradient-to-r from-emerald-950 via-slate-800 to-slate-900 border border-emerald-500/40 p-4 rounded-3xl shadow-lg relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+              <i data-lucide="piggy-bank" class="w-4 h-4"></i> Caixinha da Paz (Anti-Impulso)
+            </span>
+            <button onclick="depositSavingsPrompt()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-2.5 py-1 rounded-xl transition">
+              + Guardar
+            </button>
+          </div>
+          <div class="text-2xl font-black text-white my-1" id="savingsAmountCardDisplay">R$ 3.450,00</div>
+          <p class="text-[10px] text-slate-400">Esse dinheiro fica intocado e fora do seu saldo livre para evitar compras impulsivas.</p>
+        </div>
+
+        <!-- Total Disponível Geral nos Tetos (Organizze Print 12) -->
+        <div class="dark:bg-slate-800/80 bg-white p-3 rounded-2xl border dark:border-slate-700/80 border-slate-200 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-400">Total disponível nos limites:</span>
+          <strong class="text-sm font-black text-emerald-400" id="totalBudgetAvailableDisplay">R$ 0,00</strong>
+        </div>
+
+        <!-- Lista de Tetos -->
+        <div id="budgetsListContainer" class="space-y-2.5"></div>
+      </div>
+
+      <!-- ==================== ABA 5: BANCOS & CONTAS ==================== -->
+      <div id="view-accounts" class="space-y-4 hidden">
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h2 class="text-lg font-extrabold dark:text-white text-slate-800">Minhas Contas & Bancos 🏦</h2>
+            <p class="text-xs text-slate-400">Nubank, Itaú, Santander, Inter, etc.</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openOpenFinanceModal()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow transition">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Open Finance
+            </button>
+            <button onclick="openNewAccountModal()" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs transition" title="Conta Manual">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner Open Finance Automático -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-800 to-slate-900 border border-emerald-500/40 flex items-center justify-between gap-3 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <i data-lucide="link" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-white block">Sincronização Automática</span>
+              <span class="text-[10px] text-slate-300">Conecte seus bancos oficiais via Banco Central.</span>
+            </div>
+          </div>
+          <button onclick="openOpenFinanceModal()" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-black rounded-lg text-[10px] shrink-0 hover:bg-emerald-400 transition">
+            Conectar
+          </button>
+        </div>
+
+        <div class="dark:bg-indigo-950/40 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-200 rounded-2xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span class="text-[11px] dark:text-slate-300 text-indigo-950">Ajuste seu saldo com 1 clique se não bater com a realidade!</span>
+          </div>
+        </div>
+
+        <div id="accountsListContainer" class="space-y-2.5"></div>
+      </div>
+
+      <!-- ==================== ABA 6: MIIX IA • ASSISTENTE TDAH ==================== -->
+      <div id="view-mia" class="space-y-3 hidden flex flex-col h-full">
+        <div class="flex items-center gap-3 pt-1">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-emerald-500 to-indigo-500 flex items-center justify-center text-white shadow-lg">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-extrabold dark:text-white text-slate-800">Miix IA • Assistente NeuroAmiga</h2>
+            <p class="text-[11px] text-slate-400">Zero julgamento. Te ajudo a entender e destravar suas contas.</p>
+          </div>
+        </div>
+
+        <div id="miaChatMessages" class="space-y-2.5 p-3 rounded-2xl dark:bg-slate-900/80 bg-slate-100 border dark:border-slate-800 border-slate-200 max-h-[460px] overflow-y-auto custom-scroll text-xs">
+          <div class="flex gap-2">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white flex items-center justify-center shrink-0 text-[10px] font-bold shadow">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="dark:bg-slate-800 bg-white p-3 rounded-2xl dark:text-slate-200 text-slate-800 border dark:border-slate-700 border-slate-200 shadow-sm max-w-[85%]">
+              Olá! Eu sou a <strong>Miix IA</strong>. Sei que lidar com finanças e TDAH pode ser exaustivo. Pode me perguntar quanto tem livre hoje, quanto gastou em mercado ou pedir uma dica para não travar!
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+          <button onclick="askMiaPrompt('Quanto dinheiro eu tenho realmente livre hoje?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            💡 Quanto posso gastar hoje?
+          </button>
+          <button onclick="askMiaPrompt('Qual a soma de todas as minhas faturas de cartão?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            💳 Fatura total dos cartões?
+          </button>
+          <button onclick="askMiaPrompt('Quais contas estão mais urgentes para vencer?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            🚨 Contas mais urgentes?
+          </button>
+          <button onclick="askMiaPrompt('Como não entrar em pânico com minhas finanças hoje?')" class="p-2 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800/80 bg-white dark:text-slate-300 text-slate-700 text-left hover:border-indigo-400 transition">
+            🧘 Dica anti-paralisia rápida
+          </button>
+        </div>
+
+        <div class="flex gap-1.5 pt-1">
+          <input type="text" id="miaInput" placeholder="Pergunte algo para a Miix IA..." class="flex-1 dark:bg-slate-800 bg-white border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 text-xs dark:text-white text-slate-800 focus:outline-none focus:border-indigo-500">
+          <button onclick="handleSendMia()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
+    <nav class="absolute bottom-0 left-0 right-0 dark:bg-slate-900/95 bg-white/95 backdrop-blur border-t dark:border-slate-800 border-slate-200 py-2 px-2 flex items-center justify-around z-20">
+      <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-0.5 text-emerald-400 text-[10px] font-bold">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Início</span>
+      </button>
+      <button onclick="switchView('cards')" id="nav-cards" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="credit-card" class="w-4 h-4"></i>
+        <span>Cartões</span>
+      </button>
+      <button onclick="switchView('reports')" id="nav-reports" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="pie-chart" class="w-4 h-4"></i>
+        <span>Raio-X</span>
+      </button>
+      <button onclick="switchView('budgets')" id="nav-budgets" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="target" class="w-4 h-4"></i>
+        <span>Tetos</span>
+      </button>
+      <button onclick="switchView('accounts')" id="nav-accounts" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="landmark" class="w-4 h-4"></i>
+        <span>Bancos</span>
+      </button>
+      <button onclick="switchView('mia')" id="nav-mia" class="nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        <span>Miix IA</span>
+      </button>
+    </nav>
+  </main>
+
+  <!-- ==================== MODAL DE MARCA & LOGO ==================== -->
+  <div id="brandModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-200 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeBrandModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Logo Grande Preview -->
+      <div class="w-20 h-20 mx-auto rounded-3xl overflow-hidden shadow-xl border-2 border-emerald-500/40 p-1 bg-slate-950">
+        <img src="logo.jpg" alt="Logo" class="w-full h-full object-cover rounded-2xl">
+      </div>
+
+      <div>
+        <h3 class="text-lg font-black dark:text-white text-slate-900">Identidade da Marca</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Como você notou que 'FOCO PAY' e 'FOCUS PAY' já existem no mercado, criamos alternativas que preservam o som e a força:</p>
+      </div>
+
+      <div class="space-y-2 text-left text-xs">
+        <button onclick="selectBrandName('FOCO PAY')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-emerald-500 hover:border-emerald-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="dark:text-white text-slate-900 block font-bold">FOCO PAY</strong>
+            <span class="text-[10px] text-slate-400">O seu favorito original (Uso como app/projeto)</span>
+          </div>
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+        </button>
+
+        <button onclick="selectBrandName('FOKKO PAY')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-emerald-500 hover:border-emerald-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-emerald-400 block font-bold">FOKKO PAY ⭐ (Recomendado)</strong>
+            <span class="text-[10px] text-slate-400">Som idêntico, estilo escandinavo, livre p/ registro</span>
+          </div>
+        </button>
+
+        <button onclick="selectBrandName('FOCOFLOW')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-indigo-500 hover:border-indigo-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-indigo-400 block font-bold">FOCOFLOW</strong>
+            <span class="text-[10px] text-slate-400">Foco + 'Flow' mental (zero atrito e mente leve)</span>
+          </div>
+        </button>
+
+        <button onclick="selectBrandName('FOCOMIND')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:hover:border-purple-500 hover:border-purple-500 dark:bg-slate-800 bg-slate-50 flex items-center justify-between transition">
+          <div>
+            <strong class="text-purple-400 block font-bold">FOCOMIND</strong>
+            <span class="text-[10px] text-slate-400">Conecta direto com a mente TDAH</span>
+          </div>
+        </button>
+      </div>
+
+      <button onclick="closeBrandModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ABRIR NO CELULAR VIA QR CODE / LINK -->
+  <div id="phoneShareModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-cyan-500/40 border-cyan-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closePhoneShareModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="smartphone" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <h3 class="text-base font-black dark:text-white text-slate-900">Acesse o FOKKO FIN no seu Celular 📱</h3>
+        <p class="text-xs text-slate-400 mt-1">Aponte a câmera do seu celular para o QR Code abaixo para testar diretamente na tela do seu smartphone:</p>
+      </div>
+
+      <!-- QR Code Gerado Dinamicamente -->
+      <div class="p-3 bg-white rounded-2xl inline-block shadow-lg mx-auto border border-slate-200">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://fokkofin.pages.dev/app.html" alt="QR Code FOKKO FIN" class="w-44 h-44 mx-auto">
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="p-2.5 rounded-xl dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-200 text-left">
+          <span class="text-[10px] text-slate-400 block font-bold">Link Oficial na Nuvem (Qualquer rede / 4G / 5G):</span>
+          <a href="https://fokkofin.pages.dev/app.html" target="_blank" class="text-xs font-mono font-bold text-emerald-400 underline">https://fokkofin.pages.dev/app.html</a>
+        </div>
+        <div class="p-2.5 rounded-xl dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-200 text-left">
+          <span class="text-[10px] text-slate-400 block font-bold">Download Direto do APK Oficial:</span>
+          <a href="https://fokkofin.pages.dev/download/fokkofin.apk" target="_blank" class="text-xs font-mono font-bold text-cyan-400 underline">https://fokkofin.pages.dev/download/fokkofin.apk</a>
+        </div>
+      </div>
+
+      <button onclick="closePhoneShareModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: CONEXÃO OPEN FINANCE (BANCO CENTRAL) -->
+  <div id="openFinanceModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-emerald-500/40 border-emerald-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeOpenFinanceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="shield-check" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest text-emerald-400">Banco Central do Brasil</span>
+        <h3 class="text-base font-extrabold dark:text-white text-slate-900 mt-0.5">Conectar via Open Finance</h3>
+        <p class="text-[11px] text-slate-400 mt-1">Selecione seu banco para sincronizar saldos e faturas automaticamente sem esforço:</p>
+      </div>
+
+      <!-- Lista de Instituições -->
+      <div class="space-y-2 text-left text-xs max-h-56 overflow-y-auto custom-scroll pr-1">
+        <button onclick="connectBankViaOpenFinance('Nubank', 2340.50, 'Mastercard Roxinho')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-purple-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-purple-700 text-white font-bold flex items-center justify-center text-[10px]">nu</div>
+            <span class="font-bold dark:text-white text-slate-900">Nubank</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Itaú', 1150.00, 'Visa Click')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-orange-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-orange-600 text-white font-bold flex items-center justify-center text-[10px]">it</div>
+            <span class="font-bold dark:text-white text-slate-900">Itaú Unibanco</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Santander', 890.00, 'Santander SX')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-red-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-red-700 text-white font-bold flex items-center justify-center text-[10px]">st</div>
+            <span class="font-bold dark:text-white text-slate-900">Santander</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Banco Inter', 640.00, 'Inter Gold')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-amber-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-amber-600 text-white font-bold flex items-center justify-center text-[10px]">in</div>
+            <span class="font-bold dark:text-white text-slate-900">Banco Inter</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+
+        <button onclick="connectBankViaOpenFinance('Mercado Pago', 310.00, 'Cartão MP')" class="w-full p-2.5 rounded-xl border dark:border-slate-700 border-slate-200 dark:bg-slate-800 bg-slate-50 hover:border-cyan-500 flex items-center justify-between transition group">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-cyan-600 text-white font-bold flex items-center justify-center text-[10px]">mp</div>
+            <span class="font-bold dark:text-white text-slate-900">Mercado Pago</span>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 group-hover:translate-x-1 transition">Conectar &rarr;</span>
+        </button>
+      </div>
+
+      <div class="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[10px] text-slate-400 text-left space-y-1">
+        <div class="flex items-center gap-1.5 text-slate-200 font-bold">
+          <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i> Somente Leitura
+        </div>
+        <p>Você nunca digita sua senha do banco aqui. A autorização é feita diretamente no ambiente oficial da instituição.</p>
+      </div>
+
+      <button onclick="closeOpenFinanceModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAIS ==================== -->
+
+  <!-- MODAL: ATUALIZAÇÃO DO APLICATIVO (APK & NATIVO) -->
+  <div id="appUpdateModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-cyan-500/40 border-cyan-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeAppUpdateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-14 h-14 bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 text-cyan-400 rounded-3xl mx-auto flex items-center justify-center border border-cyan-500/30 shadow-lg">
+        <i data-lucide="smartphone" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-400 font-extrabold uppercase mb-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Versão Oficial v2.0.0
+        </div>
+        <h3 class="text-base font-black dark:text-white text-slate-900">Aplicativo & Atualizações</h3>
+        <p class="text-xs text-slate-400 mt-1">Instale o app diretamente ou baixe a versão física em APK.</p>
+      </div>
+
+      <!-- Card de Status do APK / Nuvem -->
+      <div class="p-3 rounded-2xl dark:bg-slate-800/80 bg-slate-100 border dark:border-slate-700/80 border-slate-200 text-left space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Sincronização Google:</span>
+          <span id="updateModalSyncStatus" class="font-bold text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> Conectado
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Pacote Android:</span>
+          <span class="font-bold dark:text-slate-200 text-slate-700">fokkofin.apk (2.6 MB)</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Status do Sistema:</span>
+          <span class="font-bold text-cyan-300">Atualizado e Homologado</span>
+        </div>
+      </div>
+
+      <!-- Ações do Modal -->
+      <div class="space-y-2 pt-1">
+        <!-- Botão Instalar App Nativo (WebAPK) -->
+        <button id="btnInstallNativeApp" onclick="triggerNativeInstall()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Instalar Aplicativo no Celular
+        </button>
+
+        <!-- Botão Baixar APK Físico Direto -->
+        <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+          <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i> Baixar Arquivo APK Físico
+        </a>
+
+        <!-- Botão Forçar Sincronização Google -->
+        <button onclick="forceCloudSync()" class="w-full py-2 text-slate-400 hover:text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sincronizar Agora com a Conta Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GASTEI AGORA (ZERO BUROCRACIA) -->
+  <div id="fastSpendModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-emerald-500/40 border-emerald-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeFastSpendModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Gastei Agora</h3>
+          <p class="text-[11px] text-slate-400">Sem data de vencimento. Já foi pago!</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveFastSpend(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Com o que gastou?</label>
+          <input type="text" id="spendTitle" required placeholder="Ex: Almoço, Farmácia, Uber, Café" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor (R$)</label>
+          <input type="number" step="0.01" id="spendAmount" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-lg font-bold focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Categoria</label>
+          <select id="spendCategory" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs">
+            <option value="Alimentação">Alimentação & Mercado</option>
+            <option value="Lazer">Lazer & Dopamina</option>
+            <option value="Transporte">Transporte / Uber</option>
+            <option value="Saúde">Saúde & Farmácia</option>
+            <option value="Casa">Casa & Moradia</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">De onde saiu o dinheiro?</label>
+          <select id="spendPaymentSource" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-emerald-500 text-xs"></select>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Quando foi?</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="selectSpendDateOption('today')" id="date-opt-today" class="py-1.5 px-2 rounded-xl text-center font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Hoje</button>
+            <button type="button" onclick="selectSpendDateOption('yesterday')" id="date-opt-yesterday" class="py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300">Ontem</button>
+            <button type="button" onclick="selectSpendDateOption('custom')" id="date-opt-custom" class="py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300">Outro dia</button>
+          </div>
+          <input type="date" id="spendCustomDate" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 mt-1.5 hidden text-xs">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar e Debitar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: + RECEBI DINHEIRO -->
+  <div id="addIncomeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-blue-500/40 border-blue-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddIncomeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Entrada de Dinheiro</h3>
+          <p class="text-[11px] text-slate-400">Salário, Pix recebido ou renda extra.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveIncome(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Descrição</label>
+          <input type="text" id="incomeTitle" required placeholder="Ex: Salário, Freelance, Pix do Amigo" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor Recebido (R$)</label>
+          <input type="number" step="0.01" id="incomeAmount" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-lg font-bold focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Em qual banco caiu?</label>
+          <select id="incomeAccountSelect" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500"></select>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/20">
+            <i data-lucide="check" class="w-4 h-4"></i> Adicionar ao Saldo 🎉
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTA A PAGAR -->
+  <div id="addBillModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-500/30 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddBillModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Nova Conta a Pagar</h3>
+          <p class="text-[11px] text-slate-400">Contas fixas, boletos ou faturas futuras.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveBill(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Nome da Conta</label>
+          <input type="text" id="billNameInput" required placeholder="Ex: Aluguel, Luz, Internet Claro, Celular" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Valor (R$)</label>
+            <input type="number" step="0.01" id="billAmountInput" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Vencimento</label>
+            <input type="date" id="billDateInput" required class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">De qual banco costuma pagar?</label>
+          <select id="billBankSourceInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500 text-xs"></select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="billRepeatMonthly" class="w-4 h-4 rounded text-indigo-600 dark:bg-slate-800 bg-slate-100 dark:border-slate-700 border-slate-300">
+          <label for="billRepeatMonthly" class="dark:text-slate-300 text-slate-700 font-medium cursor-pointer">Repetir todo mês automaticamente</label>
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Código Pix ou Barras (Opcional)</label>
+          <input type="text" id="billCodeInput" placeholder="Cole para copiar em 1 clique depois" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-[11px] font-mono focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Lembrete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO CARTÃO -->
+  <div id="newCardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewCardModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+          <i data-lucide="credit-card" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Cadastrar Cartão</h3>
+          <p class="text-[11px] text-slate-400">Acompanhe limite e vencimento sem surpresas.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveCard(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Nome do Cartão (Apelido)</label>
+          <input type="text" id="cardNameInput" required placeholder="Ex: Nubank Roxinho, Itaú Click, Santander SX" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Bandeira</label>
+            <select id="cardBrandInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+              <option value="Mastercard">Mastercard</option>
+              <option value="Visa">Visa</option>
+              <option value="Elo">Elo</option>
+              <option value="Amex">Amex</option>
+            </select>
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Cor / Estilo</label>
+            <select id="cardColorInput" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+              <option value="credit-card-nubank">Roxo (Nubank)</option>
+              <option value="credit-card-itau">Laranja (Itaú)</option>
+              <option value="credit-card-santander">Vermelho (Santander)</option>
+              <option value="credit-card-inter">Laranja/Preto (Inter)</option>
+              <option value="credit-card-mercadopago">Azul (Mercado Pago)</option>
+              <option value="credit-card-black">Black / Escuro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Limite Total (R$)</label>
+            <input type="number" step="0.01" id="cardTotalLimitInput" required placeholder="Ex: 3500" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Fatura Atual (R$)</label>
+            <input type="number" step="0.01" id="cardUsedLimitInput" required placeholder="Ex: 850" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Dia Fechamento</label>
+            <input type="number" min="1" max="31" id="cardClosingDayInput" required placeholder="Ex: 1" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+          <div>
+            <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Dia Vencimento</label>
+            <input type="number" min="1" max="31" id="cardDueDayInput" required placeholder="Ex: 10" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-purple-500">
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Cartão
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA CONTA -->
+  <div id="newAccountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewAccountModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="landmark" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Cadastrar Banco</h3>
+          <p class="text-[11px] text-slate-400">Adicione onde você guarda dinheiro.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveAccount(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Instituição</label>
+          <input type="text" id="accNameInput" required placeholder="Ex: Nubank, Itaú, Santander, Caixa, Inter" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Saldo Atual (R$)</label>
+          <input type="number" step="0.01" id="accBalanceInput" required placeholder="0,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-base font-bold focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Adicionar Conta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO TETO DE GASTOS -->
+  <div id="newBudgetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-slate-700 border-slate-200 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeNewBudgetModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="pie-chart" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold dark:text-white text-slate-900">Novo Teto de Gastos</h3>
+          <p class="text-[11px] text-slate-400">Defina um limite confortável por categoria.</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveBudget(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Categoria</label>
+          <input type="text" id="budgetNameInput" required placeholder="Ex: Alimentação & Delivery, Lazer, Roupas" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block dark:text-slate-300 text-slate-700 font-semibold mb-1">Limite Mensal Desejado (R$)</label>
+          <input type="number" step="0.01" id="budgetLimitInput" required placeholder="Ex: 800,00" class="w-full dark:bg-slate-800 bg-slate-100 border dark:border-slate-700 border-slate-300 rounded-xl px-3 py-2 dark:text-white text-slate-900 text-base font-bold focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Salvar Teto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: FOCO TOTAL (BODY DOUBLING) -->
+  <div id="focusModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-indigo-500/40 border-indigo-500/30 rounded-3xl w-full max-w-sm p-6 text-center space-y-4 shadow-2xl relative">
+      <button onclick="closeFocusModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="target" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <span class="text-[10px] uppercase font-extrabold tracking-wider text-indigo-400">Foco Total • Uma Coisa Por Vez</span>
+        <h3 class="text-xl font-bold dark:text-white text-slate-900 mt-1" id="focusBillTitle">Conta</h3>
+        <div class="text-3xl font-black text-emerald-400 my-1" id="focusBillAmount">R$ 0,00</div>
+        <p class="text-xs text-slate-400" id="focusBillDesc">Vence hoje! Pague agora e livre sua cabeça.</p>
+      </div>
+
+      <div class="dark:bg-slate-800/80 bg-slate-100 p-3 rounded-2xl border dark:border-slate-700 border-slate-300 text-left space-y-2 text-xs">
+        <div class="flex items-center justify-between dark:text-slate-300 text-slate-700">
+          <span>Banco sugerido:</span>
+          <strong id="focusBillBankName" class="text-indigo-400 font-bold">Nubank</strong>
+        </div>
+        <div class="flex items-center gap-2 dark:bg-slate-900 bg-white p-2 rounded-xl border dark:border-slate-700/80 border-slate-300">
+          <input type="text" id="focusBillCode" readonly value="" class="bg-transparent text-[11px] dark:text-slate-300 text-slate-700 w-full font-mono outline-none">
+          <button onclick="copyFocusCode()" id="copyBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 flex items-center gap-1 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 flex flex-col gap-2">
+        <button onclick="confirmFocusPaid()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i> Já Paguei no Banco! 🎉
+        </button>
+        <button onclick="closeFocusModal()" class="w-full py-2 text-slate-400 hover:text-slate-200 text-xs font-medium">
+          Deixar para daqui a pouco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TUTORIAL RÁPIDO PARA TDAH (3 PASSOS ULTRA-VISUAIS) -->
+  <div id="tutorialModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="p-6 rounded-3xl bg-[#0b1122] border border-slate-800 max-w-sm w-full shadow-2xl relative text-center space-y-4">
+      
+      <!-- Indicador de Passos -->
+      <div class="flex items-center justify-center gap-1.5 pt-1">
+        <span id="tutStepDot1" class="w-6 h-1.5 rounded-full bg-emerald-500 transition-all"></span>
+        <span id="tutStepDot2" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
+        <span id="tutStepDot3" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
+      </div>
+
+      <!-- Passo 1 -->
+      <div id="tutStep1" class="space-y-3">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shadow-lg">
+          🧠
+        </div>
+        <h3 class="text-base font-black text-white">Sem Textos Longos.<br>Sem Paralisia Mental.</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          O <strong>FOKKO FIN</strong> foi desenhado para a mente com TDAH: zero planilhas, zero gráficos complexos e foco no que você pode gastar hoje.
+        </p>
+        <button onclick="nextTutorialStep(2)" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition active:scale-95 shadow-lg shadow-emerald-500/20">
+          Entendi, próximo ➔
+        </button>
+      </div>
+
+      <!-- Passo 2 -->
+      <div id="tutStep2" class="space-y-3 hidden">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl shadow-lg">
+          🛡️
+        </div>
+        <h3 class="text-base font-black text-white">Saldo Realmente Livre</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Nós somamos o que você tem no banco e subtraímos as contas do mês. O valor na tela é o que sobra para você viver sem culpa!
+        </p>
+        <button onclick="nextTutorialStep(3)" class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-black rounded-xl text-xs transition active:scale-95 shadow-lg shadow-indigo-500/20">
+          Como eu anoto? ➔
+        </button>
+      </div>
+
+      <!-- Passo 3 -->
+      <div id="tutStep3" class="space-y-3 hidden">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl shadow-lg">
+          ⚡
+        </div>
+        <h3 class="text-base font-black text-white">Gastei Agora (2 Segundos)</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Comprou algo no Pix ou no cartão? Toque no botão verde <strong>"Gastei Agora"</strong> no rodapé. Só digita o valor e pronto! Sem escolher data nem preencher burocracia.
+        </p>
+        <button onclick="closeTutorialModal()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs transition active:scale-95 shadow-xl shadow-emerald-500/25">
+          🚀 Começar Minhas Finanças!
+        </button>
+      </div>
+
+      <button onclick="closeTutorialModal()" class="text-[10px] text-slate-500 hover:text-slate-300 transition block mx-auto">
+        Pular introdução
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT JS -->
+  <script>
+    lucide.createIcons();
+
+    function getTodayOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    }
+
+    const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    let currentMonthIndex = 10; // Novembro
+    let currentYear = 2026;
+
+    // ESTADO INICIAL 100% LIMPO PARA NOVOS USUÁRIOS
+    const INITIAL_STATE = {
+      isDarkMode: true,
+      privacyMode: false,
+      savingsBalance: 0.00,
+      accounts: [
+        { id: 1, name: "Minha Conta Principal", balance: 0.00, icon: "landmark" }
+      ],
+      cards: [],
+      bills: [],
+      budgets: [
+        { id: 1, name: "Alimentação & Mercado", limit: 1000.00, spent: 0.00, color: "from-amber-400 to-orange-500", stroke: "#f59e0b" },
+        { id: 2, name: "Lazer & Dopamina", limit: 400.00, spent: 0.00, color: "from-purple-400 to-indigo-500", stroke: "#a855f7" },
+        { id: 3, name: "Saúde & Farmácia", limit: 300.00, spent: 0.00, color: "from-emerald-400 to-teal-500", stroke: "#10b981" },
+        { id: 4, name: "Transporte & Uber", limit: 300.00, spent: 0.00, color: "from-blue-400 to-cyan-500", stroke: "#3b82f6" }
+      ],
+      expensesHistory: [],
+      incomesHistory: []
+    };
+
+    let state = JSON.parse(localStorage.getItem('fokkofin_v5')) || INITIAL_STATE;
+    let currentFilter = 'urgent';
+    let currentFocusBill = null;
+    let isPhoneFramed = true;
+    let spendDateSelected = 'today';
+
+    function getStorageKey() {
+      if (currentUser && currentUser.id) {
+        return `fokkofin_user_${currentUser.id}`;
+      }
+      return 'fokkofin_v5';
+    }
+
+    function saveState() {
+      const key = getStorageKey();
+      localStorage.setItem(key, JSON.stringify(state));
+      localStorage.setItem('fokkofin_v5', JSON.stringify(state));
+      render();
+      syncStateToGoogleCloud();
+    }
+
+    function resetDemoData() {
+      if (confirm("Deseja restaurar as contas, cartões e dados de demonstração?")) {
+        state = JSON.parse(JSON.stringify(INITIAL_STATE));
+        saveState();
+      }
+    }
+
+    function formatCurrency(val) {
+      if (state.privacyMode) return "R$ •••••";
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    }
+
+    function togglePrivacyMode() {
+      state.privacyMode = !state.privacyMode;
+      const icon = document.getElementById('privacyIcon');
+      if (state.privacyMode) {
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+      saveState();
+    }
+
+    function getDaysUntil(dateStr) {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const [y, m, d] = dateStr.split('-');
+      const due = new Date(y, m - 1, d);
+      due.setHours(0,0,0,0);
+      return Math.round((due - today) / (1000 * 60 * 60 * 24));
+    }
+
+    // TEMA
+    function initTheme() {
+      if (state.isDarkMode === false) {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('themeText').innerText = "Claro";
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeText').innerText = "Escuro";
+        document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      state.isDarkMode = !state.isDarkMode;
+      initTheme();
+      saveState();
+    }
+
+    function changeMonth(delta) {
+      currentMonthIndex += delta;
+      if (currentMonthIndex > 11) {
+        currentMonthIndex = 0;
+        currentYear++;
+      } else if (currentMonthIndex < 0) {
+        currentMonthIndex = 11;
+        currentYear--;
+      }
+      document.getElementById('currentMonthName').innerText = `${MONTHS[currentMonthIndex]} ${currentYear}`;
+    }
+
+    function togglePhoneFrame() {
+      const app = document.getElementById('appContainer');
+      const text = document.getElementById('frameToggleText');
+      if (isPhoneFramed) {
+        app.classList.remove('phone-wrapper');
+        app.classList.add('max-w-2xl', 'w-full', 'rounded-3xl', 'shadow-2xl', 'h-[920px]', 'flex', 'flex-col', 'overflow-hidden');
+        text.innerText = "Modo Celular";
+        isPhoneFramed = false;
+      } else {
+        app.classList.remove('max-w-2xl', 'w-full', 'rounded-3xl', 'h-[920px]');
+        app.classList.add('phone-wrapper');
+        text.innerText = "Expandir";
+        isPhoneFramed = true;
+      }
+    }
+
+    // ==========================================
+    // NAVEGAÇÃO INICIAL / SALDO / PREVISTO
+    // ==========================================
+    let currentFinTab = 'inicial';
+
+    function switchFinTab(tab) {
+      currentFinTab = tab;
+      // Reset visual for all tabs
+      document.querySelectorAll('.fin-tab').forEach(btn => {
+        btn.className = 'fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700';
+      });
+      // Highlight active
+      const activeBtn = document.getElementById(`fin-tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.className = 'fin-tab py-2.5 px-2 rounded-xl text-center transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20';
+      }
+      // Show/hide panels
+      document.querySelectorAll('.fin-panel').forEach(p => p.classList.add('hidden'));
+      const panel = document.getElementById(`finPanel-${tab}`);
+      if (panel) panel.classList.remove('hidden');
+      renderFinPanels();
+    }
+
+    function renderFinPanels() {
+      const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+      const pendingBills = state.bills.filter(b => !b.paid);
+      const totalPending = pendingBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const totalIncomes = state.incomesHistory.reduce((acc, i) => acc + Number(i.amount), 0);
+      const totalExpenses = state.expensesHistory.reduce((acc, e) => acc + Number(e.amount), 0);
+      const saldoAtual = totalBank - totalExpenses + totalIncomes;
+      const previstoFinal = totalBank + totalIncomes - totalPending - totalExpenses;
+
+      // Update tab values
+      const inicialEl = document.getElementById('finTabInicialValue');
+      const saldoEl = document.getElementById('finTabSaldoValue');
+      const previstoEl = document.getElementById('finTabPrevistoValue');
+      if (inicialEl) inicialEl.innerText = formatCurrency(totalBank);
+      if (saldoEl) saldoEl.innerText = formatCurrency(saldoAtual);
+      if (previstoEl) previstoEl.innerText = formatCurrency(previstoFinal);
+
+      // Panel: INICIAL (detalhamento do saldo por conta)
+      const inicialContainer = document.getElementById('inicialDetailContainer');
+      if (inicialContainer) {
+        inicialContainer.innerHTML = '';
+        if (state.accounts.length === 0) {
+          inicialContainer.innerHTML = '<p class="text-slate-400 text-center py-2">Nenhuma conta cadastrada.</p>';
+        } else {
+          state.accounts.forEach(acc => {
+            inicialContainer.innerHTML += `
+              <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="${acc.icon || 'landmark'}" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="font-bold dark:text-slate-200 text-slate-700">${acc.name}</span>
+                </div>
+                <span class="font-black dark:text-white text-slate-900">${formatCurrency(acc.balance)}</span>
+              </div>`;
+          });
+          inicialContainer.innerHTML += `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mt-1">
+              <span class="font-bold text-emerald-400">Total Inicial</span>
+              <span class="font-black text-emerald-400">${formatCurrency(totalBank)}</span>
+            </div>`;
+        }
+      }
+
+      // Panel: SALDO (extrato do período)
+      const saldoContainer = document.getElementById('saldoExtratoContainer');
+      if (saldoContainer) {
+        const allMov = [
+          ...(state.incomesHistory || []).map(inc => ({
+            title: inc.title, amount: Number(inc.amount), date: inc.date, isIncome: true, id: inc.id
+          })),
+          ...(state.expensesHistory || []).map(exp => ({
+            title: exp.title, amount: Number(exp.amount), date: exp.date, isIncome: false, id: exp.id
+          }))
+        ].sort((a, b) => b.id - a.id);
+
+        if (allMov.length === 0) {
+          saldoContainer.innerHTML = '<p class="text-slate-400 text-center py-2">Nenhuma movimentação no período.</p>';
+        } else {
+          saldoContainer.innerHTML = allMov.map(m => `
+            <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full ${m.isIncome ? 'bg-emerald-400' : 'bg-rose-400'}"></span>
+                <span class="dark:text-slate-200 text-slate-700">${m.title}</span>
+              </div>
+              <span class="font-bold ${m.isIncome ? 'text-emerald-400' : 'text-rose-400'}">${m.isIncome ? '+' : '-'} ${formatCurrency(m.amount)}</span>
+            </div>`).join('');
+        }
+      }
+
+      // Panel: PREVISTO (detalhamento do saldo previsto)
+      const previstoContainer = document.getElementById('previstoDetailContainer');
+      if (previstoContainer) {
+        previstoContainer.innerHTML = `
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">Saldo em contas</span>
+            <span class="font-bold text-emerald-400">${formatCurrency(totalBank)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">+ Receitas previstas</span>
+            <span class="font-bold text-emerald-400">+ ${formatCurrency(totalIncomes)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">− Contas a pagar</span>
+            <span class="font-bold text-rose-400">- ${formatCurrency(totalPending)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">− Gastos realizados</span>
+            <span class="font-bold text-rose-400">- ${formatCurrency(totalExpenses)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl ${previstoFinal >= 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30'} border mt-1">
+            <span class="font-bold ${previstoFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">Saldo Previsto Final</span>
+            <span class="font-black ${previstoFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatCurrency(previstoFinal)}</span>
+          </div>`;
+      }
+
+      // TIMELINE de débitos
+      const timelineContainer = document.getElementById('debitTimelineContainer');
+      if (timelineContainer) {
+        const unpaidBills = state.bills.filter(b => !b.paid).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+        if (unpaidBills.length === 0) {
+          timelineContainer.innerHTML = '<p class="text-[11px] text-slate-400 py-2 w-full text-center">Nenhum débito pendente 🎉</p>';
+        } else {
+          // Group bills by date
+          const grouped = {};
+          unpaidBills.forEach(b => {
+            if (!grouped[b.dueDate]) grouped[b.dueDate] = [];
+            grouped[b.dueDate].push(b);
+          });
+          timelineContainer.innerHTML = Object.entries(grouped).map(([date, bills]) => {
+            const days = getDaysUntil(date);
+            const [y, m, d] = date.split('-');
+            const dateLabel = `${d}/${m}`;
+            let dotColor = 'bg-slate-500';
+            let borderColor = 'border-slate-700';
+            if (days < 0) { dotColor = 'bg-rose-500'; borderColor = 'border-rose-500/50'; }
+            else if (days === 0) { dotColor = 'bg-rose-500 animate-pulse'; borderColor = 'border-rose-500/50'; }
+            else if (days <= 3) { dotColor = 'bg-amber-500'; borderColor = 'border-amber-500/50'; }
+            else { dotColor = 'bg-emerald-500'; borderColor = 'border-emerald-500/50'; }
+
+            const totalDate = bills.reduce((s, b) => s + Number(b.amount), 0);
+            return `
+              <div class="flex flex-col items-center gap-1 min-w-[70px] p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border ${borderColor} shrink-0">
+                <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
+                <span class="text-[10px] font-bold dark:text-slate-200 text-slate-700">${dateLabel}</span>
+                <span class="text-[9px] text-slate-400">${bills.length} conta${bills.length > 1 ? 's' : ''}</span>
+                <span class="text-[10px] font-black text-rose-400">${formatCurrency(totalDate)}</span>
+              </div>`;
+          }).join('');
+        }
+      }
+
+      // ALERTA de despesas pendentes
+      const pendingText = document.getElementById('pendingExpensesText');
+      if (pendingText) {
+        pendingText.innerText = `Você tem ${pendingBills.length} despesa${pendingBills.length === 1 ? '' : 's'} pendente${pendingBills.length === 1 ? '' : 's'} no total de ${formatCurrency(totalPending)}`;
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function switchView(viewName) {
+      ['dashboard', 'cards', 'reports', 'budgets', 'accounts', 'mia'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const navEl = document.getElementById(`nav-${v}`);
+        if (navEl) navEl.className = 'nav-item flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[10px]';
+      });
+
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) activeNav.className = 'nav-item flex flex-col items-center gap-0.5 text-emerald-400 text-[10px] font-bold';
+      render();
+    }
+
+    // RENDER PRINCIPAL
+    function render() {
+      const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+      const pendingBills = state.bills.filter(b => !b.paid);
+      const totalPending = pendingBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const totalInvoices = state.cards.reduce((acc, c) => acc + Number(c.usedLimit), 0);
+      const safeToSpend = Math.max(0, totalBank - totalPending);
+      const totalIncomes = state.incomesHistory.reduce((acc, i) => acc + Number(i.amount), 0);
+
+      document.getElementById('safeToSpendDisplay').innerText = formatCurrency(safeToSpend);
+      document.getElementById('totalIncomeDisplay').innerText = formatCurrency(totalIncomes);
+      document.getElementById('totalBillsDisplay').innerText = formatCurrency(totalPending);
+      document.getElementById('totalCardInvoicesDisplay').innerText = formatCurrency(totalInvoices);
+      document.getElementById('totalSavingsDisplay').innerText = formatCurrency(state.savingsBalance);
+      document.getElementById('savingsAmountCardDisplay').innerText = formatCurrency(state.savingsBalance);
+      document.getElementById('pendingCountBadge').innerText = `${pendingBills.length} pendente${pendingBills.length === 1 ? '' : 's'}`;
+      renderFinPanels();
+
+      const ratio = totalBank > 0 ? Math.min(100, Math.round((safeToSpend / totalBank) * 100)) : 0;
+      document.getElementById('safeProgressBar').style.width = `${ratio}%`;
+
+      // Renderizar Contas Pendentes
+      const billsContainer = document.getElementById('billsContainer');
+      billsContainer.innerHTML = '';
+      let filteredBills = state.bills;
+      if (currentFilter === 'urgent') {
+        filteredBills = state.bills.filter(b => !b.paid && getDaysUntil(b.dueDate) <= 1);
+      } else if (currentFilter === 'week') {
+        filteredBills = state.bills.filter(b => !b.paid && getDaysUntil(b.dueDate) <= 7);
+      }
+
+      if (filteredBills.length === 0) {
+        billsContainer.innerHTML = `
+          <div class="text-center py-6 px-4 dark:bg-slate-900/60 bg-white rounded-2xl border border-dashed dark:border-slate-800 border-slate-300 text-xs">
+            <i data-lucide="check-circle" class="w-6 h-6 text-emerald-400 mx-auto mb-1 opacity-90"></i>
+            <span class="font-bold dark:text-slate-200 text-slate-800 block">Nenhuma conta pendente para este período!</span>
+            <span class="text-[11px] text-slate-400">Mente em paz e sem peso na consciência.</span>
+          </div>
+        `;
+      } else {
+        filteredBills.forEach(bill => {
+          const days = getDaysUntil(bill.dueDate);
+          let badgeText = '';
+          let badgeClass = '';
+          let cardBorder = 'dark:border-slate-800 border-slate-200';
+
+          if (bill.paid) {
+            badgeText = 'Pago 🎉';
+            badgeClass = 'bg-emerald-950 text-emerald-400 border border-emerald-500/30';
+          } else if (days < 0) {
+            badgeText = `Venceu há ${Math.abs(days)}d`;
+            badgeClass = 'bg-rose-950 text-rose-400 border border-rose-500/40';
+            cardBorder = 'pulse-urgent border-rose-500/60 bg-rose-950/15';
+          } else if (days === 0) {
+            badgeText = '🚨 Vence Hoje!';
+            badgeClass = 'bg-rose-900/80 text-rose-300 font-bold border border-rose-500/50';
+            cardBorder = 'border-rose-500/50 bg-rose-950/10';
+          } else if (days === 1) {
+            badgeText = 'Amanhã';
+            badgeClass = 'bg-amber-950 text-amber-300 border border-amber-500/30';
+          } else {
+            badgeText = `Em ${days} dias`;
+            badgeClass = 'dark:bg-slate-800 bg-slate-200 dark:text-slate-300 text-slate-700';
+          }
+
+          const card = document.createElement('div');
+          card.className = `p-3 rounded-2xl dark:bg-slate-800/80 bg-white border ${cardBorder} flex items-center justify-between gap-3 shadow-sm transition`;
+          card.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-[10px] px-2 py-0.5 rounded-full ${badgeClass}">${badgeText}</span>
+                ${bill.repeatMonthly ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 font-semibold">Mensal</span>' : ''}
+                <span class="text-xs font-bold dark:text-slate-100 text-slate-800 truncate">${bill.name}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-extrabold text-emerald-400">${formatCurrency(bill.amount)}</span>
+                <span class="text-[10px] text-slate-400">• ${bill.bankSource || 'Banco'}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${!bill.paid ? `
+                <button onclick="openFocusBill(${bill.id})" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1 shadow transition">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-300"></i> Pagar
+                </button>
+              ` : `
+                <span class="text-emerald-400 text-xs font-bold px-2 py-1 flex items-center gap-1"><i data-lucide="check" class="w-4 h-4"></i> Pago</span>
+              `}
+              <button onclick="deleteBill(${bill.id})" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg transition">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+          billsContainer.appendChild(card);
+        });
+      }
+
+      // Renderizar Últimas Movimentações (Entradas e Saídas Unificadas)
+      const historyContainer = document.getElementById('expensesHistoryContainer');
+      historyContainer.innerHTML = '';
+
+      // Unifica receitas e despesas ordenadas por data/id
+      const allMovements = [
+        ...(state.incomesHistory || []).map(inc => ({
+          id: inc.id,
+          title: inc.title,
+          amount: Number(inc.amount),
+          date: inc.date,
+          source: inc.accountName || "Conta",
+          category: "Receita",
+          isIncome: true
+        })),
+        ...(state.expensesHistory || []).map(exp => ({
+          id: exp.id,
+          title: exp.title,
+          amount: Number(exp.amount),
+          date: exp.date,
+          source: exp.sourceName || "Conta",
+          category: exp.category || "Gasto",
+          isIncome: false,
+          isCredit: exp.type === 'credit'
+        }))
+      ].sort((a, b) => b.id - a.id);
+
+      if (allMovements.length === 0) {
+        historyContainer.innerHTML = `<div class="text-[11px] text-slate-500 py-3 text-center dark:bg-slate-900/50 bg-slate-100 rounded-xl border border-dashed dark:border-slate-800 border-slate-300">Nenhuma movimentação registrada ainda. Use o chat da Miix IA ou o botão verde abaixo!</div>`;
+      } else {
+        allMovements.slice(0, 7).forEach(mov => {
+          const item = document.createElement('div');
+          item.className = 'p-2.5 rounded-xl dark:bg-slate-900/70 bg-white border dark:border-slate-800/80 border-slate-200 flex items-center justify-between text-xs shadow-sm';
+          item.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg ${mov.isIncome ? 'bg-emerald-500/20 text-emerald-400' : (mov.isCredit ? 'bg-purple-500/20 text-purple-400' : 'bg-rose-500/20 text-rose-400')} flex items-center justify-center shrink-0">
+                <i data-lucide="${mov.isIncome ? 'arrow-down-left' : (mov.isCredit ? 'credit-card' : 'arrow-up-right')}" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <span class="font-bold dark:text-slate-200 text-slate-800 block text-xs">${mov.title}</span>
+                <span class="text-[10px] text-slate-400">${mov.source} • ${mov.category}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-extrabold ${mov.isIncome ? 'text-emerald-400' : (mov.isCredit ? 'text-purple-400' : 'text-rose-400')}">
+                ${mov.isIncome ? '+' : '-'}${formatCurrency(mov.amount)}
+              </span>
+            </div>
+          `;
+          historyContainer.appendChild(item);
+        });
+      }
+
+      // Renderizar Cartões
+      const cardsList = document.getElementById('cardsListContainer');
+      cardsList.innerHTML = '';
+      let totalUsedLimit = 0;
+      let totalAvailLimit = 0;
+
+      state.cards.forEach(card => {
+        const available = Math.max(0, card.totalLimit - card.usedLimit);
+        totalUsedLimit += Number(card.usedLimit);
+        totalAvailLimit += available;
+        const percUsed = Math.min(100, Math.round((card.usedLimit / card.totalLimit) * 100));
+
+        const cardEl = document.createElement('div');
+        cardEl.className = `${card.style || 'credit-card-black'} p-4 rounded-3xl text-white shadow-xl space-y-3 relative overflow-hidden`;
+        cardEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="credit-card" class="w-5 h-5 text-white/90"></i>
+              <span class="font-black text-sm tracking-wide">${card.name}</span>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 bg-black/30 rounded-full border border-white/20">${card.brand}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-white/70 block">Fatura Atual:</span>
+              <span class="text-lg font-black text-white">${formatCurrency(card.usedLimit)}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] uppercase font-bold text-white/70 block">Disponível:</span>
+              <span class="text-lg font-black text-emerald-300">${formatCurrency(available)}</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="w-full bg-black/40 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-white h-full rounded-full transition-all duration-500" style="width: ${percUsed}%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-white/70 mt-1">
+              <span>Limite Total: ${formatCurrency(card.totalLimit)}</span>
+              <span>${percUsed}% usado</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-white/15 text-white/90">
+            <div>Fecha: Dia <strong>${card.closingDay}</strong> • Vence: Dia <strong>${card.dueDay}</strong></div>
+            <div class="flex gap-2">
+              <button onclick="payCardInvoicePrompt(${card.id})" class="bg-white/20 hover:bg-white/30 text-white font-bold px-2 py-0.5 rounded-lg text-[10px] transition">Pagar Fatura</button>
+              <button onclick="editCardPrompt(${card.id})" class="text-white/80 hover:text-white underline text-[10px]">Ajustar</button>
+              <button onclick="deleteCard(${card.id})" class="text-rose-300 hover:text-rose-100 text-[10px]">Excluir</button>
+            </div>
+          </div>
+        `;
+        cardsList.appendChild(cardEl);
+      });
+
+      document.getElementById('totalCreditUsedDisplay').innerText = formatCurrency(totalUsedLimit);
+      document.getElementById('totalCreditAvailableDisplay').innerText = formatCurrency(totalAvailLimit);
+
+      // Renderizar Gráfico de Rosca (Raio-X de Gastos)
+      renderDonutChart();
+
+      // Renderizar Tetos & Orçamentos
+      const budgetsList = document.getElementById('budgetsListContainer');
+      budgetsList.innerHTML = '';
+      let totalBudgetAvail = 0;
+
+      state.budgets.forEach(b => {
+        const remaining = Math.max(0, b.limit - b.spent);
+        totalBudgetAvail += remaining;
+        const perc = Math.min(100, Math.round((b.spent / b.limit) * 100));
+        const isNear = perc >= 85;
+
+        const bCard = document.createElement('div');
+        bCard.className = 'p-3.5 rounded-2xl dark:bg-slate-800/80 bg-white border dark:border-slate-700/80 border-slate-200 shadow-sm space-y-2';
+        bCard.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold dark:text-slate-100 text-slate-800">${b.name}</span>
+            <span class="text-[11px] font-extrabold ${isNear ? 'text-rose-400' : 'text-emerald-400'}">
+              ${formatCurrency(remaining)} livre
+            </span>
+          </div>
+
+          <div class="w-full bg-slate-200 dark:bg-slate-900 rounded-full h-2 overflow-hidden">
+            <div class="bg-gradient-to-r ${b.color || 'from-indigo-400 to-emerald-400'} h-full rounded-full transition-all duration-500" style="width: ${perc}%"></div>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] text-slate-400">
+            <span>Gasto: <strong>${formatCurrency(b.spent)}</strong> de ${formatCurrency(b.limit)}</span>
+            <span>${perc}% atingido</span>
+          </div>
+        `;
+        budgetsList.appendChild(bCard);
+      });
+
+      document.getElementById('totalBudgetAvailableDisplay').innerText = formatCurrency(totalBudgetAvail);
+
+      // Renderizar Contas Bancárias
+      const accountsList = document.getElementById('accountsListContainer');
+      accountsList.innerHTML = '';
+      state.accounts.forEach(acc => {
+        const item = document.createElement('div');
+        item.className = 'p-3.5 rounded-2xl dark:bg-slate-800/90 bg-white border dark:border-slate-700/80 border-slate-200 shadow-sm flex items-center justify-between text-xs';
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+              <i data-lucide="landmark" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-bold dark:text-slate-100 text-slate-800 text-sm">${acc.name}</h4>
+              <span class="text-[10px] text-slate-400">Conta Ativa</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block">Saldo</span>
+              <strong class="text-sm font-black text-emerald-400">${formatCurrency(acc.balance)}</strong>
+            </div>
+            <button onclick="editAccountPrompt(${acc.id})" class="p-1.5 dark:bg-slate-700 bg-slate-100 hover:opacity-80 rounded-lg dark:text-slate-200 text-slate-700 transition" title="Ajustar saldo">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+        accountsList.appendChild(item);
+      });
+
+      lucide.createIcons();
+    }
+
+    // RENDERIZAR GRÁFICO DE ROSCA SVG
+    function renderDonutChart() {
+      const totalSpent = state.budgets.reduce((acc, b) => acc + Number(b.spent), 0);
+      document.getElementById('donutTotalDisplay').innerText = formatCurrency(totalSpent);
+
+      const circumference = 2 * Math.PI * 38; // ~238.76
+      let accumulatedOffset = 0;
+
+      const legend = document.getElementById('donutLegendContainer');
+      legend.innerHTML = '';
+
+      state.budgets.slice(0, 4).forEach((b, idx) => {
+        const seg = document.getElementById(`donutSeg${idx + 1}`);
+        if (seg) {
+          const ratio = totalSpent > 0 ? (b.spent / totalSpent) : 0;
+          const strokeLength = ratio * circumference;
+          seg.style.strokeDasharray = `${strokeLength} ${circumference}`;
+          seg.style.strokeDashoffset = -accumulatedOffset;
+          seg.style.stroke = b.stroke || "#6366f1";
+          accumulatedOffset += strokeLength;
+        }
+
+        const perc = totalSpent > 0 ? Math.round((b.spent / totalSpent) * 100) : 0;
+        legend.innerHTML += `
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full" style="background-color: ${b.stroke || '#6366f1'}"></span>
+              <span class="dark:text-slate-200 text-slate-800 font-medium">${b.name}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold dark:text-white text-slate-900">${formatCurrency(b.spent)}</span>
+              <span class="text-[10px] text-slate-400 font-semibold w-8 text-right">${perc}%</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // CAIXINHA DA PAZ (POUPANÇA / RESERVA)
+    function depositSavingsPrompt() {
+      const val = prompt("Quanto deseja guardar na Caixinha da Paz hoje? (R$)\nO valor sairá do seu saldo do banco e ficará protegido de impulsos.");
+      if (val !== null && !isNaN(parseFloat(val))) {
+        const amount = parseFloat(val);
+        if (state.accounts.length > 0) {
+          state.accounts[0].balance -= amount;
+        }
+        state.savingsBalance += amount;
+        saveState();
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+        alert(`🎉 Parabéns! ${formatCurrency(amount)} guardados com sucesso na sua Caixinha da Paz!`);
+      }
+    }
+
+    // LEITOR DE NOTIFICAÇÃO
+    function parseAndSaveNotification() {
+      const input = document.getElementById('pasteNotificationInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const numbers = text.match(/\d+([.,]\d+)?/g);
+      const amount = numbers ? parseFloat(numbers[0].replace(',', '.')) : 25.00;
+
+      let bank = state.accounts[0];
+      if (/nubank/i.test(text)) bank = state.accounts.find(a => /nubank/i.test(a.name)) || state.accounts[0];
+      else if (/itau|itaú/i.test(text)) bank = state.accounts.find(a => /itau|itaú/i.test(a.name)) || state.accounts[0];
+      else if (/santander/i.test(text)) bank = state.accounts.find(a => /santander/i.test(a.name)) || state.accounts[0];
+
+      let title = "Compra no Cartão/Pix";
+      let cat = "Alimentação";
+      if (/supermercado|mercado/i.test(text)) { title = "Supermercado"; cat = "Alimentação"; }
+      else if (/farmacia|farmácia|droga/i.test(text)) { title = "Farmácia"; cat = "Saúde"; }
+      else if (/uber|99/i.test(text)) { title = "Uber / Corrida"; cat = "Transporte"; }
+      else if (/ifood|restaurante|lanche/i.test(text)) { title = "Alimentação / Delivery"; cat = "Alimentação"; }
+
+      bank.balance -= amount;
+
+      const budget = state.budgets.find(b => b.name.includes(cat));
+      if (budget) budget.spent += amount;
+
+      state.expensesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date: getTodayOffset(0),
+        sourceName: `${bank.name} (Automático)`,
+        category: cat,
+        type: "debit"
+      });
+
+      input.value = '';
+      saveState();
+
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      alert(`🎉 Notificação capturada com sucesso!\n\nLançado: ${title} - ${formatCurrency(amount)}\nDebitado de: ${bank.name}`);
+    }
+
+    // GESTÃO DE MARCA / BRANDING
+    function openBrandModal() {
+      document.getElementById('brandModal').classList.remove('hidden');
+    }
+    function closeBrandModal() {
+      document.getElementById('brandModal').classList.add('hidden');
+    }
+    function openPhoneShareModal() {
+      document.getElementById('phoneShareModal').classList.remove('hidden');
+    }
+    function closePhoneShareModal() {
+      document.getElementById('phoneShareModal').classList.add('hidden');
+    }
+
+    // OPEN FINANCE BANCO CENTRAL
+    function openOpenFinanceModal() {
+      document.getElementById('openFinanceModal').classList.remove('hidden');
+    }
+    function closeOpenFinanceModal() {
+      document.getElementById('openFinanceModal').classList.add('hidden');
+    }
+    function connectBankViaOpenFinance(bankName, initialBalance, cardName) {
+      let existingAcc = state.accounts.find(a => a.name.toLowerCase() === bankName.toLowerCase());
+      if (existingAcc) {
+        existingAcc.balance = initialBalance;
+      } else {
+        state.accounts.push({
+          id: Date.now(),
+          name: bankName,
+          balance: initialBalance,
+          icon: "landmark",
+          openFinance: true
+        });
+      }
+
+      saveState();
+      closeOpenFinanceModal();
+
+      confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+      alert(`🔒 Conexão Segura Concluída!\n\nO ${bankName} foi conectado via Open Finance com sucesso.\nSaldo sincronizado: ${formatCurrency(initialBalance)}.`);
+    }
+    function selectBrandName(name) {
+      document.getElementById('brandNameDisplay').innerText = name;
+      document.title = `${name} • Finanças Neurodivergentes`;
+      closeBrandModal();
+      confetti({ particleCount: 30, spread: 40, origin: { y: 0.8 } });
+    }
+
+    // CHAT MIIX IA - MOTOR DE INTELIGÊNCIA FINANCEIRA DE ALTA VELOCIDADE
+    function askMiaPrompt(text) {
+      document.getElementById('miaInput').value = text;
+      handleSendMia();
+    }
+
+    function handleSendMia() {
+      const input = document.getElementById('miaInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatContainer = document.getElementById('miaChatMessages');
+      
+      // Mensagem do Usuário
+      chatContainer.innerHTML += `
+        <div class="flex justify-end gap-2">
+          <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-3 rounded-2xl rounded-tr-sm max-w-[85%] text-xs shadow-md">
+            ${text}
+          </div>
+        </div>
+      `;
+      input.value = '';
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Indicador de "Digitando" imediato
+      const typingId = 'mia-typing-' + Date.now();
+      chatContainer.innerHTML += `
+        <div id="${typingId}" class="flex gap-2 items-center text-xs text-slate-400 py-1">
+          <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-pulse"></i>
+          </div>
+          <span class="text-[11px] font-semibold text-emerald-400">Miix IA analisando finanças...</span>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      if (window.lucide) lucide.createIcons();
+
+      // Processamento Inteligente em 350ms (Ultra-rápido)
+      setTimeout(() => {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const lower = text.toLowerCase();
+        let reply = "";
+
+        // Métricas financeiras em tempo real do usuário
+        const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+        const pendingBills = state.bills.filter(b => !b.paid).reduce((acc, b) => acc + Number(b.amount), 0);
+        const safe = Math.max(0, totalBank - pendingBills);
+        const totalInvoices = state.cards.reduce((acc, c) => acc + Number(c.usedLimit), 0);
+        const totalSavings = state.savingsBalance || 0;
+        const daysLeftInMonth = Math.max(1, 30 - new Date().getDate());
+        const dailySafe = (safe / daysLeftInMonth).toFixed(2);
+
+        // 1. RECONHECIMENTO INTELIGENTE: ENTRADAS (RECEITAS) E SAÍDAS (GASTOS)
+        const incomeMatch = lower.match(/(?:ganhei|recebi|caiu|entrou|salario|salário|depositei)\s+(?:um\s+pix\s+de\s+|de\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:de|com|por|em|no|na)\s+([a-zá-ú0-9\s]+?)(?=(?:e\s+(?:gastei|comprei|paguei)|$)))?/);
+        const spendMatch = lower.match(/(?:gastei|comprei|paguei|saiu)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)(?:\s+(?:no|na|em|de|com)\s+([a-zá-ú0-9\s]+))?/);
+
+        // CASO A: Usuário informou Ganho E Gasto na mesma frase (Ex: "Ganhei 4066 e gastei 25")
+        if (incomeMatch && spendMatch) {
+          const incVal = parseFloat(incomeMatch[1].replace(',', '.'));
+          const incDesc = (incomeMatch[2] ? incomeMatch[2].trim() : 'Receita').replace(/^[a-z]/, c => c.toUpperCase());
+          const spVal = parseFloat(spendMatch[1].replace(',', '.'));
+          const spDesc = (spendMatch[2] ? spendMatch[2].trim() : 'Gasto rápido').replace(/^[a-z]/, c => c.toUpperCase());
+
+          if (!isNaN(incVal) && !isNaN(spVal)) {
+            // Garante que exista ao menos uma conta
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
+            // Registra a Receita
+            state.accounts[0].balance += incVal;
+            state.incomesHistory.unshift({
+              id: Date.now(),
+              title: incDesc,
+              amount: incVal,
+              date: getTodayOffset(0),
+              accountName: state.accounts[0].name
+            });
+
+            // Registra a Despesa
+            state.accounts[0].balance = Math.max(0, state.accounts[0].balance - spVal);
+            state.expensesHistory.unshift({
+              id: Date.now() + 1,
+              title: spDesc,
+              amount: spVal,
+              date: getTodayOffset(0),
+              sourceName: state.accounts[0].name,
+              category: "Geral",
+              type: "debit"
+            });
+
+            saveState();
+            confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
+            const saldoLiquido = incVal - spVal;
+
+            reply = `🎉 <strong>Movimentação Dupla Registrada com Sucesso!</strong><br><br>
+            • 🟢 <strong>Entrada:</strong> +${formatCurrency(incVal)} <em>(${incDesc})</em><br>
+            • 🔴 <strong>Saída:</strong> -${formatCurrency(spVal)} <em>(${spDesc})</em><br>
+            • 📈 <strong>Resultado Líquido:</strong> <strong>+${formatCurrency(saldoLiquido)}</strong> adicionados ao seu caixa!<br><hr class="border-slate-700 my-2">
+            🛡️ <strong>Seu Novo Saldo Realmente Livre: ${formatCurrency(newSafe)}</strong><br>
+            💡 <em>Nova meta segura:</em> Você tem <strong>R$ ${newDaily}/dia</strong> até o final do mês. Parabéns pelo controle! 🚀`;
+          }
+        }
+
+        // CASO B: Apenas Entrada de Dinheiro (Ex: "Ganhei 4066" ou "Recebi meu salário")
+        else if (incomeMatch) {
+          const incVal = parseFloat(incomeMatch[1].replace(',', '.'));
+          const incDesc = (incomeMatch[2] ? incomeMatch[2].trim() : 'Receita').replace(/^[a-z]/, c => c.toUpperCase());
+
+          if (!isNaN(incVal) && incVal > 0) {
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
+            state.accounts[0].balance += incVal;
+            state.incomesHistory.unshift({
+              id: Date.now(),
+              title: incDesc,
+              amount: incVal,
+              date: getTodayOffset(0),
+              accountName: state.accounts[0].name
+            });
+
+            saveState();
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
+
+            reply = `💰 <strong>Entrada de Dinheiro Registrada com Sucesso!</strong><br><br>
+            • 🟢 <strong>Valor creditado:</strong> +${formatCurrency(incVal)} em <em>"${incDesc}"</em><br>
+            • 🏦 <strong>Creditado em:</strong> ${state.accounts[0].name}<br><br>
+            🛡️ <strong>Seu Novo Saldo Realmente Livre: ${formatCurrency(newSafe)}</strong><br>
+            💡 <em>Sua folga diária subiu para <strong>R$ ${newDaily}/dia</strong> nos próximos ${daysLeftInMonth} dias!</em> 🎯`;
+          }
+        }
+
+        // CASO C: Apenas Saída de Dinheiro (Ex: "Gastei 25 no lanche")
+        else if (spendMatch) {
+          const val = parseFloat(spendMatch[1].replace(',', '.'));
+          const desc = (spendMatch[2] ? spendMatch[2].trim() : 'Gasto Rápido').replace(/^[a-z]/, c => c.toUpperCase());
+          
+          if (!isNaN(val) && val > 0) {
+            if (!state.accounts || state.accounts.length === 0) {
+              state.accounts = [{ id: 1, name: "Minha Conta", balance: 0, icon: "landmark" }];
+            }
+
+            state.expensesHistory.unshift({
+              id: Date.now(),
+              title: desc,
+              amount: val,
+              date: getTodayOffset(0),
+              sourceName: state.accounts[0].name,
+              category: "Geral",
+              type: "debit"
+            });
+            state.accounts[0].balance = Math.max(0, state.accounts[0].balance - val);
+            
+            saveState();
+            confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+
+            const newTotalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+            const newSafe = Math.max(0, newTotalBank - pendingBills);
+            const newDaily = (newSafe / daysLeftInMonth).toFixed(2);
+
+            reply = `✅ <strong>Gasto registrado com sucesso!</strong><br><br>
+            • 🔴 <strong>Lançado:</strong> -${formatCurrency(val)} em <em>"${desc}"</em><br>
+            • 🛡️ <strong>Novo Saldo Livre:</strong> <strong>${formatCurrency(newSafe)}</strong><br>
+            • 💡 <strong>Meta segura para hoje:</strong> R$ ${newDaily}/dia.<br><br>
+            <em>Já debitei da sua conta e atualizei seu painel na mesma hora!</em>`;
+          }
+        }
+
+        // 2. DIAGNÓSTICO FINANCEIRO COMPLETO
+        else if (lower.includes('diagnostico') || lower.includes('diagnóstico') || lower.includes('situa') || lower.includes('resumo') || lower.includes('analise') || lower.includes('análise') || lower.includes('como estou')) {
+          reply = `📊 <strong>Raio-X das Suas Finanças Hoje:</strong><br><br>
+          • <strong>Dinheiro em Conta:</strong> ${formatCurrency(totalBank)}<br>
+          • <strong>Contas do Mês:</strong> ${formatCurrency(pendingBills)} (${state.bills.filter(b => !b.paid).length} pendentes)<br>
+          • <strong>Faturas de Cartão:</strong> ${formatCurrency(totalInvoices)}<br>
+          • <strong>Caixinha da Paz:</strong> ${formatCurrency(totalSavings)}<br><hr class="border-slate-700 my-2">
+          🛡️ <strong>Saldo Realmente Livre: ${formatCurrency(safe)}</strong><br>
+          💡 <em>Seu teto diário:</em> Você pode gastar até <strong>R$ ${dailySafe}/dia</strong> até o final do mês sem ficar no vermelho!`;
+        }
+
+        // 3. SALDO LIVRE / QUANTO POSSO GASTAR
+        else if (lower.includes('livre') || lower.includes('posso gastar') || lower.includes('quanto tenho') || lower.includes('sobrou')) {
+          reply = `🛡️ <strong>Seu Saldo Realmente Livre:</strong><br><br>
+          Você tem <strong>${formatCurrency(safe)}</strong> limpos para viver!<br>
+          Isso significa <strong>R$ ${dailySafe} por dia</strong> nos próximos ${daysLeftInMonth} dias.<br><br>
+          💡 <em>Regra de ouro TDAH:</em> Se comprar algo acima de R$ ${dailySafe}, compense gastando menos no dia seguinte!`;
+        }
+
+        // 4. DÍVIDAS / RENEGOCIAÇÃO / SERASA / JUROS
+        else if (lower.includes('divida') || lower.includes('dívida') || lower.includes('juros') || lower.includes('serasa') || lower.includes('negociar') || lower.includes('atrasad') || lower.includes('rotativo')) {
+          reply = `🚨 <strong>Plano Anti-Dívidas Inteligente:</strong><br><br>
+          1. <strong>Água, Luz e Teto nunca atrasam:</strong> São sua sobrevivência imediata.<br>
+          2. <strong>Cuidado com o Rotativo do Cartão:</strong> Os juros passam de 400% ao ano! Se a fatura apertar, parcele a fatura em taxa fixa pelo app do banco antes do vencimento.<br>
+          3. <strong>Feirões do Serasa/Desenrola:</strong> Dívidas antigas chegam a ter até 90% de desconto à vista. Nunca pegue outro empréstimo para pagar o anterior!`;
+        }
+
+        // 5. ONDE INVESTIR / RESERVA DE EMERGÊNCIA
+        else if (lower.includes('invest') || lower.includes('onde guardar') || lower.includes('cdb') || lower.includes('selic') || lower.includes('poupan') || lower.includes('render')) {
+          reply = `💰 <strong>Onde Guardar Dinheiro com Segurança (Sem Perder pra Inflação):</strong><br><br>
+          • <strong>Caixinha / Porquinho (100% do CDI):</strong> Rende todo dia útil e você saca quando precisar (Nubank, Inter, Sofisa).<br>
+          • <strong>Tesouro Selic:</strong> O investimento mais seguro do Brasil, garantido pelo Governo Federal.<br>
+          • <strong>Foge da Poupança:</strong> Ela rende quase metade do CDI e você perde poder de compra com o tempo!`;
+        }
+
+        // 6. IMPULSO / VONTADE DE COMPRAR (TDAH)
+        else if (lower.includes('impulso') || lower.includes('comprar') || lower.includes('vontade') || lower.includes('ansiedade') || lower.includes('trava') || lower.includes('dopamina')) {
+          reply = `🧠 <strong>Técnica dos 3 Dias para a Mente com TDAH:</strong><br><br>
+          A vontade de comprar é um pico de dopamina rápida no cérebro. Para não se arrepender depois:<br>
+          1. <strong>Coloque no carrinho e feche o navegador por 72 horas.</strong><br>
+          2. Se daqui a 3 dias você ainda lembrar e tiver saldo livre para ela, compre.<br>
+          3. Em 80% das vezes, o impulso passa e você poupa centenas de reais! 🎯`;
+        }
+
+        // 7. CARTÕES DE CRÉDITO & FATURAS
+        else if (lower.includes('cartao') || lower.includes('cartão') || lower.includes('fatura') || lower.includes('limite')) {
+          reply = `💳 <strong>Dominando seus Cartões de Crédito:</strong><br><br>
+          • Faturas em aberto somadas: <strong>${formatCurrency(totalInvoices)}</strong>.<br>
+          • <em>Regra FOKKO:</em> Cartão de crédito não é extensão de salário, é apenas um meio de pagamento com prazo.<br>
+          • O melhor dia de compra é sempre <strong>1 dia após o fechamento da fatura</strong> (você ganha até 40 dias de prazo para pagar).`;
+        }
+
+        // 8. PARALISIA / PÂNICO / TRAVEI
+        else if (lower.includes('panico') || lower.includes('pânico') || lower.includes('paralis') || lower.includes('travei') || lower.includes('socorro') || lower.includes('medo') || lower.includes('ajuda')) {
+          reply = `💜 <strong>Calma! Respira fundo. Eu estou aqui com você.</strong><br><br>
+          A paralisia do TDAH acontece quando o cérebro tenta resolver 10 problemas ao mesmo tempo.<br><br>
+          👉 <strong>Faça apenas 1 coisa agora:</strong><br>
+          Toque no botão <strong>"Resolver 1"</strong> no topo do app. Pague apenas o boleto mais urgente e feche o banco. O resto a gente resolve amanhã. Um passo de cada vez!`;
+        }
+
+        // 9. DICAS DE ECONOMIA SEM SOFRER
+        else if (lower.includes('economiz') || lower.includes('cortar') || lower.includes('juntar') || lower.includes('poup')) {
+          reply = `💡 <strong>3 Hacks de Economia que Funcionam para TDAH:</strong><br><br>
+          1. <strong>Desinstale apps de delivery nos dias de semana:</strong> A fricção de ter que baixar de novo evita pedidos no tédio.<br>
+          2. <strong>Cancele assinaturas esquecidas:</strong> Dê uma olhada no extrato do cartão. Streamings e serviços que você não usa há 1 mês podem economizar mais de R$ 100/mês.<br>
+          3. <strong>Caixinha da Paz:</strong> Sempre que sobrar R$ 10 ou R$ 20, jogue na Caixinha da Paz antes que vire lanche!`;
+        }
+
+        // 10. RESPOSTA INTELIGENTE CONSULTIVA PERSONALIZADA
+        else {
+          reply = `🤖 <strong>Consultoria Miix IA:</strong><br><br>
+          Entendi sua dúvida sobre: <em>"${text}"</em>.<br><br>
+          Com base na sua situação atual (você tem <strong>${formatCurrency(safe)}</strong> livres e <strong>${formatCurrency(pendingBills)}</strong> em contas previstas):<br><br>
+          • <strong>Dica Prática:</strong> Mantenha seus lançamentos diários atualizados tocando em <strong>"Gastei Agora"</strong>.<br>
+          • <strong>Próximo Passo:</strong> Se precisar simular um cálculo, perguntar sobre dívidas, cartões ou investimentos, só me mandar!`;
+        }
+
+        // Renderiza a resposta com estilo elegante
+        chatContainer.innerHTML += `
+          <div class="flex gap-2.5 items-start">
+            <div class="w-7 h-7 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-slate-950 flex items-center justify-center shrink-0 text-xs font-black shadow-md shadow-emerald-500/20">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="dark:bg-[#0b1122] bg-white p-3.5 rounded-2xl rounded-tl-sm dark:text-slate-200 text-slate-800 border dark:border-slate-800 border-slate-200 shadow-lg max-w-[88%] text-xs leading-relaxed">
+              ${reply}
+            </div>
+          </div>
+        `;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        if (window.lucide) lucide.createIcons();
+      }, 350);
+    }
+
+    // MODAL GASTEI AGORA
+    function openFastSpendModal() {
+      const select = document.getElementById('spendPaymentSource');
+      select.innerHTML = '';
+
+      const bankGroup = document.createElement('optgroup');
+      bankGroup.label = "Contas Bancárias (Débito / Pix)";
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = `account:${a.id}`;
+        opt.innerText = `${a.name} (Saldo: ${formatCurrency(a.balance)})`;
+        bankGroup.appendChild(opt);
+      });
+      select.appendChild(bankGroup);
+
+      if (state.cards.length > 0) {
+        const cardGroup = document.createElement('optgroup');
+        cardGroup.label = "Cartões de Crédito (Na Fatura)";
+        state.cards.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = `card:${c.id}`;
+          opt.innerText = `${c.name} (${c.brand})`;
+          cardGroup.appendChild(opt);
+        });
+        select.appendChild(cardGroup);
+      }
+
+      selectSpendDateOption('today');
+      document.getElementById('fastSpendModal').classList.remove('hidden');
+    }
+
+    function closeFastSpendModal() {
+      document.getElementById('fastSpendModal').classList.add('hidden');
+    }
+
+    function selectSpendDateOption(opt) {
+      spendDateSelected = opt;
+      ['today', 'yesterday', 'custom'].forEach(o => {
+        const btn = document.getElementById(`date-opt-${o}`);
+        btn.className = 'py-1.5 px-2 rounded-xl text-center font-medium text-xs dark:bg-slate-800 bg-slate-100 dark:text-slate-300 text-slate-700 border dark:border-slate-700 border-slate-300';
+      });
+
+      const activeBtn = document.getElementById(`date-opt-${opt}`);
+      activeBtn.className = 'py-1.5 px-2 rounded-xl text-center font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+
+      const customInput = document.getElementById('spendCustomDate');
+      if (opt === 'custom') {
+        customInput.classList.remove('hidden');
+        customInput.value = getTodayOffset(-2);
+      } else {
+        customInput.classList.add('hidden');
+      }
+    }
+
+    function handleSaveFastSpend(e) {
+      e.preventDefault();
+      const title = document.getElementById('spendTitle').value.trim();
+      const amount = parseFloat(document.getElementById('spendAmount').value);
+      const category = document.getElementById('spendCategory').value;
+      const sourceValue = document.getElementById('spendPaymentSource').value;
+
+      let date = getTodayOffset(0);
+      if (spendDateSelected === 'yesterday') date = getTodayOffset(-1);
+      else if (spendDateSelected === 'custom') date = document.getElementById('spendCustomDate').value;
+
+      const [sourceType, sourceId] = sourceValue.split(':');
+      let sourceName = "";
+
+      if (sourceType === 'account') {
+        const acc = state.accounts.find(a => a.id == sourceId);
+        if (acc) {
+          acc.balance -= amount;
+          sourceName = `${acc.name} (Débito/Pix)`;
+        }
+      } else if (sourceType === 'card') {
+        const card = state.cards.find(c => c.id == sourceId);
+        if (card) {
+          card.usedLimit += amount;
+          sourceName = `${card.name} (Crédito)`;
+        }
+      }
+
+      const budget = state.budgets.find(b => b.name.includes(category));
+      if (budget) budget.spent += amount;
+
+      state.expensesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date,
+        sourceName,
+        category,
+        type: sourceType === 'card' ? 'credit' : 'debit'
+      });
+
+      saveState();
+      closeFastSpendModal();
+      document.getElementById('spendTitle').value = '';
+      document.getElementById('spendAmount').value = '';
+
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+    }
+
+    // MODAL RECEITA
+    function openAddIncomeModal() {
+      const select = document.getElementById('incomeAccountSelect');
+      select.innerHTML = '';
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.innerText = a.name;
+        select.appendChild(opt);
+      });
+      document.getElementById('addIncomeModal').classList.remove('hidden');
+    }
+
+    function closeAddIncomeModal() {
+      document.getElementById('addIncomeModal').classList.add('hidden');
+    }
+
+    function handleSaveIncome(e) {
+      e.preventDefault();
+      const title = document.getElementById('incomeTitle').value.trim();
+      const amount = parseFloat(document.getElementById('incomeAmount').value);
+      const accId = document.getElementById('incomeAccountSelect').value;
+
+      const acc = state.accounts.find(a => a.id == accId);
+      if (acc) {
+        acc.balance += amount;
+      }
+
+      state.incomesHistory.unshift({
+        id: Date.now(),
+        title,
+        amount,
+        date: getTodayOffset(0),
+        accountName: acc ? acc.name : "Banco"
+      });
+
+      saveState();
+      closeAddIncomeModal();
+      document.getElementById('incomeTitle').value = '';
+      document.getElementById('incomeAmount').value = '';
+
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+    }
+
+    // CONTA A PAGAR
+    function openAddBillModal() {
+      const select = document.getElementById('billBankSourceInput');
+      select.innerHTML = '';
+      state.accounts.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.name;
+        opt.innerText = a.name;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('billDateInput').value = getTodayOffset(0);
+      document.getElementById('addBillModal').classList.remove('hidden');
+    }
+
+    function closeAddBillModal() {
+      document.getElementById('addBillModal').classList.add('hidden');
+    }
+
+    function handleSaveBill(e) {
+      e.preventDefault();
+      const name = document.getElementById('billNameInput').value.trim();
+      const amount = parseFloat(document.getElementById('billAmountInput').value);
+      const dueDate = document.getElementById('billDateInput').value;
+      const bankSource = document.getElementById('billBankSourceInput').value;
+      const repeatMonthly = document.getElementById('billRepeatMonthly').checked;
+      const code = document.getElementById('billCodeInput').value.trim() || ("PIX-" + Math.floor(Math.random() * 899999));
+
+      state.bills.push({
+        id: Date.now(),
+        name,
+        amount,
+        dueDate,
+        bankSource,
+        repeatMonthly,
+        code,
+        paid: false
+      });
+
+      saveState();
+      closeAddBillModal();
+    }
+
+    // CARTÕES & FATURAS
+    function openNewCardModal() {
+      document.getElementById('newCardModal').classList.remove('hidden');
+    }
+    function closeNewCardModal() {
+      document.getElementById('newCardModal').classList.add('hidden');
+    }
+
+    function handleSaveCard(e) {
+      e.preventDefault();
+      const name = document.getElementById('cardNameInput').value.trim();
+      const brand = document.getElementById('cardBrandInput').value;
+      const style = document.getElementById('cardColorInput').value;
+      const totalLimit = parseFloat(document.getElementById('cardTotalLimitInput').value);
+      const usedLimit = parseFloat(document.getElementById('cardUsedLimitInput').value);
+      const closingDay = parseInt(document.getElementById('cardClosingDayInput').value);
+      const dueDay = parseInt(document.getElementById('cardDueDayInput').value);
+
+      state.cards.push({
+        id: Date.now(),
+        name,
+        brand,
+        style,
+        totalLimit,
+        usedLimit,
+        closingDay,
+        dueDay
+      });
+
+      saveState();
+      closeNewCardModal();
+    }
+
+    function payCardInvoicePrompt(cardId) {
+      const card = state.cards.find(c => c.id === cardId);
+      if (!card) return;
+      if (card.usedLimit <= 0) {
+        alert("🎉 A fatura deste cartão já está zerada!");
+        return;
+      }
+
+      if (confirm(`Deseja pagar a fatura de ${formatCurrency(card.usedLimit)} do ${card.name}?\nO valor será debitado da sua conta principal.`)) {
+        if (state.accounts.length > 0) {
+          state.accounts[0].balance -= card.usedLimit;
+        }
+        card.usedLimit = 0;
+        saveState();
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+      }
+    }
+
+    function editCardPrompt(id) {
+      const card = state.cards.find(c => c.id === id);
+      if (!card) return;
+      const val = prompt(`Qual o valor atual da fatura em aberto do cartão "${card.name}"? (R$)`, card.usedLimit);
+      if (val !== null && !isNaN(parseFloat(val))) {
+        card.usedLimit = parseFloat(val);
+        saveState();
+      }
+    }
+
+    function deleteCard(id) {
+      if (confirm("Excluir este cartão de crédito?")) {
+        state.cards = state.cards.filter(c => c.id !== id);
+        saveState();
+      }
+    }
+
+    // BANCOS
+    function openNewAccountModal() {
+      document.getElementById('newAccountModal').classList.remove('hidden');
+    }
+    function closeNewAccountModal() {
+      document.getElementById('newAccountModal').classList.add('hidden');
+    }
+
+    function handleSaveAccount(e) {
+      e.preventDefault();
+      const name = document.getElementById('accNameInput').value.trim();
+      const balance = parseFloat(document.getElementById('accBalanceInput').value);
+
+      state.accounts.push({
+        id: Date.now(),
+        name,
+        balance,
+        icon: "landmark"
+      });
+
+      saveState();
+      closeNewAccountModal();
+    }
+
+    function editAccountPrompt(id) {
+      const acc = state.accounts.find(a => a.id === id);
+      if (!acc) return;
+      const val = prompt(`Qual o saldo disponível no ${acc.name} agora? (R$)`, acc.balance);
+      if (val !== null && !isNaN(parseFloat(val))) {
+        acc.balance = parseFloat(val);
+        saveState();
+      }
+    }
+
+    // TETOS
+    function openNewBudgetModal() {
+      document.getElementById('newBudgetModal').classList.remove('hidden');
+    }
+    function closeNewBudgetModal() {
+      document.getElementById('newBudgetModal').classList.add('hidden');
+    }
+
+    function handleSaveBudget(e) {
+      e.preventDefault();
+      const name = document.getElementById('budgetNameInput').value.trim();
+      const limit = parseFloat(document.getElementById('budgetLimitInput').value);
+
+      state.budgets.push({
+        id: Date.now(),
+        name,
+        limit,
+        spent: 0,
+        color: "from-blue-400 to-indigo-500",
+        stroke: "#3b82f6"
+      });
+
+      saveState();
+      closeNewBudgetModal();
+    }
+
+    // FOCO TOTAL
+    function startFocusPayFlow() {
+      const pending = state.bills.filter(b => !b.paid).sort((a,b) => getDaysUntil(a.dueDate) - getDaysUntil(b.dueDate));
+      if (pending.length === 0) {
+        alert("🎉 Nenhuma conta pendente para pagar agora!");
+        return;
+      }
+      openFocusBill(pending[0].id);
+    }
+
+    function openFocusBill(id) {
+      const bill = state.bills.find(b => b.id === id);
+      if (!bill) return;
+
+      currentFocusBill = bill;
+      document.getElementById('focusBillTitle').innerText = bill.name;
+      document.getElementById('focusBillAmount').innerText = formatCurrency(bill.amount);
+      document.getElementById('focusBillCode').value = bill.code || "PIX-CHAVE-COPIADA";
+      document.getElementById('focusBillBankName').innerText = bill.bankSource || "Qualquer Banco";
+
+      const days = getDaysUntil(bill.dueDate);
+      const desc = days <= 0 ? "🚨 Essa conta vence hoje/venceu! Copie o código abaixo e pague no app do banco." : `Vence em ${days} dias. Pague agora para tirar esse peso da mente!`;
+      document.getElementById('focusBillDesc').innerText = desc;
+
+      document.getElementById('copyBtn').innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar`;
+      document.getElementById('focusModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeFocusModal() {
+      document.getElementById('focusModal').classList.add('hidden');
+      currentFocusBill = null;
+    }
+
+    function copyFocusCode() {
+      const codeInput = document.getElementById('focusBillCode');
+      navigator.clipboard.writeText(codeInput.value);
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-300"></i> Copiado!`;
+      lucide.createIcons();
+    }
+
+    function confirmFocusPaid() {
+      if (!currentFocusBill) return;
+      currentFocusBill.paid = true;
+
+      const bank = state.accounts.find(a => a.name === currentFocusBill.bankSource);
+      if (bank) {
+        bank.balance -= currentFocusBill.amount;
+      }
+
+      saveState();
+      closeFocusModal();
+
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
+    function deleteBill(id) {
+      state.bills = state.bills.filter(b => b.id !== id);
+      saveState();
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.className = 'filter-btn py-1 font-medium rounded-lg text-slate-400 hover:text-slate-200';
+      });
+      const active = document.getElementById(`filter-${filter}`);
+      if (filter === 'urgent') {
+        active.className = 'filter-btn py-1 font-bold rounded-lg text-rose-300 bg-rose-500/20 border border-rose-500/40';
+      } else {
+        active.className = 'filter-btn py-1 font-bold rounded-lg text-indigo-300 bg-indigo-500/20 border border-indigo-500/40';
+      }
+      render();
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').innerText = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // REGISTRO DE PWA
+    if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+
+    // ==========================================
+    // INTEGRAÇÃO OFICIAL SUPABASE CLOUD
+    // ==========================================
+    const SUPABASE_URL = 'https://djcecwwjctypelrphzok.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_V1xAu9OcGOztr5q4WNdydg_P0pgKEDk';
+    let sbClient = null;
+    let currentUser = null;
+
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (err) {
+      console.warn('Erro ao inicializar Supabase:', err);
+    }
+
+    function showAuthAlert(message, type = 'error') {
+      const alertBox = document.getElementById('authAlert');
+      if (!alertBox) return;
+      alertBox.className = type === 'error'
+        ? 'p-3 rounded-2xl text-xs font-semibold border bg-rose-500/10 border-rose-500/30 text-rose-300 block mb-2'
+        : (type === 'success' 
+            ? 'p-3 rounded-2xl text-xs font-semibold border bg-emerald-500/10 border-emerald-500/30 text-emerald-300 block mb-2'
+            : 'p-3 rounded-2xl text-xs font-semibold border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 block mb-2');
+      alertBox.innerText = message;
+    }
+
+    function hideAuthAlert() {
+      const alertBox = document.getElementById('authAlert');
+      if (alertBox) alertBox.className = 'hidden';
+    }
+
+    function showAuthScreen() {
+      const authScreen = document.getElementById('authScreen');
+      if (authScreen) authScreen.classList.remove('hidden');
+      const badge = document.getElementById('userProfileBadge');
+      if (badge) badge.classList.add('hidden');
+    }
+
+    function hideAuthScreen() {
+      const authScreen = document.getElementById('authScreen');
+      if (authScreen) authScreen.classList.add('hidden');
+      const badge = document.getElementById('userProfileBadge');
+      const emailSpan = document.getElementById('userEmailSpan');
+      if (badge && currentUser) {
+        badge.classList.remove('hidden');
+        emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function signInWithGoogle() {
+      hideAuthAlert();
+      showAuthAlert('Abrindo tela de login do Google...', 'info');
+
+      var redirectUrl = window.location.origin.includes('localhost')
+        ? window.location.origin + '/app.html'
+        : 'https://fokkofin.pages.dev/app';
+
+      var directAuthUrl = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectUrl) + '&prompt=select_account';
+      window.location.href = directAuthUrl;
+    }
+
+    async function handleEmailSignIn() {
+      if (!sbClient) return alert('Cliente Supabase indisponível.');
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password) {
+        return showAuthAlert('Por favor, informe seu e-mail e senha.');
+      }
+      showAuthAlert('Entrando...', 'info');
+      try {
+        const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthAlert(error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message);
+        } else {
+          currentUser = data.user;
+          hideAuthAlert();
+          hideAuthScreen();
+          loadCloudData();
+        }
+      } catch (e) {
+        showAuthAlert('Erro de conexão: ' + e.message);
+      }
+    }
+
+    async function handleEmailSignUp() {
+      if (!sbClient) return alert('Cliente Supabase indisponível.');
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password) {
+        return showAuthAlert('Por favor, preencha e-mail e crie uma senha.');
+      }
+      if (password.length < 6) {
+        return showAuthAlert('A senha deve ter no mínimo 6 caracteres.');
+      }
+      showAuthAlert('Criando sua conta...', 'info');
+      try {
+        const { data, error } = await sbClient.auth.signUp({ email, password });
+        if (error) {
+          showAuthAlert(error.message);
+        } else {
+          currentUser = data.user;
+          showAuthAlert('🎉 Conta criada com sucesso no Supabase!', 'success');
+          setTimeout(() => {
+            hideAuthAlert();
+            hideAuthScreen();
+            loadCloudData();
+          }, 800);
+        }
+      } catch (e) {
+        showAuthAlert('Erro ao cadastrar: ' + e.message);
+      }
+    }
+
+    function handleSignOut() {
+      localStorage.removeItem('fokko_user_session');
+      if (sbClient) {
+        sbClient.auth.signOut().catch(() => {});
+      }
+      currentUser = null;
+      updateSyncIndicator('offline');
+      showAuthScreen();
+    }
+
+    // ==========================================
+    // SINCRONIZAÇÃO EM NUVEM NA CONTA GOOGLE
+    // ==========================================
+    let syncDebounceTimer = null;
+
+    function updateSyncIndicator(status) {
+      const dot = document.getElementById('cloudSyncDot');
+      const text = document.getElementById('cloudSyncText');
+      const footerStatus = document.getElementById('cloudSyncStatusFooter');
+      const footerTime = document.getElementById('lastSyncTimeFooter');
+      const modalStatus = document.getElementById('updateModalSyncStatus');
+      const nowStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      if (status === 'syncing') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping';
+        if (text) text.innerText = 'Sincronizando Google...';
+        if (footerStatus) footerStatus.innerText = 'Enviando dados...';
+      } else if (status === 'synced') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        if (text) text.innerText = `Google: Sincronizado ✓`;
+        if (footerStatus) footerStatus.innerText = 'Conta Google Conectada ✓';
+        if (footerTime) footerTime.innerText = `Hoje às ${nowStr}`;
+        if (modalStatus) modalStatus.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Conectado e Atualizado';
+      } else if (status === 'offline') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+        if (text) text.innerText = 'Salvo localmente (offline)';
+        if (footerStatus) footerStatus.innerText = 'Modo Local (Offline)';
+        if (footerTime) footerTime.innerText = 'Pendente de sincronização';
+        if (modalStatus) modalStatus.innerHTML = '<i data-lucide="cloud-off" class="w-3.5 h-3.5"></i> Offline';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function syncStateToGoogleCloud() {
+      if (!sbClient || !currentUser) {
+        updateSyncIndicator('offline');
+        return;
+      }
+      clearTimeout(syncDebounceTimer);
+      syncDebounceTimer = setTimeout(async () => {
+        try {
+          updateSyncIndicator('syncing');
+          // Sincroniza o estado financeiro completo diretamente na conta autenticada do Google / Supabase
+          const { error } = await sbClient.auth.updateUser({
+            data: {
+              fokko_state: state,
+              last_synced: new Date().toISOString()
+            }
+          });
+          if (error) {
+            console.warn('Erro ao atualizar dados na nuvem:', error);
+            updateSyncIndicator('offline');
+          } else {
+            updateSyncIndicator('synced');
+          }
+        } catch (err) {
+          console.warn('Falha sync cloud:', err);
+          updateSyncIndicator('offline');
+        }
+      }, 400);
+    }
+
+    async function forceCloudSync() {
+      if (!currentUser) {
+        alert('Faça login com a sua conta Google para sincronizar os dados na nuvem.');
+        return;
+      }
+      showAuthAlert('Sincronizando com a sua Conta Google...', 'info');
+      await syncStateToGoogleCloud();
+      setTimeout(() => {
+        hideAuthAlert();
+      }, 800);
+    }
+
+    async function loadCloudData() {
+      if (!currentUser || !sbClient) return;
+      try {
+        updateSyncIndicator('syncing');
+        // Lê os metadados mais recentes associados à conta Google no Supabase
+        const { data: { user } } = await sbClient.auth.getUser();
+        const activeUser = user || currentUser;
+        if (activeUser && activeUser.user_metadata && activeUser.user_metadata.fokko_state) {
+          const cloudState = activeUser.user_metadata.fokko_state;
+          // Se tiver contas ou histórico na nuvem, restaura!
+          if (cloudState && (cloudState.accounts || cloudState.bills || cloudState.expensesHistory || cloudState.incomesHistory)) {
+            state = Object.assign({}, INITIAL_STATE, cloudState);
+            const key = getStorageKey();
+            localStorage.setItem(key, JSON.stringify(state));
+            render();
+          }
+        } else {
+          // Se a conta Google ainda não tiver dados salvos na nuvem, faz o primeiro upload
+          syncStateToGoogleCloud();
+        }
+        updateSyncIndicator('synced');
+      } catch (e) {
+        console.warn('Erro ao carregar dados da nuvem:', e);
+        updateSyncIndicator('offline');
+      }
+    }
+
+    // ==========================================
+    // CONTROLE DO APLICATIVO FÍSICO & APK
+    // ==========================================
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById('btnInstallNativeApp');
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="smartphone" class="w-4 h-4"></i> Instalar Aplicativo no Celular';
+      }
+      if (window.lucide) lucide.createIcons();
+    });
+
+    function triggerNativeInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('App instalado com sucesso!');
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        // Dispara download direto do APK com instrução
+        window.location.href = 'download/fokkofin.apk';
+      }
+    }
+
+    function openAppUpdateModal() {
+      const modal = document.getElementById('appUpdateModal');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAppUpdateModal() {
+      const modal = document.getElementById('appUpdateModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function trackApkDownload() {
+      console.log('Iniciando download do pacote APK físico v2.0.0');
+    }
+
+    async function initAuth() {
+      if (sbClient) {
+        try {
+          const { data: { session } } = await sbClient.auth.getSession();
+          if (session && session.user) {
+            currentUser = session.user;
+            hideAuthScreen();
+            const emailSpan = document.getElementById('userEmailSpan');
+            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
+            loadCloudData();
+            return;
+          }
+          sbClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+              currentUser = session.user;
+              hideAuthScreen();
+              const emailSpan = document.getElementById('userEmailSpan');
+              if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
+              loadCloudData();
+            }
+          });
+        } catch (e) {}
+      }
+
+      const savedSession = localStorage.getItem('fokko_user_session');
+      if (savedSession) {
+        try {
+          currentUser = JSON.parse(savedSession);
+          hideAuthScreen();
+          const emailSpan = document.getElementById('userEmailSpan');
+          if (emailSpan && currentUser) emailSpan.innerText = currentUser.name || currentUser.email.split('@')[0];
+          loadCloudData();
+          return;
+        } catch (e) {}
+      }
+      showAuthScreen();
+    }
+
+    // ==========================================
+    // TUTORIAL RÁPIDO PARA TDAH (3 PASSOS)
+    // ==========================================
+    function openTutorialModal() {
+      const modal = document.getElementById('tutorialModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        nextTutorialStep(1);
+      }
+    }
+
+    function closeTutorialModal() {
+      const modal = document.getElementById('tutorialModal');
+      if (modal) modal.classList.add('hidden');
+      localStorage.setItem('fokko_tut_seen', 'true');
+    }
+
+    function nextTutorialStep(step) {
+      const s1 = document.getElementById('tutStep1');
+      const s2 = document.getElementById('tutStep2');
+      const s3 = document.getElementById('tutStep3');
+      if (s1) s1.classList.toggle('hidden', step !== 1);
+      if (s2) s2.classList.toggle('hidden', step !== 2);
+      if (s3) s3.classList.toggle('hidden', step !== 3);
+
+      const d1 = document.getElementById('tutStepDot1');
+      const d2 = document.getElementById('tutStepDot2');
+      const d3 = document.getElementById('tutStepDot3');
+      if (d1) d1.className = step === 1 ? 'w-6 h-1.5 rounded-full bg-emerald-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+      if (d2) d2.className = step === 2 ? 'w-6 h-1.5 rounded-full bg-indigo-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+      if (d3) d3.className = step === 3 ? 'w-6 h-1.5 rounded-full bg-cyan-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+    }
+
+    initTheme();
+    render();
+    initAuth();
+
+    // Abre o tutorial simplificado automaticamente na primeira vez
+    setTimeout(() => {
+      if (!localStorage.getItem('fokko_tut_seen')) {
+        openTutorialModal();
+      }
+    }, 600);
+  </script>
+</body>
+</html>

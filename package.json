@@ -1,0 +1,18 @@
+{
+  "name": "fokkofin",
+  "version": "2.0.0",
+  "description": "FOKKO FIN • Aplicativo Financeiro Profissional com Foco Neurodivergente",
+  "scripts": {
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  },
+  "author": "Evandro Miix",
+  "license": "MIT"
+}

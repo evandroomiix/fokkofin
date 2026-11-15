@@ -1,1 +1,7 @@
+node_modules/
 server.py
+android/.gradle/
+android/build/
+android/app/build/
+*.log
+.DS_Store

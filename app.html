@@ -2963,45 +2963,16 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    async function signInWithGoogle() {
+    function signInWithGoogle() {
       hideAuthAlert();
-      showAuthAlert('Conectando à sua Conta Google...', 'info');
+      showAuthAlert('Abrindo tela de login do Google...', 'info');
 
-      // Define a URL de retorno dinâmica e segura
-      var currentUrl = window.location.href.split('#')[0].split('?')[0];
-      var redirectUrl = currentUrl;
-      if (!redirectUrl.includes('localhost') && !redirectUrl.endsWith('/app') && !redirectUrl.endsWith('/app.html')) {
-        redirectUrl = 'https://fokkofin.pages.dev/app';
-      }
+      var redirectUrl = window.location.origin.includes('localhost')
+        ? window.location.origin + '/app.html'
+        : 'https://fokkofin.pages.dev/app';
 
-      try {
-        if (sbClient && sbClient.auth) {
-          const { data, error } = await sbClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-              redirectTo: redirectUrl,
-              queryParams: {
-                prompt: 'select_account'
-              }
-            }
-          });
-
-          if (data && data.url) {
-            window.location.assign(data.url);
-            return;
-          }
-
-          if (error) {
-            console.warn('Supabase signInWithOAuth retornou erro:', error);
-          }
-        }
-      } catch (e) {
-        console.warn('Erro ao chamar signInWithOAuth, acionando rota direta:', e);
-      }
-
-      // Redirecionamento direto infalível para o OAuth do Google via Supabase
-      var directUrl = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectUrl) + '&prompt=select_account';
-      window.location.assign(directUrl);
+      var directAuthUrl = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectUrl) + '&prompt=select_account';
+      window.location.href = directAuthUrl;
     }
 
     async function handleEmailSignIn() {
