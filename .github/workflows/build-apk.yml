@@ -42,7 +42,24 @@ jobs:
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace > ../gradle_build.log 2>&1 || {
+            echo "GRADLE_FAILED=true" > ../gradle_error.flag
+            tail -n 100 ../gradle_build.log > ../gradle_error.log
+          }
+
+      - name: Report and Push Log on Failure
+        if: always()
+        run: |
+          if [ -f gradle_error.flag ]; then
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add gradle_error.log
+            git commit -m "ci: capture gradle build error log [skip ci]" || true
+            git push || true
+            echo "--- GRADLE BUILD ERROR OUTPUT ---"
+            cat gradle_error.log
+            exit 1
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
