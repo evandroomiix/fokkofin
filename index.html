@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <script>
-    // Se aberto de dentro do APK ou PWA instalado, entra direto no App sem abrir landing page
-    if (window.matchMedia('(display-mode: standalone)').matches || 
+    // Preserva tokens do Google OAuth (access_token / code) ou entra direto se for APK/PWA
+    if (window.location.hash.includes('access_token') || 
+        window.location.search.includes('code=') || 
+        window.location.hash.includes('error') ||
+        window.matchMedia('(display-mode: standalone)').matches || 
         window.navigator.standalone === true || 
         document.referrer.includes('android-app://') || 
         navigator.userAgent.includes('wv') ||
         window.location.search.includes('source=pwa')) {
-      window.location.replace('app.html');
+      window.location.replace('/app' + window.location.search + window.location.hash);
     }
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

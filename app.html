@@ -3188,28 +3188,68 @@
 
     async function initAuth() {
       if (sbClient) {
+        // Registra o listener de mudança de estado de autenticação
+        sbClient.auth.onAuthStateChange((event, session) => {
+          if (session && session.user) {
+            currentUser = session.user;
+            localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+            hideAuthScreen();
+            const emailSpan = document.getElementById('userEmailSpan');
+            if (emailSpan && currentUser) {
+              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+            }
+            loadCloudData();
+            if (window.location.hash.includes('access_token')) {
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+          }
+        });
+
+        // 1. Trata retorno com código de autorização (PKCE)
+        const urlParams = new URLSearchParams(window.location.search);
+        const authCode = urlParams.get('code');
+        if (authCode) {
+          try {
+            showAuthAlert('Autenticando Conta Google...', 'info');
+            const { data, error } = await sbClient.auth.exchangeCodeForSession(authCode);
+            if (data && data.session && data.session.user) {
+              currentUser = data.session.user;
+              localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+              hideAuthScreen();
+              loadCloudData();
+              window.history.replaceState({}, document.title, window.location.pathname);
+              return;
+            }
+          } catch (err) {
+            console.warn('Erro ao trocar código por sessão:', err);
+          }
+        }
+
+        // 2. Trata retorno com token no Hash (#access_token)
+        if (window.location.hash.includes('access_token')) {
+          showAuthAlert('Autenticando Conta Google...', 'info');
+          // Dá 300ms para o SDK extrair a sessão da URL
+          await new Promise(r => setTimeout(r, 300));
+        }
+
+        // 3. Tenta obter a sessão ativa
         try {
           const { data: { session } } = await sbClient.auth.getSession();
           if (session && session.user) {
             currentUser = session.user;
+            localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
             const emailSpan = document.getElementById('userEmailSpan');
             if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
             loadCloudData();
             return;
           }
-          sbClient.auth.onAuthStateChange((event, session) => {
-            if (session && session.user) {
-              currentUser = session.user;
-              hideAuthScreen();
-              const emailSpan = document.getElementById('userEmailSpan');
-              if (emailSpan && currentUser) emailSpan.innerText = currentUser.email.split('@')[0];
-              loadCloudData();
-            }
-          });
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Erro getSession:', e);
+        }
       }
 
+      // 4. Sessão local salva anteriormente
       const savedSession = localStorage.getItem('fokko_user_session');
       if (savedSession) {
         try {
@@ -3221,7 +3261,11 @@
           return;
         } catch (e) {}
       }
-      showAuthScreen();
+
+      // Se não houver autenticação em andamento, mostra a tela de login
+      if (!window.location.hash.includes('access_token') && !window.location.search.includes('code=')) {
+        showAuthScreen();
+      }
     }
 
     // ==========================================
