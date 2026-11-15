@@ -3042,10 +3042,15 @@
     function updateGoogleAuthLink() {
       const btn = document.getElementById('btnGoogleAuth');
       if (btn) {
-        const isLocal = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1');
-        const redirectUrl = isLocal 
-          ? window.location.origin + '/app.html' 
+        // Detecta se estamos rodando dentro do aplicativo físico (Capacitor / Android)
+        const isCapacitor = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+        const isLocalScheme = window.location.origin.includes('localhost') || window.location.origin.includes('capacitor://');
+
+        // Se estiver rodando dentro do aplicativo físico instalado (APK), redireciona direto para o Deep Link do App!
+        const redirectUrl = (isCapacitor || isLocalScheme)
+          ? 'com.fokkofin.app://callback'
           : 'https://fokkofin.pages.dev/app';
+
         btn.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}&prompt=select_account`;
       }
     }
@@ -3112,29 +3117,12 @@
       localStorage.removeItem('fokko_user_session');
       if (confirmClear) {
         localStorage.clear();
-        state = {
-          accounts: [
-            { id: 'acc_nubank', name: 'Nubank (Conta Principal)', initialBalance: 1250.00, color: '#820ad1' },
-            { id: 'acc_inter', name: 'Banco Inter', initialBalance: 420.50, color: '#ff7a00' },
-            { id: 'acc_carteira', name: 'Dinheiro Físico', initialBalance: 85.00, color: '#10b981' }
-          ],
-          creditCards: [
-            { id: 'card_nubank', name: 'Nubank Roxinho', limit: 3500.00, closeDay: 10, dueDay: 17, color: 'credit-card-nubank' }
-          ],
-          categories: [
-            { id: 'cat_moradia', name: 'Moradia / Aluguel', icon: 'home', color: 'emerald' },
-            { id: 'cat_mercado', name: 'Alimentação / Mercado', icon: 'shopping-cart', color: 'cyan' },
-            { id: 'cat_transporte', name: 'Transporte / Uber', icon: 'car', color: 'indigo' },
-            { id: 'cat_lazer', name: 'Lazer e Streaming', icon: 'film', color: 'amber' },
-            { id: 'cat_saude', name: 'Saúde & Remédios', icon: 'heart-pulse', color: 'rose' }
-          ],
-          transactions: []
-        };
-        saveLocal();
+        state = JSON.parse(JSON.stringify(INITIAL_STATE));
+        saveState();
         render();
       }
 
-      if (sbClient) {
+      if (sbClient && sbClient.auth) {
         sbClient.auth.signOut().catch(() => {});
       }
       currentUser = null;
