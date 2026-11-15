@@ -2,11 +2,35 @@
 <html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>FOKKO FIN • Organização Financeira para TDAH</title>
   <link rel="icon" type="image/jpeg" href="fokko_icon.jpg">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#060913">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="FOKKO FIN">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    // Desregistra Service Workers antigos e limpa caches para carregar sempre a versão mais nova
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var i = 0; i < regs.length; i++) {
+          regs[i].unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var i = 0; i < names.length; i++) {
+          caches.delete(names[i]);
+        }
+      });
+    }
+  </script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts -->
@@ -73,6 +97,8 @@
       body {
         padding: 0 !important;
         margin: 0 !important;
+        overscroll-behavior-y: none !important;
+        -webkit-tap-highlight-color: transparent;
       }
       header.w-full.max-w-4xl {
         display: none !important;
@@ -85,6 +111,9 @@
         border-radius: 0 !important;
         box-shadow: none !important;
         border: none !important;
+      }
+      .simulated-notch {
+        display: none !important;
       }
     }
 
@@ -184,21 +213,44 @@
   <!-- CONTAINER DO APLICATIVO -->
   <main id="appContainer" class="phone-wrapper w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-200">
     
-    <!-- Barra Superior do Celular (Notch + Hora) -->
-    <div class="relative z-30 pt-3 px-6 pb-2 dark:bg-slate-900/90 bg-white/90 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
-      <span id="currentTime" class="font-bold dark:text-slate-200 text-slate-800">19:45</span>
-      <div class="w-24 h-4 bg-black rounded-full flex items-center justify-center">
-        <div class="w-2 h-2 rounded-full bg-slate-800 mr-2"></div>
+    <!-- Barra Superior do Aplicativo (Adaptação Inteligente: Desktop e Celular Nativo) -->
+    <div class="relative z-30 pt-2.5 px-4 pb-2 dark:bg-slate-900/95 bg-white/95 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
+      
+      <!-- Lado Esquerdo: Identidade do App e Status Cloud -->
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg overflow-hidden border border-cyan-500/40 shrink-0">
+          <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <div class="flex items-center gap-1">
+            <span class="font-black text-xs tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+            <button onclick="openAppUpdateModal()" class="text-[9px] px-1.5 py-0.2 bg-cyan-500/10 text-cyan-300 font-extrabold rounded-md border border-cyan-500/30 hover:bg-cyan-500/20 transition" title="Verificar Atualizações do App">v2.0.0</button>
+          </div>
+          <!-- Indicador Dinâmico da Conta Google / Supabase -->
+          <div id="cloudSyncIndicator" class="flex items-center gap-1 text-[8.5px] text-slate-400 font-semibold">
+            <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span id="cloudSyncText">Conectando...</span>
+          </div>
+        </div>
       </div>
+
+      <!-- Notch Simulado (Exibido apenas na moldura de Desktop) -->
+      <div class="simulated-notch w-20 h-3.5 bg-black rounded-full flex items-center justify-center">
+        <div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+      </div>
+
+      <!-- Lado Direito: Perfil do Usuário Google / Sair -->
       <div class="flex items-center gap-2">
         <div id="userProfileBadge" class="hidden flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+          <i data-lucide="user-check" class="w-3 h-3 text-emerald-400"></i>
           <span id="userEmailSpan" class="text-[9px] text-emerald-400 font-bold max-w-[90px] truncate">usuario</span>
-          <button onclick="handleSignOut()" class="text-slate-400 hover:text-rose-400" title="Sair da Conta">
+          <button onclick="handleSignOut()" class="text-slate-400 hover:text-rose-400 ml-0.5" title="Sair da Conta">
             <i data-lucide="log-out" class="w-3 h-3"></i>
           </button>
         </div>
-        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
-        <i data-lucide="battery-charging" class="w-4 h-4 text-emerald-400"></i>
+        <button onclick="openAppUpdateModal()" class="p-1 rounded-lg text-slate-400 hover:text-cyan-300 transition" title="Atualizar Aplicativo (APK)">
+          <i data-lucide="download-cloud" class="w-4 h-4"></i>
+        </button>
       </div>
     </div>
 
@@ -286,10 +338,83 @@
           </button>
         </div>
 
-        <!-- Logo Oficial FOKKO FIN Banner -->
-        <div class="rounded-3xl overflow-hidden shadow-xl border border-cyan-500/25 bg-slate-950 flex flex-col items-center justify-center p-3 text-center relative group">
-          <img src="fokko_logo.jpg" alt="FOKKO FIN - Organização Financeira" class="max-h-24 w-auto object-contain transition group-hover:scale-105 duration-300">
-          <span class="text-[10px] text-cyan-400/80 font-bold uppercase tracking-widest mt-1">Desenvolvido com foco neurodivergente</span>
+        <!-- Logo compacta no topo -->
+        <div class="flex items-center justify-center gap-2 py-1">
+          <div class="w-7 h-7 rounded-xl overflow-hidden border border-cyan-500/30 shadow-sm">
+            <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
+          </div>
+          <span class="font-black text-sm tracking-tight dark:text-white text-slate-900">FOKKO <span class="text-cyan-400">FIN</span></span>
+        </div>
+
+        <!-- NAVEGAÇÃO: INICIAL / SALDO / PREVISTO -->
+        <div class="grid grid-cols-3 gap-1 dark:bg-slate-800/60 bg-slate-200/70 p-1 rounded-2xl border dark:border-slate-700/60 border-slate-300">
+          <button onclick="switchFinTab('inicial')" id="fin-tab-inicial" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Inicial</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabInicialValue">R$ 0,00</strong>
+          </button>
+          <button onclick="switchFinTab('saldo')" id="fin-tab-saldo" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Saldo</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabSaldoValue">R$ 0,00</strong>
+          </button>
+          <button onclick="switchFinTab('previsto')" id="fin-tab-previsto" class="fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700">
+            <span class="text-[10px] uppercase tracking-wider block font-bold">Previsto</span>
+            <strong class="text-sm font-black block mt-0.5" id="finTabPrevistoValue">R$ 0,00</strong>
+          </button>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba INICIAL (detalhamento do saldo) -->
+        <div id="finPanel-inicial" class="fin-panel p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-400"></i> Detalhamento do Saldo Inicial
+          </h3>
+          <div id="inicialDetailContainer" class="space-y-1.5 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba SALDO (extrato do período) -->
+        <div id="finPanel-saldo" class="fin-panel hidden p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="receipt" class="w-3.5 h-3.5 text-cyan-400"></i> Extrato do Período
+          </h3>
+          <div id="saldoExtratoContainer" class="space-y-1.5 text-xs max-h-48 overflow-y-auto custom-scroll">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- PAINEL: Conteúdo da aba PREVISTO (detalhamento do saldo previsto) -->
+        <div id="finPanel-previsto" class="fin-panel hidden p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm space-y-2">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-indigo-400"></i> Detalhamento do Saldo Previsto
+          </h3>
+          <div id="previstoDetailContainer" class="space-y-1.5 text-xs">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- LINHA DO TEMPO: Datas com débitos a pagar -->
+        <div class="p-3 rounded-2xl dark:bg-slate-800/60 bg-white border dark:border-slate-700/60 border-slate-200 shadow-sm">
+          <h3 class="text-xs font-bold dark:text-slate-200 text-slate-800 flex items-center gap-1.5 mb-2">
+            <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-amber-400"></i> Linha do Tempo de Débitos
+          </h3>
+          <div id="debitTimelineContainer" class="flex gap-2 overflow-x-auto pb-2 custom-scroll">
+            <!-- Gerado via JS -->
+          </div>
+        </div>
+
+        <!-- ALERTA DE DESPESAS PENDENTES -->
+        <div id="pendingExpensesAlert" class="p-4 rounded-2xl bg-gradient-to-r from-rose-950/40 via-slate-800/80 to-slate-800/40 border border-rose-500/30 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-bold dark:text-slate-100 text-slate-800" id="pendingExpensesText">Você tem 0 despesas pendentes no total de R$ 0,00</p>
+            </div>
+          </div>
+          <button onclick="setFilter('all'); switchView('dashboard');" class="w-full mt-3 py-2.5 bg-rose-500 hover:bg-rose-400 active:scale-95 text-white font-black rounded-xl text-xs transition shadow-lg shadow-rose-500/20 flex items-center justify-center gap-1.5">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i> Verificar
+          </button>
         </div>
 
         <!-- CARD PRINCIPAL: SALDO REALMENTE LIVRE (SAFE-TO-SPEND) COM OLHINHO DE PRIVACIDADE -->
@@ -453,39 +578,53 @@
           <div id="expensesHistoryContainer" class="space-y-1.5"></div>
         </div>
 
-        <!-- PAINEL OFICIAL DE PRODUÇÃO & DESENVOLVEDOR -->
-        <div class="p-4 rounded-3xl bg-[#090e1c] border border-slate-800 space-y-3 mt-4">
+        <!-- PAINEL OFICIAL: APLICATIVO FÍSICO & NUVEM GOOGLE (v2.0.0) -->
+        <div class="p-4 rounded-3xl bg-gradient-to-br from-[#090e1c] via-[#0b1226] to-[#070b16] border border-cyan-500/30 space-y-3 mt-4 shadow-xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-2xl overflow-hidden border border-emerald-500/40 shadow-lg shadow-emerald-500/20 shrink-0">
+              <div class="w-9 h-9 rounded-2xl overflow-hidden border border-cyan-400/40 shadow-lg shadow-cyan-500/20 shrink-0">
                 <img src="fokko_icon.jpg" alt="FOKKO FIN" class="w-full h-full object-cover">
               </div>
               <div>
                 <span class="font-black text-white block text-xs tracking-tight">FOKKO <span class="text-cyan-400">FIN</span></span>
-                <span class="text-[9px] text-emerald-400 font-bold flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-                  v1.0.0 Oficial (Produção)
+                <span class="text-[9px] text-cyan-300 font-bold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block animate-pulse"></span>
+                  v2.0.0 Aplicativo Oficial
                 </span>
               </div>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[9px] text-emerald-300 font-black uppercase tracking-wider">Homologado</span>
+            <button onclick="openAppUpdateModal()" class="px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[9px] text-cyan-300 font-black uppercase tracking-wider hover:bg-cyan-500/20 transition flex items-center gap-1">
+              <i data-lucide="download" class="w-3 h-3"></i> Atualizar APK
+            </button>
           </div>
 
-          <div class="border-t border-slate-800/80 pt-2.5 space-y-1.5 text-[10px]">
-            <div class="flex items-center justify-between text-slate-400">
-              <span>Desenvolvedor Principal:</span>
-              <span class="font-extrabold text-white">Evandro Miix</span>
+          <!-- Status da Conta Google e Nuvem -->
+          <div class="p-2.5 rounded-2xl dark:bg-slate-900/80 bg-white/5 border dark:border-slate-800 border-slate-700/50 space-y-1.5 text-[10px]">
+            <div class="flex items-center justify-between text-slate-300">
+              <span class="flex items-center gap-1"><i data-lucide="cloud" class="w-3 h-3 text-cyan-400"></i> Sincronização Google:</span>
+              <span id="cloudSyncStatusFooter" class="font-bold text-emerald-400">Ativa & Conectada ✓</span>
             </div>
             <div class="flex items-center justify-between text-slate-400">
-              <span>Assistente Financeira:</span>
-              <span class="font-bold text-cyan-300">Miix IA Integrada</span>
+              <span>Última sincronização:</span>
+              <span id="lastSyncTimeFooter" class="font-mono text-slate-300">Em tempo real</span>
             </div>
-            <div class="flex items-center justify-between text-slate-400">
-              <span>Status do Banco na Nuvem:</span>
-              <span class="font-bold text-emerald-400 flex items-center gap-1">
-                <i data-lucide="check" class="w-3 h-3"></i> Supabase Cloud Conectado
-              </span>
-            </div>
+          </div>
+
+          <!-- Botões Rápidos de Aplicativo -->
+          <div class="grid grid-cols-2 gap-2 pt-0.5">
+            <button onclick="triggerNativeInstall()" class="py-2.5 px-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Instalar no Celular
+            </button>
+            <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="py-2.5 px-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
+              <i data-lucide="package" class="w-3.5 h-3.5 text-cyan-400"></i> Baixar APK (2.6M)
+            </a>
+          </div>
+
+          <div class="border-t border-slate-800/80 pt-2 text-[10px] text-slate-400 flex items-center justify-between">
+            <span>Desenvolvedor: <strong>Evandro Miix</strong></span>
+            <button onclick="forceCloudSync()" class="text-cyan-400 hover:underline flex items-center gap-0.5 font-semibold">
+              <i data-lucide="refresh-cw" class="w-2.5 h-2.5"></i> Sincronizar Agora
+            </button>
           </div>
         </div>
 
@@ -877,6 +1016,64 @@
   </div>
 
   <!-- ==================== MODAIS ==================== -->
+
+  <!-- MODAL: ATUALIZAÇÃO DO APLICATIVO (APK & NATIVO) -->
+  <div id="appUpdateModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="dark:bg-slate-900 bg-white border dark:border-cyan-500/40 border-cyan-300 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative text-center">
+      <button onclick="closeAppUpdateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-14 h-14 bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 text-cyan-400 rounded-3xl mx-auto flex items-center justify-center border border-cyan-500/30 shadow-lg">
+        <i data-lucide="smartphone" class="w-7 h-7"></i>
+      </div>
+
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-400 font-extrabold uppercase mb-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Versão Oficial v2.0.0
+        </div>
+        <h3 class="text-base font-black dark:text-white text-slate-900">Aplicativo & Atualizações</h3>
+        <p class="text-xs text-slate-400 mt-1">Instale o app diretamente ou baixe a versão física em APK.</p>
+      </div>
+
+      <!-- Card de Status do APK / Nuvem -->
+      <div class="p-3 rounded-2xl dark:bg-slate-800/80 bg-slate-100 border dark:border-slate-700/80 border-slate-200 text-left space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Sincronização Google:</span>
+          <span id="updateModalSyncStatus" class="font-bold text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> Conectado
+          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Pacote Android:</span>
+          <span class="font-bold dark:text-slate-200 text-slate-700">fokkofin.apk (2.6 MB)</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Status do Sistema:</span>
+          <span class="font-bold text-cyan-300">Atualizado e Homologado</span>
+        </div>
+      </div>
+
+      <!-- Ações do Modal -->
+      <div class="space-y-2 pt-1">
+        <!-- Botão Instalar App Nativo (WebAPK) -->
+        <button id="btnInstallNativeApp" onclick="triggerNativeInstall()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Instalar Aplicativo no Celular
+        </button>
+
+        <!-- Botão Baixar APK Físico Direto -->
+        <a href="download/fokkofin.apk" download="fokkofin.apk" onclick="trackApkDownload()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2">
+          <i data-lucide="package" class="w-4 h-4 text-cyan-400"></i> Baixar Arquivo APK Físico
+        </a>
+
+        <!-- Botão Forçar Sincronização Google -->
+        <button onclick="forceCloudSync()" class="w-full py-2 text-slate-400 hover:text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sincronizar Agora com a Conta Google
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: GASTEI AGORA (ZERO BUROCRACIA) -->
   <div id="fastSpendModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -1334,9 +1531,19 @@
     let isPhoneFramed = true;
     let spendDateSelected = 'today';
 
+    function getStorageKey() {
+      if (currentUser && currentUser.id) {
+        return `fokkofin_user_${currentUser.id}`;
+      }
+      return 'fokkofin_v5';
+    }
+
     function saveState() {
+      const key = getStorageKey();
+      localStorage.setItem(key, JSON.stringify(state));
       localStorage.setItem('fokkofin_v5', JSON.stringify(state));
       render();
+      syncStateToGoogleCloud();
     }
 
     function resetDemoData() {
@@ -1420,6 +1627,168 @@
       }
     }
 
+    // ==========================================
+    // NAVEGAÇÃO INICIAL / SALDO / PREVISTO
+    // ==========================================
+    let currentFinTab = 'inicial';
+
+    function switchFinTab(tab) {
+      currentFinTab = tab;
+      // Reset visual for all tabs
+      document.querySelectorAll('.fin-tab').forEach(btn => {
+        btn.className = 'fin-tab py-2.5 px-2 rounded-xl text-center transition-all dark:text-slate-300 text-slate-700';
+      });
+      // Highlight active
+      const activeBtn = document.getElementById(`fin-tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.className = 'fin-tab py-2.5 px-2 rounded-xl text-center transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20';
+      }
+      // Show/hide panels
+      document.querySelectorAll('.fin-panel').forEach(p => p.classList.add('hidden'));
+      const panel = document.getElementById(`finPanel-${tab}`);
+      if (panel) panel.classList.remove('hidden');
+      renderFinPanels();
+    }
+
+    function renderFinPanels() {
+      const totalBank = state.accounts.reduce((acc, a) => acc + Number(a.balance), 0);
+      const pendingBills = state.bills.filter(b => !b.paid);
+      const totalPending = pendingBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const totalIncomes = state.incomesHistory.reduce((acc, i) => acc + Number(i.amount), 0);
+      const totalExpenses = state.expensesHistory.reduce((acc, e) => acc + Number(e.amount), 0);
+      const saldoAtual = totalBank - totalExpenses + totalIncomes;
+      const previstoFinal = totalBank + totalIncomes - totalPending - totalExpenses;
+
+      // Update tab values
+      const inicialEl = document.getElementById('finTabInicialValue');
+      const saldoEl = document.getElementById('finTabSaldoValue');
+      const previstoEl = document.getElementById('finTabPrevistoValue');
+      if (inicialEl) inicialEl.innerText = formatCurrency(totalBank);
+      if (saldoEl) saldoEl.innerText = formatCurrency(saldoAtual);
+      if (previstoEl) previstoEl.innerText = formatCurrency(previstoFinal);
+
+      // Panel: INICIAL (detalhamento do saldo por conta)
+      const inicialContainer = document.getElementById('inicialDetailContainer');
+      if (inicialContainer) {
+        inicialContainer.innerHTML = '';
+        if (state.accounts.length === 0) {
+          inicialContainer.innerHTML = '<p class="text-slate-400 text-center py-2">Nenhuma conta cadastrada.</p>';
+        } else {
+          state.accounts.forEach(acc => {
+            inicialContainer.innerHTML += `
+              <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="${acc.icon || 'landmark'}" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="font-bold dark:text-slate-200 text-slate-700">${acc.name}</span>
+                </div>
+                <span class="font-black dark:text-white text-slate-900">${formatCurrency(acc.balance)}</span>
+              </div>`;
+          });
+          inicialContainer.innerHTML += `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mt-1">
+              <span class="font-bold text-emerald-400">Total Inicial</span>
+              <span class="font-black text-emerald-400">${formatCurrency(totalBank)}</span>
+            </div>`;
+        }
+      }
+
+      // Panel: SALDO (extrato do período)
+      const saldoContainer = document.getElementById('saldoExtratoContainer');
+      if (saldoContainer) {
+        const allMov = [
+          ...(state.incomesHistory || []).map(inc => ({
+            title: inc.title, amount: Number(inc.amount), date: inc.date, isIncome: true, id: inc.id
+          })),
+          ...(state.expensesHistory || []).map(exp => ({
+            title: exp.title, amount: Number(exp.amount), date: exp.date, isIncome: false, id: exp.id
+          }))
+        ].sort((a, b) => b.id - a.id);
+
+        if (allMov.length === 0) {
+          saldoContainer.innerHTML = '<p class="text-slate-400 text-center py-2">Nenhuma movimentação no período.</p>';
+        } else {
+          saldoContainer.innerHTML = allMov.map(m => `
+            <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full ${m.isIncome ? 'bg-emerald-400' : 'bg-rose-400'}"></span>
+                <span class="dark:text-slate-200 text-slate-700">${m.title}</span>
+              </div>
+              <span class="font-bold ${m.isIncome ? 'text-emerald-400' : 'text-rose-400'}">${m.isIncome ? '+' : '-'} ${formatCurrency(m.amount)}</span>
+            </div>`).join('');
+        }
+      }
+
+      // Panel: PREVISTO (detalhamento do saldo previsto)
+      const previstoContainer = document.getElementById('previstoDetailContainer');
+      if (previstoContainer) {
+        previstoContainer.innerHTML = `
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">Saldo em contas</span>
+            <span class="font-bold text-emerald-400">${formatCurrency(totalBank)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">+ Receitas previstas</span>
+            <span class="font-bold text-emerald-400">+ ${formatCurrency(totalIncomes)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">− Contas a pagar</span>
+            <span class="font-bold text-rose-400">- ${formatCurrency(totalPending)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border dark:border-slate-700/50 border-slate-200">
+            <span class="dark:text-slate-300 text-slate-600">− Gastos realizados</span>
+            <span class="font-bold text-rose-400">- ${formatCurrency(totalExpenses)}</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl ${previstoFinal >= 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30'} border mt-1">
+            <span class="font-bold ${previstoFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">Saldo Previsto Final</span>
+            <span class="font-black ${previstoFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatCurrency(previstoFinal)}</span>
+          </div>`;
+      }
+
+      // TIMELINE de débitos
+      const timelineContainer = document.getElementById('debitTimelineContainer');
+      if (timelineContainer) {
+        const unpaidBills = state.bills.filter(b => !b.paid).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+        if (unpaidBills.length === 0) {
+          timelineContainer.innerHTML = '<p class="text-[11px] text-slate-400 py-2 w-full text-center">Nenhum débito pendente 🎉</p>';
+        } else {
+          // Group bills by date
+          const grouped = {};
+          unpaidBills.forEach(b => {
+            if (!grouped[b.dueDate]) grouped[b.dueDate] = [];
+            grouped[b.dueDate].push(b);
+          });
+          timelineContainer.innerHTML = Object.entries(grouped).map(([date, bills]) => {
+            const days = getDaysUntil(date);
+            const [y, m, d] = date.split('-');
+            const dateLabel = `${d}/${m}`;
+            let dotColor = 'bg-slate-500';
+            let borderColor = 'border-slate-700';
+            if (days < 0) { dotColor = 'bg-rose-500'; borderColor = 'border-rose-500/50'; }
+            else if (days === 0) { dotColor = 'bg-rose-500 animate-pulse'; borderColor = 'border-rose-500/50'; }
+            else if (days <= 3) { dotColor = 'bg-amber-500'; borderColor = 'border-amber-500/50'; }
+            else { dotColor = 'bg-emerald-500'; borderColor = 'border-emerald-500/50'; }
+
+            const totalDate = bills.reduce((s, b) => s + Number(b.amount), 0);
+            return `
+              <div class="flex flex-col items-center gap-1 min-w-[70px] p-2 rounded-xl dark:bg-slate-900/60 bg-slate-50 border ${borderColor} shrink-0">
+                <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
+                <span class="text-[10px] font-bold dark:text-slate-200 text-slate-700">${dateLabel}</span>
+                <span class="text-[9px] text-slate-400">${bills.length} conta${bills.length > 1 ? 's' : ''}</span>
+                <span class="text-[10px] font-black text-rose-400">${formatCurrency(totalDate)}</span>
+              </div>`;
+          }).join('');
+        }
+      }
+
+      // ALERTA de despesas pendentes
+      const pendingText = document.getElementById('pendingExpensesText');
+      if (pendingText) {
+        pendingText.innerText = `Você tem ${pendingBills.length} despesa${pendingBills.length === 1 ? '' : 's'} pendente${pendingBills.length === 1 ? '' : 's'} no total de ${formatCurrency(totalPending)}`;
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
     function switchView(viewName) {
       ['dashboard', 'cards', 'reports', 'budgets', 'accounts', 'mia'].forEach(v => {
         document.getElementById(`view-${v}`).classList.add('hidden');
@@ -1449,6 +1818,7 @@
       document.getElementById('totalSavingsDisplay').innerText = formatCurrency(state.savingsBalance);
       document.getElementById('savingsAmountCardDisplay').innerText = formatCurrency(state.savingsBalance);
       document.getElementById('pendingCountBadge').innerText = `${pendingBills.length} pendente${pendingBills.length === 1 ? '' : 's'}`;
+      renderFinPanels();
 
       const ratio = totalBank > 0 ? Math.min(100, Math.round((safeToSpend / totalBank) * 100)) : 0;
       document.getElementById('safeProgressBar').style.width = `${ratio}%`;
@@ -2535,8 +2905,8 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // REGISTRO DE PWA (INSTALAÇÃO SEGURA SEM BLOQUEIOS)
-    if ('serviceWorker' in navigator) {
+    // REGISTRO DE PWA
+    if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
       });
@@ -2601,7 +2971,10 @@
         const { error } = await sbClient.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + '/app.html'
+            redirectTo: window.location.origin + '/app.html',
+            queryParams: {
+              prompt: 'select_account'
+            }
           }
         });
         if (error) {
@@ -2670,18 +3043,154 @@
         sbClient.auth.signOut().catch(() => {});
       }
       currentUser = null;
+      updateSyncIndicator('offline');
       showAuthScreen();
+    }
+
+    // ==========================================
+    // SINCRONIZAÇÃO EM NUVEM NA CONTA GOOGLE
+    // ==========================================
+    let syncDebounceTimer = null;
+
+    function updateSyncIndicator(status) {
+      const dot = document.getElementById('cloudSyncDot');
+      const text = document.getElementById('cloudSyncText');
+      const footerStatus = document.getElementById('cloudSyncStatusFooter');
+      const footerTime = document.getElementById('lastSyncTimeFooter');
+      const modalStatus = document.getElementById('updateModalSyncStatus');
+      const nowStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      if (status === 'syncing') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping';
+        if (text) text.innerText = 'Sincronizando Google...';
+        if (footerStatus) footerStatus.innerText = 'Enviando dados...';
+      } else if (status === 'synced') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        if (text) text.innerText = `Google: Sincronizado ✓`;
+        if (footerStatus) footerStatus.innerText = 'Conta Google Conectada ✓';
+        if (footerTime) footerTime.innerText = `Hoje às ${nowStr}`;
+        if (modalStatus) modalStatus.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Conectado e Atualizado';
+      } else if (status === 'offline') {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+        if (text) text.innerText = 'Salvo localmente (offline)';
+        if (footerStatus) footerStatus.innerText = 'Modo Local (Offline)';
+        if (footerTime) footerTime.innerText = 'Pendente de sincronização';
+        if (modalStatus) modalStatus.innerHTML = '<i data-lucide="cloud-off" class="w-3.5 h-3.5"></i> Offline';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function syncStateToGoogleCloud() {
+      if (!sbClient || !currentUser) {
+        updateSyncIndicator('offline');
+        return;
+      }
+      clearTimeout(syncDebounceTimer);
+      syncDebounceTimer = setTimeout(async () => {
+        try {
+          updateSyncIndicator('syncing');
+          // Sincroniza o estado financeiro completo diretamente na conta autenticada do Google / Supabase
+          const { error } = await sbClient.auth.updateUser({
+            data: {
+              fokko_state: state,
+              last_synced: new Date().toISOString()
+            }
+          });
+          if (error) {
+            console.warn('Erro ao atualizar dados na nuvem:', error);
+            updateSyncIndicator('offline');
+          } else {
+            updateSyncIndicator('synced');
+          }
+        } catch (err) {
+          console.warn('Falha sync cloud:', err);
+          updateSyncIndicator('offline');
+        }
+      }, 400);
+    }
+
+    async function forceCloudSync() {
+      if (!currentUser) {
+        alert('Faça login com a sua conta Google para sincronizar os dados na nuvem.');
+        return;
+      }
+      showAuthAlert('Sincronizando com a sua Conta Google...', 'info');
+      await syncStateToGoogleCloud();
+      setTimeout(() => {
+        hideAuthAlert();
+      }, 800);
     }
 
     async function loadCloudData() {
       if (!currentUser || !sbClient) return;
       try {
-        const { data: bills } = await sbClient.from('transactions').select('*').limit(20);
-        if (bills && bills.length > 0) {
-          state.bills = bills;
-          render();
+        updateSyncIndicator('syncing');
+        // Lê os metadados mais recentes associados à conta Google no Supabase
+        const { data: { user } } = await sbClient.auth.getUser();
+        const activeUser = user || currentUser;
+        if (activeUser && activeUser.user_metadata && activeUser.user_metadata.fokko_state) {
+          const cloudState = activeUser.user_metadata.fokko_state;
+          // Se tiver contas ou histórico na nuvem, restaura!
+          if (cloudState && (cloudState.accounts || cloudState.bills || cloudState.expensesHistory || cloudState.incomesHistory)) {
+            state = Object.assign({}, INITIAL_STATE, cloudState);
+            const key = getStorageKey();
+            localStorage.setItem(key, JSON.stringify(state));
+            render();
+          }
+        } else {
+          // Se a conta Google ainda não tiver dados salvos na nuvem, faz o primeiro upload
+          syncStateToGoogleCloud();
         }
-      } catch (e) {}
+        updateSyncIndicator('synced');
+      } catch (e) {
+        console.warn('Erro ao carregar dados da nuvem:', e);
+        updateSyncIndicator('offline');
+      }
+    }
+
+    // ==========================================
+    // CONTROLE DO APLICATIVO FÍSICO & APK
+    // ==========================================
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById('btnInstallNativeApp');
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="smartphone" class="w-4 h-4"></i> Instalar Aplicativo no Celular';
+      }
+      if (window.lucide) lucide.createIcons();
+    });
+
+    function triggerNativeInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('App instalado com sucesso!');
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        // Dispara download direto do APK com instrução
+        window.location.href = 'download/fokkofin.apk';
+      }
+    }
+
+    function openAppUpdateModal() {
+      const modal = document.getElementById('appUpdateModal');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAppUpdateModal() {
+      const modal = document.getElementById('appUpdateModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function trackApkDownload() {
+      console.log('Iniciando download do pacote APK físico v2.0.0');
     }
 
     async function initAuth() {
@@ -2715,6 +3224,7 @@
           hideAuthScreen();
           const emailSpan = document.getElementById('userEmailSpan');
           if (emailSpan && currentUser) emailSpan.innerText = currentUser.name || currentUser.email.split('@')[0];
+          loadCloudData();
           return;
         } catch (e) {}
       }

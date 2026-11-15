@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fokko-fin-v3';
+const CACHE_NAME = 'fokko-fin-v5';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -9,9 +9,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          return caches.delete(key);
         })
       );
     })
@@ -28,12 +26,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response && response.status === 200) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, copy);
-          });
-        }
         return response;
       })
       .catch(() => {
