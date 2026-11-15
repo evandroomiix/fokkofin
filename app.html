@@ -308,6 +308,14 @@
               Criar Conta
             </button>
           </div>
+
+          <!-- Acesso Imediato 1-Click Direto -->
+          <div class="pt-2 border-t border-slate-800/80">
+            <button onclick="enterDirectDemo('evandroomiix.lc@gmail.com')" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-emerald-500/30 transition active:scale-95">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+              <span>Entrar no Meu Painel Agora</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -2922,7 +2930,14 @@
 
     try {
       if (window.supabase && window.supabase.createClient) {
-        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: window.localStorage
+          }
+        });
       }
     } catch (err) {
       console.warn('Erro ao inicializar Supabase:', err);
@@ -3289,7 +3304,30 @@
         }
       }
 
-      // 4. Sessão local salva anteriormente
+      // 4. Procura tokens salvos diretamente pelo Supabase no localStorage
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              const u = parsed.user || (parsed.currentSession && parsed.currentSession.user);
+              if (u) {
+                currentUser = u;
+                localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+                hideAuthScreen();
+                const emailSpan = document.getElementById('userEmailSpan');
+                if (emailSpan) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Logado';
+                loadCloudData();
+                return;
+              }
+            }
+          }
+        }
+      } catch (err) {}
+
+      // 5. Sessão local salva anteriormente
       const savedSession = localStorage.getItem('fokko_user_session');
       if (savedSession) {
         try {
@@ -3302,10 +3340,33 @@
         } catch (e) {}
       }
 
+      // Se houver erro na URL vindo do Google, exibe alerta!
+      const urlHash = window.location.hash;
+      const urlSearch = window.location.search;
+      if (urlHash.includes('error=') || urlSearch.includes('error=')) {
+        const hParams = new URLSearchParams(urlHash.substring(1));
+        const sParams = new URLSearchParams(urlSearch);
+        const errDesc = hParams.get('error_description') || sParams.get('error_description') || hParams.get('error') || sParams.get('error');
+        if (errDesc) {
+          showAuthAlert('Mensagem Google: ' + decodeURIComponent(errDesc.replace(/\+/g, ' ')), 'error');
+        }
+      }
+
       // Se não houver autenticação em andamento, mostra a tela de login
       if (!window.location.hash.includes('access_token') && !window.location.search.includes('code=')) {
         showAuthScreen();
       }
+    }
+
+    function enterDirectDemo(email) {
+      currentUser = {
+        id: 'user_evandro',
+        email: email || 'evandroomiix.lc@gmail.com',
+        name: 'Evandro Magno'
+      };
+      localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+      hideAuthScreen();
+      loadCloudData();
     }
 
     // ==========================================
