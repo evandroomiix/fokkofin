@@ -93,12 +93,23 @@
       transition: all 0.4s ease;
     }
 
+    /* Adaptação Safe Area para Barra de Notificação do Celular */
+    .app-top-header {
+      padding-top: max(env(safe-area-inset-top, 0px), 36px) !important;
+    }
+    @media (min-width: 641px) {
+      .app-top-header {
+        padding-top: 12px !important;
+      }
+    }
+
     @media (max-width: 640px) {
       body {
         padding: 0 !important;
         margin: 0 !important;
         overscroll-behavior-y: none !important;
         -webkit-tap-highlight-color: transparent;
+        background-color: #060913 !important;
       }
       header.w-full.max-w-4xl {
         display: none !important;
@@ -213,8 +224,8 @@
   <!-- CONTAINER DO APLICATIVO -->
   <main id="appContainer" class="phone-wrapper w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-800 border-slate-200">
     
-    <!-- Barra Superior do Aplicativo (Adaptação Inteligente: Desktop e Celular Nativo) -->
-    <div class="relative z-30 pt-2.5 px-4 pb-2 dark:bg-slate-900/95 bg-white/95 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
+    <!-- Barra Superior do Aplicativo com Adaptação Safe Area para Notificações -->
+    <div class="app-top-header relative z-30 px-4 pb-2.5 dark:bg-[#060913]/95 bg-white/95 backdrop-blur border-b dark:border-slate-800 border-slate-200 flex items-center justify-between text-xs text-slate-400">
       
       <!-- Lado Esquerdo: Identidade do App e Status Cloud -->
       <div class="flex items-center gap-2">
@@ -229,7 +240,7 @@
           <!-- Indicador Dinâmico da Conta Google / Supabase -->
           <div id="cloudSyncIndicator" class="flex items-center gap-1 text-[8.5px] text-slate-400 font-semibold">
             <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span id="cloudSyncText">Conectando...</span>
+            <span id="cloudSyncText">Modo Local</span>
           </div>
         </div>
       </div>
@@ -241,14 +252,26 @@
 
       <!-- Lado Direito: Perfil do Usuário Google / Sair -->
       <div class="flex items-center gap-2">
-        <button onclick="showAuthScreen()" id="userProfileBadge" class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full hover:bg-emerald-500/20 transition cursor-pointer">
-          <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span id="userEmailSpan" class="text-[10px] text-emerald-400 font-bold max-w-[100px] truncate">Evandro Magno</span>
+        <button onclick="showAuthScreen()" id="userProfileBadge" class="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 px-2.5 py-1 rounded-full transition cursor-pointer">
+          <i id="userBadgeIcon" data-lucide="user" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span id="userEmailSpan" class="text-[10px] text-slate-200 font-bold max-w-[100px] truncate">Conectar</span>
         </button>
         <button onclick="openAppUpdateModal()" class="p-1 rounded-lg text-slate-400 hover:text-cyan-300 transition" title="Atualizar Aplicativo (APK)">
           <i data-lucide="download-cloud" class="w-4 h-4"></i>
         </button>
       </div>
+    </div>
+
+    <!-- Banner de Retorno para o APK Físico (exibido apenas se concluído no navegador externo) -->
+    <div id="deepLinkReturnBanner" class="hidden m-3 p-3.5 rounded-2xl bg-emerald-500/15 border-2 border-emerald-500/60 text-center space-y-2">
+      <div class="flex items-center justify-center gap-1.5 text-emerald-400 font-bold text-xs">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+        <span>Login Realizado no Google com Sucesso!</span>
+      </div>
+      <p class="text-[11px] text-slate-300">Toque abaixo para retornar imediatamente ao seu aplicativo instalado:</p>
+      <a id="btnReturnToApp" href="com.fokkofin.app://callback" class="inline-flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/30 transition active:scale-95 no-underline">
+        <i data-lucide="smartphone" class="w-4 h-4"></i> Abrir no Aplicativo FOKKO FIN
+      </a>
     </div>
 
     <!-- MODAL DE CONEXÃO GOOGLE & SUPABASE (NÃO BLOQUEIA O ACESSO AO APP) -->
@@ -271,13 +294,16 @@
           </div>
         </div>
 
+        <!-- Informações da Conta Atual (dinâmico) -->
+        <div id="modalAccountInfo" class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs"></div>
+
         <!-- Alerta de Status -->
         <div id="authAlert" class="hidden p-3 rounded-2xl text-xs font-semibold border"></div>
 
         <!-- Botão Oficial Google (Link Direto Nativo) -->
         <a id="btnGoogleAuth" href="https://djcecwwjctypelrphzok.supabase.co/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Ffokkofin.pages.dev%2Fapp&prompt=select_account" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl text-xs flex items-center justify-center gap-3 shadow-xl transition active:scale-95 cursor-pointer no-underline">
           <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span>Conectar Conta Google</span>
+          <span>Conectar com a Conta Google</span>
         </a>
 
         <!-- Botão Continuar no App -->
@@ -286,10 +312,10 @@
           <span>Continuar no Painel Principal</span>
         </button>
 
-        <!-- Sair da Conta -->
-        <div class="pt-2 text-center border-t border-slate-800/80">
-          <button onclick="handleSignOut()" class="text-[11px] text-slate-500 hover:text-rose-400 font-semibold transition">
-            Desconectar ou Limpar Sessão
+        <!-- Sair da Conta / Limpar Dados -->
+        <div id="btnSignOutContainer" class="pt-2 text-center border-t border-slate-800/80">
+          <button onclick="handleSignOut()" class="text-[11px] text-rose-400 hover:text-rose-300 font-bold transition flex items-center justify-center gap-1.5 mx-auto">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Desconectar Conta / Limpar Dados
           </button>
         </div>
       </div>
@@ -2930,14 +2956,78 @@
       if (alertBox) alertBox.className = 'hidden';
     }
 
+    function updateUserProfileBadge() {
+      const emailSpan = document.getElementById('userEmailSpan');
+      const badgeIcon = document.getElementById('userBadgeIcon');
+      const badge = document.getElementById('userProfileBadge');
+      const modalAccountInfo = document.getElementById('modalAccountInfo');
+      const btnSignOutContainer = document.getElementById('btnSignOutContainer');
+      const dot = document.getElementById('cloudSyncDot');
+      const text = document.getElementById('cloudSyncText');
+
+      if (currentUser && (currentUser.name || currentUser.email)) {
+        const displayName = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Usuário');
+        if (emailSpan) emailSpan.innerText = displayName;
+        if (badgeIcon) {
+          badgeIcon.setAttribute('data-lucide', 'user-check');
+          badgeIcon.className = 'w-3.5 h-3.5 text-emerald-400';
+        }
+        if (badge) {
+          badge.className = 'flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-full transition cursor-pointer';
+        }
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        if (text) text.innerText = 'Sincronizado';
+
+        if (modalAccountInfo) {
+          modalAccountInfo.classList.remove('hidden');
+          modalAccountInfo.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-300">Conectado como:</span>
+              </div>
+              <strong class="text-emerald-400 font-mono">${currentUser.email || currentUser.name}</strong>
+            </div>
+          `;
+        }
+        if (btnSignOutContainer) btnSignOutContainer.classList.remove('hidden');
+      } else {
+        if (emailSpan) emailSpan.innerText = 'Conectar';
+        if (badgeIcon) {
+          badgeIcon.setAttribute('data-lucide', 'user');
+          badgeIcon.className = 'w-3.5 h-3.5 text-cyan-400';
+        }
+        if (badge) {
+          badge.className = 'flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 px-2.5 py-1 rounded-full transition cursor-pointer';
+        }
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+        if (text) text.innerText = 'Modo Local';
+
+        if (modalAccountInfo) {
+          modalAccountInfo.classList.remove('hidden');
+          modalAccountInfo.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span class="text-slate-300">Status da Conta:</span>
+              </div>
+              <span class="text-amber-400 font-semibold">Modo Local (Offline)</span>
+            </div>
+          `;
+        }
+        if (btnSignOutContainer) btnSignOutContainer.classList.add('hidden');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
     function showAuthScreen() {
       const authScreen = document.getElementById('authScreen');
       if (authScreen) {
         authScreen.classList.remove('hidden');
         authScreen.style.display = 'flex';
       }
-      const badge = document.getElementById('userProfileBadge');
-      if (badge) badge.classList.add('hidden');
+      updateUserProfileBadge();
+      updateGoogleAuthLink();
     }
 
     function hideAuthScreen() {
@@ -2946,13 +3036,7 @@
         authScreen.classList.add('hidden');
         authScreen.style.display = 'none';
       }
-      const badge = document.getElementById('userProfileBadge');
-      const emailSpan = document.getElementById('userEmailSpan');
-      if (badge && currentUser) {
-        badge.classList.remove('hidden');
-        emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Logado');
-      }
-      if (window.lucide) lucide.createIcons();
+      updateUserProfileBadge();
     }
 
     function updateGoogleAuthLink() {
@@ -3023,13 +3107,41 @@
     }
 
     function handleSignOut() {
+      const confirmClear = confirm('Deseja também apagar todos os lançamentos e cartões locais deste aparelho?\n\n- Clique em [OK] para LIMPAR TUDO (reset completo)\n- Clique em [Cancelar] apenas para desconectar a conta');
+      
       localStorage.removeItem('fokko_user_session');
+      if (confirmClear) {
+        localStorage.clear();
+        state = {
+          accounts: [
+            { id: 'acc_nubank', name: 'Nubank (Conta Principal)', initialBalance: 1250.00, color: '#820ad1' },
+            { id: 'acc_inter', name: 'Banco Inter', initialBalance: 420.50, color: '#ff7a00' },
+            { id: 'acc_carteira', name: 'Dinheiro Físico', initialBalance: 85.00, color: '#10b981' }
+          ],
+          creditCards: [
+            { id: 'card_nubank', name: 'Nubank Roxinho', limit: 3500.00, closeDay: 10, dueDay: 17, color: 'credit-card-nubank' }
+          ],
+          categories: [
+            { id: 'cat_moradia', name: 'Moradia / Aluguel', icon: 'home', color: 'emerald' },
+            { id: 'cat_mercado', name: 'Alimentação / Mercado', icon: 'shopping-cart', color: 'cyan' },
+            { id: 'cat_transporte', name: 'Transporte / Uber', icon: 'car', color: 'indigo' },
+            { id: 'cat_lazer', name: 'Lazer e Streaming', icon: 'film', color: 'amber' },
+            { id: 'cat_saude', name: 'Saúde & Remédios', icon: 'heart-pulse', color: 'rose' }
+          ],
+          transactions: []
+        };
+        saveLocal();
+        render();
+      }
+
       if (sbClient) {
         sbClient.auth.signOut().catch(() => {});
       }
       currentUser = null;
+      updateUserProfileBadge();
       updateSyncIndicator('offline');
-      showAuthScreen();
+      hideAuthScreen();
+      showToast('Conta desconectada com sucesso!', 'info');
     }
 
     // ==========================================
@@ -3179,29 +3291,19 @@
     }
 
     async function initAuth() {
-      // 1. Garante que currentUser está sempre inicializado com Evandro Magno
+      // 1. Restaura sessão salva se existir (sem recriar automaticamente se o usuário apagou)
       if (!currentUser) {
         const savedSession = localStorage.getItem('fokko_user_session');
         if (savedSession) {
           try { currentUser = JSON.parse(savedSession); } catch (e) {}
         }
-        if (!currentUser) {
-          currentUser = {
-            id: 'user_evandro',
-            email: 'evandroomiix.lc@gmail.com',
-            name: 'Evandro Magno'
-          };
-          localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
-        }
       }
 
-      // Atualiza badge de perfil imediatamente
-      const emailSpan = document.getElementById('userEmailSpan');
-      if (emailSpan && currentUser) {
-        emailSpan.innerText = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno');
-      }
-      const syncText = document.getElementById('cloudSyncText');
-      if (syncText) syncText.innerText = 'Sincronizado';
+      // Atualiza badge de perfil dinamicamente (Mostra "Conectar" se não houver usuário)
+      updateUserProfileBadge();
+
+      // Configura tratamento de Deep Links para o APK Físico
+      setupDeepLinkHandling();
 
       if (sbClient) {
         // Registra o listener de mudança de estado de autenticação
@@ -3210,9 +3312,7 @@
             currentUser = session.user;
             localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
-            if (emailSpan && currentUser) {
-              emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : (currentUser.name || 'Evandro Magno');
-            }
+            updateUserProfileBadge();
             loadCloudData();
             if (window.location.hash.includes('access_token')) {
               window.history.replaceState({}, document.title, window.location.pathname);
@@ -3231,6 +3331,7 @@
               currentUser = data.session.user;
               localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
               hideAuthScreen();
+              updateUserProfileBadge();
               loadCloudData();
               window.history.replaceState({}, document.title, window.location.pathname);
               return;
@@ -3256,6 +3357,7 @@
                   currentUser = data.session.user;
                   localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
                   hideAuthScreen();
+                  updateUserProfileBadge();
                   loadCloudData();
                   window.history.replaceState({}, document.title, window.location.pathname);
                   return;
@@ -3266,11 +3368,12 @@
               if (payload && (payload.sub || payload.email)) {
                 currentUser = {
                   id: payload.sub,
-                  email: payload.email || 'evandroomiix.lc@gmail.com',
-                  name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Evandro Magno')
+                  email: payload.email,
+                  name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Usuário Google')
                 };
                 localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
                 hideAuthScreen();
+                updateUserProfileBadge();
                 loadCloudData();
                 window.history.replaceState({}, document.title, window.location.pathname);
                 return;
@@ -3288,7 +3391,7 @@
             currentUser = session.user;
             localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
             hideAuthScreen();
-            if (emailSpan && currentUser) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno';
+            updateUserProfileBadge();
             loadCloudData();
             return;
           }
@@ -3310,7 +3413,7 @@
                 currentUser = u;
                 localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
                 hideAuthScreen();
-                if (emailSpan) emailSpan.innerText = currentUser.email ? currentUser.email.split('@')[0] : 'Evandro Magno';
+                updateUserProfileBadge();
                 loadCloudData();
                 return;
               }
@@ -3333,6 +3436,69 @@
 
       // Carrega os dados locais e na nuvem
       loadCloudData();
+    }
+
+    function setupDeepLinkHandling() {
+      // 1. Escuta Deep Link no aplicativo nativo (Capacitor)
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('appUrlOpen', (data) => {
+          if (data && data.url) {
+            handleDeepLinkUrl(data.url);
+          }
+        });
+      }
+
+      // 2. Se for acesso via navegador em dispositivo móvel com tokens, oferece retorno ao APK instalado
+      const hash = window.location.hash;
+      const search = window.location.search;
+      if (hash.includes('access_token') || search.includes('code=')) {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isMobile && !isStandalone) {
+          const deepLink = 'com.fokkofin.app://callback' + hash + search;
+          const banner = document.getElementById('deepLinkReturnBanner');
+          if (banner) {
+            banner.classList.remove('hidden');
+            const linkBtn = document.getElementById('btnReturnToApp');
+            if (linkBtn) linkBtn.href = deepLink;
+          }
+          // Dispara tentativa automática de retorno ao app instalado
+          setTimeout(() => {
+            try {
+              window.location.href = deepLink;
+            } catch (e) {}
+          }, 350);
+        }
+      }
+    }
+
+    async function handleDeepLinkUrl(fullUrl) {
+      try {
+        const urlClean = fullUrl.replace('com.fokkofin.app://callback', 'https://fokkofin.pages.dev/app');
+        const urlObj = new URL(urlClean);
+        const hashParams = new URLSearchParams(urlObj.hash.substring(1));
+        const access_token = hashParams.get('access_token');
+        const refresh_token = hashParams.get('refresh_token');
+
+        if (access_token && sbClient) {
+          if (refresh_token) {
+            await sbClient.auth.setSession({ access_token, refresh_token });
+          }
+          const payload = JSON.parse(atob(access_token.split('.')[1]));
+          currentUser = {
+            id: payload.sub,
+            email: payload.email,
+            name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Usuário')
+          };
+          localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+          updateUserProfileBadge();
+          loadCloudData();
+          hideAuthScreen();
+          showToast('🎉 Conectado com sucesso com ' + currentUser.email + '!', 'success');
+        }
+      } catch (err) {
+        console.warn('Erro ao processar Deep Link:', err);
+      }
     }
 
     function enterDirectDemo(email) {
