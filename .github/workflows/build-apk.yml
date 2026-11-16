@@ -36,6 +36,9 @@ jobs:
       - name: Install NPM Dependencies
         run: npm install
 
+      - name: Sync Capacitor Web Assets
+        run: npx cap sync android || true
+
       - name: Make Gradlew Executable
         run: chmod +x android/gradlew
 

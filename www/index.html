@@ -306,6 +306,26 @@
           <span>Conectar com a Conta Google</span>
         </a>
 
+        <!-- Divisor OU com E-mail -->
+        <div class="relative py-1">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+          <div class="relative flex justify-center text-[10px] uppercase font-bold text-slate-500 bg-[#0b1122] px-2">Ou com e-mail direto</div>
+        </div>
+
+        <!-- Formulário E-mail e Senha (Direto no App) -->
+        <div class="space-y-2 text-left">
+          <input type="email" id="sbEmail" placeholder="seu@email.com" class="w-full py-2.5 px-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500">
+          <input type="password" id="sbPassword" placeholder="Sua senha (mínimo 6 dígitos)" class="w-full py-2.5 px-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500">
+          <div class="flex gap-2 pt-1">
+            <button onclick="handleEmailSignIn()" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black rounded-xl text-xs transition active:scale-95 cursor-pointer">
+              Entrar
+            </button>
+            <button onclick="handleEmailSignUp()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs border border-slate-700 transition active:scale-95 cursor-pointer">
+              Cadastrar
+            </button>
+          </div>
+        </div>
+
         <!-- Botão Continuar no App -->
         <button onclick="hideAuthScreen()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-slate-700 transition cursor-pointer">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -318,9 +338,6 @@
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Desconectar Conta / Limpar Dados
           </button>
         </div>
-      </div>
-    </div>
-        <span>Dados Criptografados e Salvos Automaticamente</span>
       </div>
     </div>
 
@@ -3462,21 +3479,49 @@
 
     async function handleDeepLinkUrl(fullUrl) {
       try {
+        console.log('Recebido Deep Link:', fullUrl);
         const urlClean = fullUrl.replace('com.fokkofin.app://callback', 'https://fokkofin.pages.dev/app');
         const urlObj = new URL(urlClean);
-        const hashParams = new URLSearchParams(urlObj.hash.substring(1));
-        const access_token = hashParams.get('access_token');
-        const refresh_token = hashParams.get('refresh_token');
+
+        // 1. Token no Hash (#access_token=...)
+        const hashParams = new URLSearchParams(urlObj.hash.startsWith('#') ? urlObj.hash.substring(1) : urlObj.hash);
+        let access_token = hashParams.get('access_token');
+        let refresh_token = hashParams.get('refresh_token');
+
+        // 2. Ou token nos parâmetros de busca (?access_token=... ou ?code=...)
+        if (!access_token) {
+          access_token = urlObj.searchParams.get('access_token');
+          refresh_token = urlObj.searchParams.get('refresh_token');
+        }
+
+        const authCode = urlObj.searchParams.get('code');
+
+        if (authCode && sbClient) {
+          showAuthAlert('Autenticando via Google...', 'info');
+          const { data, error } = await sbClient.auth.exchangeCodeForSession(authCode);
+          if (data && data.session && data.session.user) {
+            currentUser = data.session.user;
+            localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
+            updateUserProfileBadge();
+            loadCloudData();
+            hideAuthScreen();
+            showToast('🎉 Conectado com sucesso!', 'success');
+            return;
+          }
+        }
 
         if (access_token && sbClient) {
           if (refresh_token) {
             await sbClient.auth.setSession({ access_token, refresh_token });
           }
-          const payload = JSON.parse(atob(access_token.split('.')[1]));
+          let payload = {};
+          try {
+            payload = JSON.parse(atob(access_token.split('.')[1]));
+          } catch(e){}
           currentUser = {
-            id: payload.sub,
-            email: payload.email,
-            name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Usuário')
+            id: payload.sub || 'user_' + Date.now(),
+            email: payload.email || 'usuario@google.com',
+            name: (payload.user_metadata && payload.user_metadata.full_name) || (payload.email ? payload.email.split('@')[0] : 'Usuário Google')
           };
           localStorage.setItem('fokko_user_session', JSON.stringify(currentUser));
           updateUserProfileBadge();
@@ -3488,6 +3533,7 @@
         console.warn('Erro ao processar Deep Link:', err);
       }
     }
+    window.handleDeepLinkUrl = handleDeepLinkUrl;
 
     function enterDirectDemo(email) {
       currentUser = {
